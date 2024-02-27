@@ -49,3 +49,15 @@ mouse, touch, keyboard, software keyboard, screensize
 -   [ ] タスクの日付を削除
 -   [ ] タスクのソート
 -   [ ] 完了タスクの削除
+
+## ノート
+
+### 設計
+
+-   eventオブジェクトが引数に渡される場合はonXXX
+-   eventオブジェクトが引数に渡される場合はhandleXXX
+-   globalStateにはpagesからしかアクセスしない
+
+### 参考
+
+-   [dnd-kitを使ってリストの並び替えを実装する](https://zenn.dev/wintyo/articles/d39841c63cc9c9)
