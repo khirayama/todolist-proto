@@ -52,6 +52,7 @@ body {
 
 input,
 button,
+textarea,
 *[role="button"] {
   -webkit-appearance: none;
   outline: none;
