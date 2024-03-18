@@ -17,8 +17,12 @@ export function Textarea(props: {
   ];
   return (
     <div className={clsx("relative overflow-hidden", props.className)}>
-      <textarea {...props} className={clsx("absolute resize-none")} />
-      <div {...props} className={clsx("z-[-1] select-none")}>
+      <textarea
+        {...props}
+        rows={1}
+        className={clsx("absolute resize-none inline-block", classNames)}
+      />
+      <div className={clsx("z-[-1] select-none", classNames)}>
         {props.value + "\u200b"}
       </div>
     </div>
