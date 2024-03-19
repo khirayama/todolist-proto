@@ -56,4 +56,9 @@ textarea,
 *[role="button"] {
   -webkit-appearance: none;
   outline: none;
+  background-color: transparent;
+}
+
+textarea {
+  resize: none;
 }
