@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { useState, useRef } from "react";
+import { useState, useRef, FormEvent } from "react";
 import {
   DndContext,
   closestCenter,
@@ -29,7 +29,6 @@ import { clsx } from "clsx";
 
 import { Icon } from "components/Icon";
 import { Sheet } from "components/Sheet";
-import { Textarea } from "components/Textarea";
 
 function InvitationSheet(props: {
   open: boolean;
@@ -76,7 +75,19 @@ export function TaskList(props: {
         <header className="sticky w-full top-0 border-b z-20 bg-white">
           <section className="px-2">
             <div className="relative">
-              <h1 className="py-2 text-center font-bold">{taskList.name}</h1>
+              <h1 className="py-2 text-center font-bold">
+                <input
+                  className="inline-block text-center w-full"
+                  type="text"
+                  value={taskList.name}
+                  onChange={(e) => {
+                    props.handleTaskListChange({
+                      ...taskList,
+                      name: e.currentTarget.value,
+                    });
+                  }}
+                />
+              </h1>
               <button
                 className="absolute top-0 right-0 h-full flex items-center justify-center px-2"
                 onClick={() => {
@@ -127,7 +138,7 @@ export function TaskList(props: {
                   <Icon text="vertical_align_bottom" />
                 )}
               </span>
-              <Textarea
+              <input
                 className="flex-1 rounded-full py-2 px-4 border"
                 value={taskText}
                 placeholder={
@@ -262,6 +273,35 @@ export function TaskList(props: {
   );
 }
 
+function TaskTextArea(props: {
+  task: Task;
+  onTaskTextChange: (event: FormEvent<HTMLTextAreaElement>) => void;
+}) {
+  const task = props.task;
+
+  /* FYI: Autoresize textarea */
+  return (
+    <div
+      className={clsx(
+        "relative flex-1 py-4",
+        task.complete ? "line-through text-gray-400" : ""
+      )}
+    >
+      <div className="whitespace-break-spaces invisible">
+        {task.text + "\u200b"}
+      </div>
+      <textarea
+        className={clsx(
+          "absolute inline-block top-0 left-0 w-full h-full flex-1 py-4 whitespace-break-spaces",
+          task.complete ? "line-through text-gray-400" : ""
+        )}
+        value={task.text}
+        onChange={props.onTaskTextChange}
+      />
+    </div>
+  );
+}
+
 function TaskItem(props: {
   index: number;
   task: Task;
@@ -333,14 +373,9 @@ function TaskItem(props: {
           </CheckboxIndicator>
         </Checkbox>
       </span>
-      <input
-        type="text"
-        className={clsx(
-          "flex-1 py-4 bg-transparent",
-          task.complete ? "line-through text-gray-400" : ""
-        )}
-        value={task.text}
-        onChange={(e) => {
+      <TaskTextArea
+        task={task}
+        onTaskTextChange={(e) => {
           props.handleTaskChange({
             ...task,
             text: e.currentTarget.value,
