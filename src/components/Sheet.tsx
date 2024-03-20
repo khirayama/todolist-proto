@@ -11,15 +11,11 @@ export function Sheet(props: {
   onOpenChange: (open: boolean) => void;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(props.open);
-  const duration = {
-    show: 600,
-    hide: 600,
-  };
   useEffect(() => {
     if (!props.open) {
       setTimeout(() => {
         setIsOpen(props.open);
-      }, duration.hide);
+      }, 600);
     } else {
       setIsOpen(props.open);
     }
@@ -32,18 +28,18 @@ export function Sheet(props: {
           className={clsx(
             "fixed w-full h-full top-0 left-0 z-30 bg-gray-900/50",
             props.open &&
-              `animate-[overlayshow_${duration.show}ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
+              `animate-[overlayshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open &&
-              `animate-[overlayhide_${duration.hide}ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
+              `animate-[overlayhide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
           )}
         />
         <RadixDialog.Content
           className={clsx(
             "fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-lg mx-auto min-h-[80%] rounded-t-lg shadow-lg z-40 bg-white",
             props.open &&
-              `animate-[contentshow_${duration.show}ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
+              `animate-[contentshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open &&
-              `animate-[contenthide_${duration.hide}ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
+              `animate-[contenthide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
           )}
         >
           <header className="flex w-full p-4 items-center justify-center relative">
