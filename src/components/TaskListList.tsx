@@ -68,6 +68,9 @@ export function TaskListList(props: {
                 props.handleTaskListsChange([...taskLists, newTaskList]);
               }
               setTaskListName("");
+              setTimeout(() => {
+                props.handleTaskListLinkClick(newTaskList.id);
+              }, 0);
             }}
           >
             <span
@@ -216,24 +219,13 @@ function TaskListListItem(props: {
       >
         <Icon text="drag_indicator" />
       </span>
-      <input
-        type="text"
-        className={clsx("flex-1 py-4 bg-transparent")}
-        value={taskList.name}
-        onChange={(e) => {
-          props.handleTaskListChange({
-            ...taskList,
-            name: e.currentTarget.value,
-          });
-        }}
-      />
       <span
+        className={clsx("flex-1 py-4")}
         onClick={() => {
           props.handleTaskListLinkClick(taskList.id);
         }}
-        className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
       >
-        <Icon text="trending_flat" />
+        {taskList.name}
       </span>
       <span
         onClick={() => {
