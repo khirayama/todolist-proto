@@ -28,18 +28,6 @@ import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
 
 import { Icon } from "components/Icon";
-import { Sheet } from "components/Sheet";
-
-function InvitationSheet(props: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <Sheet open={props.open} onOpenChange={props.onOpenChange} title="招待">
-      <div>Invite!</div>
-    </Sheet>
-  );
-}
 
 export function TaskList(props: {
   taskList: TaskList;
@@ -54,7 +42,6 @@ export function TaskList(props: {
     "bottom"
   );
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
-  const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -88,14 +75,6 @@ export function TaskList(props: {
                   }}
                 />
               </h1>
-              <button
-                className="absolute top-0 right-0 h-full flex items-center justify-center px-2"
-                onClick={() => {
-                  setInvitationSheetOpen(true);
-                }}
-              >
-                <Icon text="groups" />
-              </button>
             </div>
             <form
               className="flex items-center py-2 bg-white"
@@ -264,11 +243,6 @@ export function TaskList(props: {
           </DndContext>
         </section>
       </div>
-
-      <InvitationSheet
-        open={invitationSheetOpen}
-        onOpenChange={setInvitationSheetOpen}
-      />
     </>
   );
 }
