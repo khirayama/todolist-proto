@@ -6,19 +6,10 @@ import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { Icon } from "components/Icon";
 import { Sheet } from "components/Sheet";
-import { Textarea } from "components/Textarea";
 
 function Settings() {
-  const [value, setValue] = useState("Hello World");
-
   return (
     <>
-      <div>
-        <Textarea
-          value={value}
-          onChange={(e) => setValue(e.currentTarget.value)}
-        />
-      </div>
       <div>Account</div>
       <div>Theme</div>
       <div>Lang</div>
