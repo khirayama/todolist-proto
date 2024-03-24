@@ -12,6 +12,7 @@ const initialValue = (): State => {
       preferences: {
         lang: "ja",
         theme: "system",
+        taskInsertPosition: "bottom",
       },
       taskListIds: [taskList.id],
     },

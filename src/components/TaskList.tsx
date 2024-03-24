@@ -30,7 +30,11 @@ import { clsx } from "clsx";
 import { Icon } from "components/Icon";
 
 export function TaskList(props: {
+  hasPrev: boolean;
+  hasNext: boolean;
   taskList: TaskList;
+  insertPosition: Preferences["taskInsertPosition"];
+  handlePreferencesChange: (updatedPreferences: Partial<Preferences>) => void;
   handleTaskChange: (updatedTask: Task) => void;
   handleTaskListChange: (updateTaskList: TaskList) => void;
   handleDragStart: (e: DragStartEvent) => void;
@@ -38,9 +42,6 @@ export function TaskList(props: {
   handleDragEnd: (e: DragEndEvent) => void;
 }) {
   const [taskText, setTaskText] = useState<string>("");
-  const [insertPosition, setInsertPosition] = useState<"bottom" | "top">(
-    "bottom"
-  );
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
 
   const sensors = useSensors(
@@ -50,6 +51,7 @@ export function TaskList(props: {
     })
   );
 
+  const insertPosition = props.insertPosition;
   const taskList = props.taskList;
   const tasks = taskList.tasks;
   const isInsertTop =
@@ -60,8 +62,24 @@ export function TaskList(props: {
     <>
       <div className="h-full overflow-scroll">
         <header className="sticky w-full top-0 border-b z-20 bg-white">
-          <section className="px-2">
+          <section className={clsx("px-1")}>
             <div className="relative">
+              {props.hasPrev && (
+                <button
+                  className="absolute top-0 left-0 py-2 text-gray-400"
+                  onClick={() => {
+                    const el = document.querySelector<HTMLElement>(
+                      `[data-tasklistid="${taskList.id}"]`
+                    );
+                    el.parentElement.scrollTo({
+                      behavior: "smooth",
+                      left: el.parentElement.scrollLeft - el.offsetWidth,
+                    });
+                  }}
+                >
+                  <Icon text="navigate_before" />
+                </button>
+              )}
               <h1 className="py-2 text-center font-bold">
                 <input
                   className="inline-block text-center w-full"
@@ -75,6 +93,22 @@ export function TaskList(props: {
                   }}
                 />
               </h1>
+              {props.hasNext && (
+                <button
+                  className="absolute top-0 right-0 py-2 text-gray-400"
+                  onClick={() => {
+                    const el = document.querySelector<HTMLElement>(
+                      `[data-tasklistid="${taskList.id}"]`
+                    );
+                    el.parentElement.scrollTo({
+                      behavior: "smooth",
+                      left: el.parentElement.scrollLeft + el.offsetWidth,
+                    });
+                  }}
+                >
+                  <Icon text="navigate_next" />
+                </button>
+              )}
             </div>
             <form
               className="flex items-center py-2 bg-white"
@@ -106,9 +140,10 @@ export function TaskList(props: {
               <span
                 className="p-2 flex"
                 onClick={() => {
-                  setInsertPosition(
-                    insertPosition === "bottom" ? "top" : "bottom"
-                  );
+                  props.handlePreferencesChange({
+                    taskInsertPosition:
+                      insertPosition === "bottom" ? "top" : "bottom",
+                  });
                 }}
               >
                 {isInsertTop ? (

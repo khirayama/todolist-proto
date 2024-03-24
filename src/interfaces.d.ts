@@ -14,6 +14,7 @@ type TaskList = {
 type Preferences = {
   lang: string;
   theme: string;
+  taskInsertPosition: "bottom" | "top";
 };
 
 type App = {

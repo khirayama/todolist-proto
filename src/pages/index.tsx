@@ -234,7 +234,11 @@ export default function IndexPage() {
                   <div className="absolute w-full h-full overflow-scroll">
                     <TaskList
                       key={taskList.id}
+                      hasPrev={i !== 0}
+                      hasNext={i !== taskLists.length - 1}
+                      insertPosition={preferences.taskInsertPosition}
                       taskList={taskList}
+                      handlePreferencesChange={handlePreferencesChange}
                       handleTaskChange={handleTaskChange}
                       handleTaskListChange={handleTaskListChange}
                       handleDragStart={handleDragStart}
