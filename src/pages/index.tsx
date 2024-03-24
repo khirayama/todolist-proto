@@ -7,13 +7,17 @@ import { TaskListList } from "components/TaskListList";
 import { Icon } from "components/Icon";
 import { Sheet } from "components/Sheet";
 
-function Settings() {
+function UserSheet(props: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   return (
-    <>
-      <div>Account</div>
-      <div>Theme</div>
-      <div>Lang</div>
-    </>
+    <Sheet open={props.open} onOpenChange={props.onOpenChange} title="ログイン">
+      <div>Log In</div>
+      <div>Sign Up</div>
+      <div>User Info</div>
+      <div>Log Out</div>
+    </Sheet>
   );
 }
 
@@ -23,31 +27,20 @@ function SettingsSheet(props: {
 }) {
   return (
     <Sheet open={props.open} onOpenChange={props.onOpenChange} title="設定">
-      <Settings />
+      <div>Theme</div>
+      <div>Lang</div>
+      <div>Task Insert Position</div>
     </Sheet>
   );
 }
 
-function TaskListSheet(props: {
+function InvitationSheet(props: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  taskLists: TaskList[];
-  handleTaskListChange: (updatedTaskList: TaskList) => void;
-  handleTaskListsChange: (updateTaskLists: TaskList[]) => void;
-  handleTaskListLinkClick: (taskListId: string) => void;
 }) {
   return (
-    <Sheet
-      open={props.open}
-      onOpenChange={props.onOpenChange}
-      title="タスクリストを編集"
-    >
-      <TaskListList
-        taskLists={props.taskLists}
-        handleTaskListChange={props.handleTaskListChange}
-        handleTaskListsChange={props.handleTaskListsChange}
-        handleTaskListLinkClick={props.handleTaskListLinkClick}
-      />
+    <Sheet open={props.open} onOpenChange={props.onOpenChange} title="招待">
+      <div>Invite!</div>
     </Sheet>
   );
 }
@@ -55,14 +48,29 @@ function TaskListSheet(props: {
 export default function IndexPage() {
   const [globalState, setGlobalState] = useGlobalState();
 
-  const [taskListSheetOpen, setTaskListSheetOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
+  const [userSheetOpen, setUserSheetOpen] = useState(false);
+  const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
   const taskLists = globalState.app.taskListIds.map(
     (tlid) => globalState.taskLists[tlid]
   );
   const taskListContainerRef = useRef<HTMLElement>(null);
+  const preferences = globalState.app.preferences;
 
+  const handlePreferencesChange = (newPreferences: Partial<Preferences>) => {
+    setGlobalState({
+      ...globalState,
+      app: {
+        ...globalState.app,
+        preferences: {
+          ...globalState.app.preferences,
+          ...newPreferences,
+        },
+      },
+    });
+  };
   const handleTaskListChange = (newTaskList: TaskList) => {
     setGlobalState({
       ...globalState,
@@ -90,49 +98,93 @@ export default function IndexPage() {
     });
   };
   const handleTaskListLinkClick = (taskListId: string) => {
-    setTaskListSheetOpen(false);
-    const el = taskListContainerRef.current;
-    if (el) {
-      const w = el.clientWidth;
-      const idx = taskLists.findIndex((tl) => tl.id === taskListId);
-      el.scrollLeft = w * idx;
+    setIsDrawerOpen(false);
+    const parent = taskListContainerRef.current;
+    const el = document.querySelector<HTMLElement>(
+      `[data-tasklistid="${taskListId}"]`
+    );
+    if (parent && el) {
+      parent.scrollLeft = el.offsetLeft;
     }
   };
-  const handleTaskListSheetOpenClick = () => {
-    setTaskListSheetOpen(true);
+  const handleTaskListIconClick = () => {
+    setIsDrawerOpen(true);
+  };
+  const handleDrawerCloseIconClick = () => {
+    setIsDrawerOpen(false);
   };
   const handleSettingsSheetOpenClick = () => {
     setSettingsSheetOpen(true);
   };
+  const handleUserSheetOpenClick = () => {
+    setUserSheetOpen(true);
+  };
 
   return (
     <>
-      <div className="flex relative w-full h-full bg-gray-100 overflow-hidden">
-        <section className="absolute top-0 left-0 h-full bg-white z-10 border-r">
-          <TaskListList
-            taskLists={taskLists}
-            handleTaskListChange={handleTaskListChange}
-            handleTaskListsChange={handleTaskListsChange}
-            handleTaskListLinkClick={handleTaskListLinkClick}
-          />
-        </section>
-
-        <section className="flex flex-col h-full max-w-lg mx-auto w-full border-x z-20">
-          <div className="flex p-4 bg-white">
+      <div className="flex w-full h-full bg-gray-100 overflow-hidden">
+        <section
+          className={clsx(
+            "h-full bg-white z-30 border-r md:max-w-sm w-full md:w-[auto] absolute md:relative md:block -translate-x-full md:translate-x-0 transition-transform duration-[320ms]",
+            isDrawerOpen && "translate-x-0"
+          )}
+        >
+          <div className="flex md:hidden">
             <button
-              className="flex items-center justify-center"
-              onClick={handleTaskListSheetOpenClick}
+              className="flex items-center justify-center px-4 pt-4 w-full"
+              onClick={handleDrawerCloseIconClick}
             >
-              <Icon text="list" />
+              <Icon text="close" />
+              <div className="flex-1" />
             </button>
-            <div className="flex-1" />
+          </div>
+          <div className="py-2">
             <button
-              className="flex items-center justify-center"
+              className="flex items-center justify-center px-4 py-2 w-full"
+              onClick={handleUserSheetOpenClick}
+            >
+              <div className="flex-1 text-left">ログイン</div>
+              <Icon text="person" />
+            </button>
+
+            <button
+              className="flex items-center justify-center px-4 py-2 w-full"
               onClick={handleSettingsSheetOpenClick}
             >
+              <div className="flex-1 text-left">設定</div>
               <Icon text="settings" />
             </button>
           </div>
+          <div className="pt-2 border-t">
+            <TaskListList
+              taskLists={taskLists}
+              handleTaskListChange={handleTaskListChange}
+              handleTaskListsChange={handleTaskListsChange}
+              handleTaskListLinkClick={handleTaskListLinkClick}
+            />
+          </div>
+        </section>
+
+        <section className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full border-x">
+          <header className="flex p-4 bg-white">
+            <button
+              className="flex md:hidden items-center justify-center"
+              onClick={handleTaskListIconClick}
+            >
+              <Icon text="list" />
+            </button>
+
+            <div className="flex-1" />
+
+            <button
+              className="flex items-center justify-center"
+              onClick={() => {
+                setInvitationSheetOpen(true);
+              }}
+            >
+              <Icon text="groups" />
+            </button>
+          </header>
 
           <section
             ref={taskListContainerRef}
@@ -142,7 +194,7 @@ export default function IndexPage() {
               sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}
           >
-            {taskLists.map((taskList) => {
+            {taskLists.map((taskList, i) => {
               const handleTaskChange = (newTask: Task) => {
                 setGlobalState({
                   ...globalState,
@@ -169,6 +221,7 @@ export default function IndexPage() {
 
               return (
                 <div
+                  data-tasklistid={taskList.id}
                   key={taskList.id}
                   className={clsx(
                     "flex-none w-full snap-start snap-always relative",
@@ -195,23 +248,21 @@ export default function IndexPage() {
           </section>
         </section>
 
-        <section className="absolute top-0 right-0 w-[240px] h-full bg-white z-10 border-l">
-          <Settings />
-        </section>
+        <section
+          className="lg:w-[15%] w-[0px]" /* FYI: Spacer to adjust list centering*/
+        />
       </div>
-
-      <TaskListSheet
-        open={taskListSheetOpen}
-        onOpenChange={setTaskListSheetOpen}
-        taskLists={taskLists}
-        handleTaskListChange={handleTaskListChange}
-        handleTaskListsChange={handleTaskListsChange}
-        handleTaskListLinkClick={handleTaskListLinkClick}
-      />
 
       <SettingsSheet
         open={settingsSheetOpen}
         onOpenChange={setSettingsSheetOpen}
+      />
+
+      <UserSheet open={userSheetOpen} onOpenChange={setUserSheetOpen} />
+
+      <InvitationSheet
+        open={invitationSheetOpen}
+        onOpenChange={setInvitationSheetOpen}
       />
     </>
   );
