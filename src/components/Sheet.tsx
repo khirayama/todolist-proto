@@ -35,7 +35,7 @@ export function Sheet(props: {
         />
         <RadixDialog.Content
           className={clsx(
-            "fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-lg mx-auto min-h-[80%] rounded-t-lg shadow-lg z-[400] bg-white",
+            "fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-2xl mx-auto min-h-[80%] rounded-t-lg shadow-lg z-[400] bg-white",
             props.open &&
               `animate-[contentshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open &&
