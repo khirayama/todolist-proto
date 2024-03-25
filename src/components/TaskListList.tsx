@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import {
   DndContext,
   closestCenter,
@@ -46,41 +46,56 @@ export function TaskListList(props: {
     (insertPosition === "top" && !isShiftPressed) ||
     (insertPosition === "bottom" && isShiftPressed);
 
+  const onTaskListFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (taskListName === "") {
+      return;
+    }
+    const newTaskList: TaskList = {
+      id: uuid(),
+      name: taskListName,
+      tasks: [],
+    };
+    if (isInsertTop) {
+      props.handleTaskListsChange([newTaskList, ...taskLists]);
+    } else {
+      props.handleTaskListsChange([...taskLists, newTaskList]);
+    }
+    setTaskListName("");
+    setTimeout(() => {
+      props.handleTaskListLinkClick(newTaskList.id);
+    }, 0);
+  };
+  const onInsertPositionIconClick = () => {
+    setInsertPosition(insertPosition === "bottom" ? "top" : "bottom");
+  };
+  const onTaskListNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTaskListName(e.target.value);
+  };
+  const onTaskListNameKeyDownAndKeyUp = (e: KeyboardEvent) => {
+    setIsShiftPressed(e.shiftKey);
+  };
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+
+    if (active && over && active.id !== over.id) {
+      const oldIndex = taskLists.findIndex((tl) => tl.id === active.id);
+      const newIndex = taskLists.findIndex((tl) => tl.id === over.id);
+
+      const newTaskLists = arrayMove(taskLists, oldIndex, newIndex);
+      props.handleTaskListsChange(newTaskLists);
+    }
+  };
+
   return (
     <div>
       <header className="sticky w-full top-0 border-b z-20 bg-white">
         <section className="px-2">
           <form
             className="flex items-center py-2 bg-white"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (taskListName === "") {
-                return;
-              }
-              const newTaskList: TaskList = {
-                id: uuid(),
-                name: taskListName,
-                tasks: [],
-              };
-              if (isInsertTop) {
-                props.handleTaskListsChange([newTaskList, ...taskLists]);
-              } else {
-                props.handleTaskListsChange([...taskLists, newTaskList]);
-              }
-              setTaskListName("");
-              setTimeout(() => {
-                props.handleTaskListLinkClick(newTaskList.id);
-              }, 0);
-            }}
+            onSubmit={onTaskListFormSubmit}
           >
-            <span
-              className="p-2 flex"
-              onClick={() => {
-                setInsertPosition(
-                  insertPosition === "bottom" ? "top" : "bottom"
-                );
-              }}
-            >
+            <span className="p-2 flex" onClick={onInsertPositionIconClick}>
               {isInsertTop ? (
                 <Icon text="vertical_align_top" />
               ) : (
@@ -94,11 +109,9 @@ export function TaskListList(props: {
               placeholder={
                 isInsertTop ? "Add task list to top" : "Add task list to bottom"
               }
-              onChange={(e) => {
-                setTaskListName(e.target.value);
-              }}
-              onKeyDown={(e) => setIsShiftPressed(e.shiftKey)}
-              onKeyUp={(e) => setIsShiftPressed(e.shiftKey)}
+              onChange={onTaskListNameChange}
+              onKeyDown={onTaskListNameKeyDownAndKeyUp}
+              onKeyUp={onTaskListNameKeyDownAndKeyUp}
             />
             <button className="p-2 flex" type="submit">
               <Icon text="send" />
@@ -112,51 +125,46 @@ export function TaskListList(props: {
           sensors={sensors}
           collisionDetection={closestCenter}
           modifiers={[restrictToVerticalAxis]}
-          onDragEnd={(event: DragEndEvent) => {
-            const { active, over } = event;
-
-            if (active && over && active.id !== over.id) {
-              const oldIndex = taskLists.findIndex((tl) => tl.id === active.id);
-              const newIndex = taskLists.findIndex((tl) => tl.id === over.id);
-
-              const newTaskLists = arrayMove(taskLists, oldIndex, newIndex);
-              props.handleTaskListsChange(newTaskLists);
-            }
-          }}
+          onDragEnd={handleDragEnd}
         >
           <SortableContext
             items={taskLists}
             strategy={verticalListSortingStrategy}
           >
-            {taskLists.map((taskList, i) => (
-              <TaskListListItem
-                key={taskList.id}
-                index={i}
-                taskList={taskList}
-                newTaskListName={taskListName}
-                handleTaskListChange={(newTaskList) => {
-                  props.handleTaskListChange(newTaskList);
-                }}
-                handleInsertTaskListButtonClick={(idx) => {
-                  const newTaskLists = [...taskLists];
-                  newTaskLists.splice(idx, 0, {
-                    id: uuid(),
-                    name: taskListName,
-                    tasks: [],
-                  });
-                  props.handleTaskListsChange(newTaskLists);
-                  setTaskListName("");
-                }}
-                handleDeleteTaskListButtonClick={(taskListId) => {
-                  props.handleTaskListsChange(
-                    taskLists.filter((tl) => tl.id !== taskListId)
-                  );
-                }}
-                handleTaskListLinkClick={(taskListId) => {
-                  props.handleTaskListLinkClick(taskListId);
-                }}
-              />
-            ))}
+            {taskLists.map((taskList, i) => {
+              const handleInsertTaskListButtonClick = (idx: number) => {
+                const newTaskLists = [...taskLists];
+                newTaskLists.splice(idx, 0, {
+                  id: uuid(),
+                  name: taskListName,
+                  tasks: [],
+                });
+                props.handleTaskListsChange(newTaskLists);
+                setTaskListName("");
+              };
+              const handleDeleteTaskListButtonClick = (taskListId: string) => {
+                props.handleTaskListsChange(
+                  taskLists.filter((tl) => tl.id !== taskListId)
+                );
+              };
+
+              return (
+                <TaskListListItem
+                  key={taskList.id}
+                  index={i}
+                  taskList={taskList}
+                  newTaskListName={taskListName}
+                  handleTaskListChange={props.handleTaskListChange}
+                  handleInsertTaskListButtonClick={
+                    handleInsertTaskListButtonClick
+                  }
+                  handleDeleteTaskListButtonClick={
+                    handleDeleteTaskListButtonClick
+                  }
+                  handleTaskListLinkClick={props.handleTaskListLinkClick}
+                />
+              );
+            })}
           </SortableContext>
         </DndContext>
       </section>

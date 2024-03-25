@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { useState, useRef, FormEvent } from "react";
+import { useState, useRef, FormEvent, KeyboardEvent } from "react";
 import {
   DndContext,
   closestCenter,
@@ -58,6 +58,117 @@ export function TaskList(props: {
     (insertPosition === "top" && !isShiftPressed) ||
     (insertPosition === "bottom" && isShiftPressed);
 
+  const onPrevTaskListClick = () => {
+    const el = document.querySelector<HTMLElement>(
+      `[data-tasklistid="${taskList.id}"]`
+    );
+    el.parentElement.scrollTo({
+      behavior: "smooth",
+      left: el.parentElement.scrollLeft - el.offsetWidth,
+    });
+  };
+  const onNextTaskListClick = () => {
+    const el = document.querySelector<HTMLElement>(
+      `[data-tasklistid="${taskList.id}"]`
+    );
+    el.parentElement.scrollTo({
+      behavior: "smooth",
+      left: el.parentElement.scrollLeft + el.offsetWidth,
+    });
+  };
+  const onTaskListNameChange = (e: FormEvent<HTMLInputElement>) => {
+    props.handleTaskListChange({
+      ...taskList,
+      name: e.currentTarget.value,
+    });
+  };
+  const onTaskFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (taskText === "") {
+      return;
+    }
+    const newTask = {
+      id: uuid(),
+      text: taskText,
+      complete: false,
+      date: "",
+    };
+    if (isInsertTop) {
+      props.handleTaskListChange({
+        ...props.taskList,
+        tasks: [newTask, ...tasks],
+      });
+    } else {
+      props.handleTaskListChange({
+        ...props.taskList,
+        tasks: [...tasks, newTask],
+      });
+    }
+    setTaskText("");
+  };
+  const onInsertPositionIconClick = () => {
+    props.handlePreferencesChange({
+      taskInsertPosition: insertPosition === "bottom" ? "top" : "bottom",
+    });
+  };
+  const onTaskTextChange = (e: FormEvent<HTMLInputElement>) => {
+    setTaskText(e.currentTarget.value);
+  };
+  const onTaskTextKeyDownAndKeyUp = (e: KeyboardEvent) => {
+    setIsShiftPressed(e.shiftKey);
+  };
+  const onSortTasksButtonClick = () => {
+    const newTaskList = {
+      ...taskList,
+      tasks: taskList.tasks
+        .sort((a, b) => {
+          if (a.complete && !b.complete) {
+            return 1;
+          }
+          if (!a.complete && b.complete) {
+            return -1;
+          }
+          if (!a.date && b.date) {
+            return 1;
+          }
+          if (a.date && !b.date) {
+            return -1;
+          }
+          if (a.date > b.date) {
+            return 1;
+          }
+          if (a.date < b.date) {
+            return -1;
+          }
+          return 0;
+        })
+        .concat(),
+    };
+    props.handleTaskListChange(newTaskList);
+  };
+  const onClearCompletedTasksButtonClick = () => {
+    const newTaskList = {
+      ...taskList,
+      tasks: taskList.tasks.filter((t) => !t.complete),
+    };
+    props.handleTaskListChange(newTaskList);
+  };
+  const handleDragEnd = (e: DragEndEvent) => {
+    props.handleDragEnd(e);
+    const { active, over } = e;
+
+    if (active && over && active.id !== over.id) {
+      const oldIndex = tasks.findIndex((t) => t.id === active.id);
+      const newIndex = tasks.findIndex((t) => t.id === over.id);
+
+      const newTasks = arrayMove(tasks, oldIndex, newIndex);
+      props.handleTaskListChange({
+        ...taskList,
+        tasks: newTasks,
+      });
+    }
+  };
+
   return (
     <>
       <div className="h-full overflow-scroll">
@@ -67,15 +178,7 @@ export function TaskList(props: {
               {props.hasPrev && (
                 <button
                   className="absolute top-0 left-0 py-2 text-gray-400"
-                  onClick={() => {
-                    const el = document.querySelector<HTMLElement>(
-                      `[data-tasklistid="${taskList.id}"]`
-                    );
-                    el.parentElement.scrollTo({
-                      behavior: "smooth",
-                      left: el.parentElement.scrollLeft - el.offsetWidth,
-                    });
-                  }}
+                  onClick={onPrevTaskListClick}
                 >
                   <Icon text="navigate_before" />
                 </button>
@@ -85,26 +188,13 @@ export function TaskList(props: {
                   className="inline-block text-center w-full"
                   type="text"
                   value={taskList.name}
-                  onChange={(e) => {
-                    props.handleTaskListChange({
-                      ...taskList,
-                      name: e.currentTarget.value,
-                    });
-                  }}
+                  onChange={onTaskListNameChange}
                 />
               </h1>
               {props.hasNext && (
                 <button
                   className="absolute top-0 right-0 py-2 text-gray-400"
-                  onClick={() => {
-                    const el = document.querySelector<HTMLElement>(
-                      `[data-tasklistid="${taskList.id}"]`
-                    );
-                    el.parentElement.scrollTo({
-                      behavior: "smooth",
-                      left: el.parentElement.scrollLeft + el.offsetWidth,
-                    });
-                  }}
+                  onClick={onNextTaskListClick}
                 >
                   <Icon text="navigate_next" />
                 </button>
@@ -112,40 +202,9 @@ export function TaskList(props: {
             </div>
             <form
               className="flex items-center py-2 bg-white"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (taskText === "") {
-                  return;
-                }
-                const newTask = {
-                  id: uuid(),
-                  text: taskText,
-                  complete: false,
-                  date: "",
-                };
-                if (isInsertTop) {
-                  props.handleTaskListChange({
-                    ...props.taskList,
-                    tasks: [newTask, ...tasks],
-                  });
-                } else {
-                  props.handleTaskListChange({
-                    ...props.taskList,
-                    tasks: [...tasks, newTask],
-                  });
-                }
-                setTaskText("");
-              }}
+              onSubmit={onTaskFormSubmit}
             >
-              <span
-                className="p-2 flex"
-                onClick={() => {
-                  props.handlePreferencesChange({
-                    taskInsertPosition:
-                      insertPosition === "bottom" ? "top" : "bottom",
-                  });
-                }}
-              >
+              <span className="p-2 flex" onClick={onInsertPositionIconClick}>
                 {isInsertTop ? (
                   <Icon text="vertical_align_top" />
                 ) : (
@@ -158,11 +217,9 @@ export function TaskList(props: {
                 placeholder={
                   isInsertTop ? "Add task to top" : "Add task to bottom"
                 }
-                onChange={(e) => {
-                  setTaskText(e.currentTarget.value);
-                }}
-                onKeyDown={(e) => setIsShiftPressed(e.shiftKey)}
-                onKeyUp={(e) => setIsShiftPressed(e.shiftKey)}
+                onChange={onTaskTextChange}
+                onKeyDown={onTaskTextKeyDownAndKeyUp}
+                onKeyUp={onTaskTextKeyDownAndKeyUp}
               />
               <button className="p-2 flex" type="submit">
                 <Icon text="send" />
@@ -170,52 +227,12 @@ export function TaskList(props: {
             </form>
           </section>
           <section className="flex py-2 pl-4 pr-3 text-gray-400">
-            <button
-              className="flex"
-              onClick={() => {
-                const newTaskList = {
-                  ...taskList,
-                  tasks: taskList.tasks
-                    .sort((a, b) => {
-                      if (a.complete && !b.complete) {
-                        return 1;
-                      }
-                      if (!a.complete && b.complete) {
-                        return -1;
-                      }
-                      if (!a.date && b.date) {
-                        return 1;
-                      }
-                      if (a.date && !b.date) {
-                        return -1;
-                      }
-                      if (a.date > b.date) {
-                        return 1;
-                      }
-                      if (a.date < b.date) {
-                        return -1;
-                      }
-                      return 0;
-                    })
-                    .concat(),
-                };
-                props.handleTaskListChange(newTaskList);
-              }}
-            >
+            <button className="flex" onClick={onSortTasksButtonClick}>
               <Icon text="sort" />
               <span className="pl-1">Sort</span>
             </button>
             <div className="inline-block flex-1"></div>
-            <button
-              className="flex"
-              onClick={() => {
-                const newTaskList = {
-                  ...taskList,
-                  tasks: taskList.tasks.filter((t) => !t.complete),
-                };
-                props.handleTaskListChange(newTaskList);
-              }}
-            >
+            <button className="flex" onClick={onClearCompletedTasksButtonClick}>
               <span className="pr-1">Clear Completed</span>
               <Icon text="delete" />
             </button>
@@ -229,51 +246,39 @@ export function TaskList(props: {
             modifiers={[restrictToVerticalAxis]}
             onDragStart={props.handleDragStart}
             onDragCancel={props.handleDragCancel}
-            onDragEnd={(event: DragEndEvent) => {
-              props.handleDragEnd(event);
-              const { active, over } = event;
-
-              if (active && over && active.id !== over.id) {
-                const oldIndex = tasks.findIndex((t) => t.id === active.id);
-                const newIndex = tasks.findIndex((t) => t.id === over.id);
-
-                const newTasks = arrayMove(tasks, oldIndex, newIndex);
-                props.handleTaskListChange({
-                  ...taskList,
-                  tasks: newTasks,
-                });
-              }
-            }}
+            onDragEnd={handleDragEnd}
           >
             <SortableContext
               items={tasks}
               strategy={verticalListSortingStrategy}
             >
-              {tasks.map((task, i) => (
-                <TaskItem
-                  key={task.id}
-                  index={i}
-                  task={task}
-                  newTaskText={taskText}
-                  handleTaskChange={(newTask) => {
-                    props.handleTaskChange(newTask);
-                  }}
-                  handleInsertTaskButtonClick={(idx) => {
-                    const newTasks = [...taskList.tasks];
-                    newTasks.splice(idx, 0, {
-                      id: uuid(),
-                      text: taskText,
-                      complete: false,
-                      date: "",
-                    });
-                    props.handleTaskListChange({
-                      ...taskList,
-                      tasks: newTasks,
-                    });
-                    setTaskText("");
-                  }}
-                />
-              ))}
+              {tasks.map((task, i) => {
+                const handleInsertTaskButtonClick = (idx: number) => {
+                  const newTasks = [...taskList.tasks];
+                  newTasks.splice(idx, 0, {
+                    id: uuid(),
+                    text: taskText,
+                    complete: false,
+                    date: "",
+                  });
+                  props.handleTaskListChange({
+                    ...taskList,
+                    tasks: newTasks,
+                  });
+                  setTaskText("");
+                };
+
+                return (
+                  <TaskItem
+                    key={task.id}
+                    index={i}
+                    task={task}
+                    newTaskText={taskText}
+                    handleTaskChange={props.handleTaskChange}
+                    handleInsertTaskButtonClick={handleInsertTaskButtonClick}
+                  />
+                );
+              })}
             </SortableContext>
           </DndContext>
         </section>
