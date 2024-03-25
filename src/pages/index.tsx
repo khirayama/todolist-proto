@@ -5,45 +5,9 @@ import { useGlobalState } from "libs";
 import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { Icon } from "components/Icon";
-import { Sheet } from "components/Sheet";
-
-function UserSheet(props: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <Sheet open={props.open} onOpenChange={props.onOpenChange} title="ログイン">
-      <div>Log In</div>
-      <div>Sign Up</div>
-      <div>User Info</div>
-      <div>Log Out</div>
-    </Sheet>
-  );
-}
-
-function SettingsSheet(props: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <Sheet open={props.open} onOpenChange={props.onOpenChange} title="設定">
-      <div>Theme</div>
-      <div>Lang</div>
-      <div>Task Insert Position</div>
-    </Sheet>
-  );
-}
-
-function InvitationSheet(props: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <Sheet open={props.open} onOpenChange={props.onOpenChange} title="招待">
-      <div>Invite!</div>
-    </Sheet>
-  );
-}
+import { UserSheet } from "components/UserSheet";
+import { PreferencesSheet } from "components/PreferencesSheet";
+import { InvitationSheet } from "components/InvitationSheet";
 
 export default function IndexPage() {
   const [globalState, setGlobalState] = useGlobalState();
@@ -119,6 +83,9 @@ export default function IndexPage() {
   const handleUserSheetOpenClick = () => {
     setUserSheetOpen(true);
   };
+  const handleInvitationSheetOpenClick = () => {
+    setInvitationSheetOpen(true);
+  };
 
   return (
     <>
@@ -178,9 +145,7 @@ export default function IndexPage() {
 
             <button
               className="flex items-center justify-center"
-              onClick={() => {
-                setInvitationSheetOpen(true);
-              }}
+              onClick={handleInvitationSheetOpenClick}
             >
               <Icon text="groups" />
             </button>
@@ -257,7 +222,7 @@ export default function IndexPage() {
         />
       </div>
 
-      <SettingsSheet
+      <PreferencesSheet
         open={settingsSheetOpen}
         onOpenChange={setSettingsSheetOpen}
       />
