@@ -5,6 +5,9 @@ import type { AppProps } from "next/app";
 import "./globals.css";
 
 import { GlobalStateProvider } from "libs";
+import { init as initI18n } from "libs/i18n";
+
+initI18n();
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false);

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { clsx } from "clsx";
+import { useTranslation } from "react-i18next";
 
 import { useGlobalState } from "libs";
 import { TaskList } from "components/TaskList";
@@ -10,6 +11,9 @@ import { PreferencesSheet } from "components/PreferencesSheet";
 import { InvitationSheet } from "components/InvitationSheet";
 
 export default function IndexPage() {
+  const { t, i18n } = useTranslation();
+  const tr = (key: string) => t(`pages.index.${key}`);
+
   const [globalState, setGlobalState] = useGlobalState();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -22,6 +26,9 @@ export default function IndexPage() {
   );
   const taskListContainerRef = useRef<HTMLElement>(null);
   const preferences = globalState.app.preferences;
+  if (i18n.resolvedLanguage !== preferences.lang) {
+    i18n.changeLanguage(preferences.lang);
+  }
 
   const handlePreferencesChange = (newPreferences: Partial<Preferences>) => {
     setGlobalState({
@@ -110,7 +117,7 @@ export default function IndexPage() {
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={handleUserSheetOpenClick}
             >
-              <div className="flex-1 text-left">ログイン</div>
+              <div className="flex-1 text-left">{tr("Log In")}</div>
               <Icon text="person" />
             </button>
 
@@ -118,7 +125,7 @@ export default function IndexPage() {
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={handleSettingsSheetOpenClick}
             >
-              <div className="flex-1 text-left">設定</div>
+              <div className="flex-1 text-left">{tr("Preferences")}</div>
               <Icon text="settings" />
             </button>
           </div>
@@ -225,6 +232,7 @@ export default function IndexPage() {
       <PreferencesSheet
         open={settingsSheetOpen}
         onOpenChange={setSettingsSheetOpen}
+        handlePreferencesChange={handlePreferencesChange}
       />
 
       <UserSheet open={userSheetOpen} onOpenChange={setUserSheetOpen} />

@@ -26,6 +26,7 @@ import {
 } from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
+import { useTranslation } from "react-i18next";
 
 import { Icon } from "components/Icon";
 
@@ -41,6 +42,9 @@ export function TaskList(props: {
   handleDragCancel: (e: DragCancelEvent) => void;
   handleDragEnd: (e: DragEndEvent) => void;
 }) {
+  const { t } = useTranslation();
+  const tr = (key: string) => t(`components.TaskList.${key}`);
+
   const [taskText, setTaskText] = useState<string>("");
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
 
@@ -215,7 +219,7 @@ export function TaskList(props: {
                 className="flex-1 rounded-full py-2 px-4 border"
                 value={taskText}
                 placeholder={
-                  isInsertTop ? "Add task to top" : "Add task to bottom"
+                  isInsertTop ? tr("Add task to top") : tr("Add task to bottom")
                 }
                 onChange={onTaskTextChange}
                 onKeyDown={onTaskTextKeyDownAndKeyUp}
@@ -229,11 +233,11 @@ export function TaskList(props: {
           <section className="flex py-2 pl-4 pr-3 text-gray-400">
             <button className="flex" onClick={onSortTasksButtonClick}>
               <Icon text="sort" />
-              <span className="pl-1">Sort</span>
+              <span className="pl-1">{tr("Sort")}</span>
             </button>
             <div className="inline-block flex-1"></div>
             <button className="flex" onClick={onClearCompletedTasksButtonClick}>
-              <span className="pr-1">Clear Completed</span>
+              <span className="pr-1">{tr("Clear Completed")}</span>
               <Icon text="delete" />
             </button>
           </section>

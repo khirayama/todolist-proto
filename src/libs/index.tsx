@@ -27,8 +27,11 @@ const GlobalStateContext = createContext<[State, (newState: State) => void]>([
   () => {},
 ]);
 
-export const loadGlobalState = () =>
-  JSON.parse(window.localStorage.getItem("__global_state")) || initialValue();
+export const loadGlobalState = () => {
+  return (
+    JSON.parse(window.localStorage.getItem("__global_state")) || initialValue()
+  );
+};
 
 export const GlobalStateProvider = (props: { children: ReactNode }) => {
   const [globalState, nativeSetGlobalState] = useState(loadGlobalState);
