@@ -15,22 +15,22 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setMounted(true);
 
-    let pendingUpdate = false;
-
-    const next = document.querySelector("#__next");
-
-    function viewportHandler(event) {
-      if (pendingUpdate) return;
-      pendingUpdate = true;
-
-      const viewport = event.target;
-      requestAnimationFrame(() => {
-        pendingUpdate = false;
-        next.style.height = viewport.height + "px";
-      });
-    }
-
-    window.visualViewport.addEventListener("resize", viewportHandler);
+    // let pendingUpdate = false;
+    //
+    // const next = document.querySelector("#__next");
+    //
+    // function viewportHandler(event) {
+    //   if (pendingUpdate) return;
+    //   pendingUpdate = true;
+    //
+    //   const viewport = event.target;
+    //   requestAnimationFrame(() => {
+    //     pendingUpdate = false;
+    //     next.style.height = viewport.height + "px";
+    //   });
+    // }
+    //
+    // window.visualViewport.addEventListener("resize", viewportHandler);
   }, []);
 
   return mounted ? (
