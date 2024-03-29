@@ -375,7 +375,7 @@ function TaskItem(props: {
       >
         <Icon text="drag_indicator" />
       </span>
-      <span className="flex items-center pr-2 py-2">
+      <span className="flex items-center pr-4 py-2">
         <Checkbox
           className="border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden"
           checked={task.complete}
