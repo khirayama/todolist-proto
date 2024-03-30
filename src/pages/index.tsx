@@ -1,6 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 import { useGlobalState } from "libs";
 import { TaskList } from "components/TaskList";
@@ -10,13 +12,19 @@ import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
 import { InvitationSheet } from "components/InvitationSheet";
 
+function isDrawerOpened() {
+  const hash = location.href.split("#")[1];
+  return hash === "opened";
+}
+
 export default function IndexPage() {
   const { t, i18n } = useTranslation();
   const tr = (key: string) => t(`pages.index.${key}`);
 
+  const router = useRouter();
   const [globalState, setGlobalState] = useGlobalState();
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
@@ -29,6 +37,13 @@ export default function IndexPage() {
   if (i18n.resolvedLanguage !== preferences.lang) {
     i18n.changeLanguage(preferences.lang);
   }
+
+  useEffect(() => {
+    setIsDrawerOpen(isDrawerOpened());
+    router.events.on("hashChangeComplete", () => {
+      setIsDrawerOpen(isDrawerOpened());
+    });
+  }, []);
 
   const handlePreferencesChange = (newPreferences: Partial<Preferences>) => {
     setGlobalState({
@@ -69,7 +84,7 @@ export default function IndexPage() {
     });
   };
   const handleTaskListLinkClick = (taskListId: string) => {
-    setIsDrawerOpen(false);
+    router.push("/");
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
       `[data-tasklistid="${taskListId}"]`
@@ -77,12 +92,6 @@ export default function IndexPage() {
     if (parent && el) {
       parent.scrollLeft = el.offsetLeft;
     }
-  };
-  const handleTaskListIconClick = () => {
-    setIsDrawerOpen(true);
-  };
-  const handleDrawerCloseIconClick = () => {
-    setIsDrawerOpen(false);
   };
   const handleSettingsSheetOpenClick = () => {
     setSettingsSheetOpen(true);
@@ -104,13 +113,13 @@ export default function IndexPage() {
           )}
         >
           <div className="flex md:hidden">
-            <button
+            <Link
+              href="/"
               className="flex items-center justify-center px-4 pt-4 w-full"
-              onClick={handleDrawerCloseIconClick}
             >
               <Icon text="close" />
               <div className="flex-1" />
-            </button>
+            </Link>
           </div>
           <div className="py-2">
             <button
@@ -141,12 +150,12 @@ export default function IndexPage() {
 
         <section className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full border-x">
           <header className="flex p-4 bg-white">
-            <button
+            <Link
+              href="/#opened"
               className="flex md:hidden items-center justify-center"
-              onClick={handleTaskListIconClick}
             >
               <Icon text="list" />
-            </button>
+            </Link>
 
             <div className="flex-1" />
 
