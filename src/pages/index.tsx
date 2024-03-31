@@ -39,10 +39,15 @@ export default function IndexPage() {
   }
 
   useEffect(() => {
-    setIsDrawerOpen(isDrawerOpened());
-    router.events.on("hashChangeComplete", () => {
+    const handleHashChange = () => {
       setIsDrawerOpen(isDrawerOpened());
-    });
+    };
+
+    setIsDrawerOpen(isDrawerOpened());
+    router.events.on("hashChangeComplete", handleHashChange);
+    return () => {
+      router.events.off("hashChangeComplete", handleHashChange);
+    };
   }, []);
 
   const handlePreferencesChange = (newPreferences: Partial<Preferences>) => {
