@@ -22,18 +22,20 @@ export default function IndexPage() {
   const tr = (key: string) => t(`pages.index.${key}`);
 
   const router = useRouter();
-  const [globalState, setGlobalState] = useGlobalState();
+  const [
+    { app, taskLists: tls },
+    { updatePreferences, updateTaskList, updateTaskLists, updateTask },
+  ] = useGlobalState();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
-  const taskLists = globalState.app.taskListIds.map(
-    (tlid) => globalState.taskLists[tlid]
-  );
+  const taskLists = app.taskListIds.map((tlid) => tls[tlid]);
   const taskListContainerRef = useRef<HTMLElement>(null);
-  const preferences = globalState.app.preferences;
+
+  const preferences = app.preferences;
   if (i18n.resolvedLanguage !== preferences.lang) {
     i18n.changeLanguage(preferences.lang);
   }
@@ -50,44 +52,6 @@ export default function IndexPage() {
     };
   }, []);
 
-  const handlePreferencesChange = (newPreferences: Partial<Preferences>) => {
-    setGlobalState({
-      ...globalState,
-      app: {
-        ...globalState.app,
-        preferences: {
-          ...globalState.app.preferences,
-          ...newPreferences,
-        },
-      },
-    });
-  };
-  const handleTaskListChange = (newTaskList: TaskList) => {
-    setGlobalState({
-      ...globalState,
-      taskLists: {
-        ...globalState.taskLists,
-        [newTaskList.id]: newTaskList,
-      },
-    });
-  };
-  const handleTaskListsChange = (newTaskLists: TaskList[]) => {
-    const newTaskListsMap = {
-      ...globalState.taskLists,
-    };
-    newTaskLists.forEach((tl) => {
-      newTaskListsMap[tl.id] = tl;
-    });
-
-    setGlobalState({
-      ...globalState,
-      app: {
-        ...globalState.app,
-        taskListIds: newTaskLists.map((tl) => tl.id),
-      },
-      taskLists: newTaskListsMap,
-    });
-  };
   const handleTaskListLinkClick = (taskListId: string) => {
     router.push("/");
     const parent = taskListContainerRef.current;
@@ -98,15 +62,9 @@ export default function IndexPage() {
       parent.scrollLeft = el.offsetLeft;
     }
   };
-  const handleSettingsSheetOpenClick = () => {
-    setSettingsSheetOpen(true);
-  };
-  const handleUserSheetOpenClick = () => {
-    setUserSheetOpen(true);
-  };
-  const handleInvitationSheetOpenClick = () => {
-    setInvitationSheetOpen(true);
-  };
+  const handleSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
+  const handleUserSheetOpenClick = () => setUserSheetOpen(true);
+  const handleInvitationSheetOpenClick = () => setInvitationSheetOpen(true);
 
   return (
     <>
@@ -146,8 +104,8 @@ export default function IndexPage() {
           <div className="pt-2 border-t">
             <TaskListList
               taskLists={taskLists}
-              handleTaskListChange={handleTaskListChange}
-              handleTaskListsChange={handleTaskListsChange}
+              handleTaskListChange={updateTaskList}
+              handleTaskListsChange={updateTaskLists}
               handleTaskListLinkClick={handleTaskListLinkClick}
             />
           </div>
@@ -180,23 +138,9 @@ export default function IndexPage() {
               sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}
           >
-            {taskLists.map((taskList, i) => {
+            {taskLists.map((taskList: TaskList, i: number) => {
               const handleTaskChange = (newTask: Task) => {
-                setGlobalState({
-                  ...globalState,
-                  taskLists: {
-                    ...globalState.taskLists,
-                    [taskList.id]: {
-                      ...taskList,
-                      tasks: taskList.tasks.map((t) => {
-                        if (t.id === newTask.id) {
-                          return newTask;
-                        }
-                        return t;
-                      }),
-                    },
-                  },
-                });
+                updateTask(taskList, newTask);
               };
               const handleDragStart = () => {
                 setSortingTaskListId(taskList.id);
@@ -224,9 +168,9 @@ export default function IndexPage() {
                       hasNext={i !== taskLists.length - 1}
                       insertPosition={preferences.taskInsertPosition}
                       taskList={taskList}
-                      handlePreferencesChange={handlePreferencesChange}
+                      handlePreferencesChange={updatePreferences}
                       handleTaskChange={handleTaskChange}
-                      handleTaskListChange={handleTaskListChange}
+                      handleTaskListChange={updateTaskList}
                       handleDragStart={handleDragStart}
                       handleDragCancel={handleDragEnd}
                       handleDragEnd={handleDragEnd}
@@ -246,7 +190,7 @@ export default function IndexPage() {
       <PreferencesSheet
         open={settingsSheetOpen}
         onOpenChange={setSettingsSheetOpen}
-        handlePreferencesChange={handlePreferencesChange}
+        handlePreferencesChange={updatePreferences}
       />
 
       <UserSheet open={userSheetOpen} onOpenChange={setUserSheetOpen} />
