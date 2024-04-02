@@ -22,6 +22,8 @@ const initialValue = (): State => {
   };
 };
 
+const globalStateKey = "__global_state";
+
 const GlobalStateContext = createContext<[State, (newState: State) => void]>([
   initialValue(),
   () => {},
@@ -29,7 +31,7 @@ const GlobalStateContext = createContext<[State, (newState: State) => void]>([
 
 export const loadGlobalState = () => {
   return (
-    JSON.parse(window.localStorage.getItem("__global_state")) || initialValue()
+    JSON.parse(window.localStorage.getItem(globalStateKey)) || initialValue()
   );
 };
 
@@ -37,7 +39,7 @@ export const GlobalStateProvider = (props: { children: ReactNode }) => {
   const [globalState, nativeSetGlobalState] = useState(loadGlobalState);
 
   const setGlobalState = (newState: State) => {
-    window.localStorage.setItem("__global_state", JSON.stringify(newState));
+    window.localStorage.setItem(globalStateKey, JSON.stringify(newState));
     return nativeSetGlobalState(newState);
   };
 
