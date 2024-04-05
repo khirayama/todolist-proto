@@ -2,7 +2,7 @@ import { useState, useEffect, ReactNode } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { clsx } from "clsx";
 
-import { Icon } from "components/Icon";
+import { Icon } from "libs/components/Icon";
 
 export function Sheet(props: {
   children: ReactNode;
