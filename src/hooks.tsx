@@ -1,4 +1,4 @@
-import { useGlobalState } from "./libs";
+import { useGlobalState } from "libs/globalState";
 
 export const use = (): [
   State,

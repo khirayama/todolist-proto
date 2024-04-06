@@ -4,7 +4,7 @@ import type { AppProps } from "next/app";
 
 import "./globals.css";
 
-import { GlobalStateProvider } from "libs";
+import { GlobalStateProvider } from "libs/globalState";
 import { init as initI18n } from "libs/i18n";
 
 initI18n();
