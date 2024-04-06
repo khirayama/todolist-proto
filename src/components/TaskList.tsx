@@ -28,7 +28,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { Icon } from "components/Icon";
+import { Icon } from "libs/components/Icon";
 
 export function TaskList(props: {
   hasPrev: boolean;

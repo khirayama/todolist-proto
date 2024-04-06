@@ -21,7 +21,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { clsx } from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { Icon } from "components/Icon";
+import { Icon } from "libs/components/Icon";
 
 export function TaskListList(props: {
   taskLists: TaskList[];

@@ -1,4 +1,4 @@
-import { Sheet } from "components/Sheet";
+import { Sheet } from "libs/components/Sheet";
 import { useTranslation } from "react-i18next";
 
 export function UserSheet(props: {

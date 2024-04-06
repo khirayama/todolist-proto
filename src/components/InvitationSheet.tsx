@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { Sheet } from "components/Sheet";
+import { Sheet } from "libs/components/Sheet";
 
 export function InvitationSheet(props: {
   open: boolean;

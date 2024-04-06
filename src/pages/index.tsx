@@ -5,9 +5,9 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 
 import { useGlobalState } from "libs";
+import { Icon } from "libs/components/Icon";
 import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
-import { Icon } from "components/Icon";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
 import { InvitationSheet } from "components/InvitationSheet";
