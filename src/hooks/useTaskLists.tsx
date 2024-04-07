@@ -1,28 +1,20 @@
 import { useGlobalState } from "libs/globalState";
 
-export const use = (): [
-  State,
+// useResouce: () => [Resouce, { mutations }, { selectors }]
+// App-Preferences, TaskList-Task
+
+export const useTaskLists = (): [
+  { [id: string]: TaskList },
   {
-    updatePreferences: (newPreferences: Partial<Preferences>) => void;
     updateTaskList: (newTaskList: TaskList) => void;
     updateTaskLists: (newTaskLists: TaskList[]) => void;
     updateTask: (taskList: TaskList, newTask: Task) => void;
   },
+  {
+    getTaskListsById: (taskListIds: string[]) => TaskList[];
+  },
 ] => {
   const [globalState, setGlobalState] = useGlobalState();
-
-  const updatePreferences = (newPreferences: Partial<Preferences>) => {
-    setGlobalState({
-      ...globalState,
-      app: {
-        ...globalState.app,
-        preferences: {
-          ...globalState.app.preferences,
-          ...newPreferences,
-        },
-      },
-    });
-  };
 
   const updateTaskList = (newTaskList: TaskList) => {
     setGlobalState({
@@ -71,12 +63,16 @@ export const use = (): [
   };
 
   return [
-    globalState,
+    globalState.taskLists,
     {
-      updatePreferences,
       updateTaskList,
       updateTaskLists,
       updateTask,
+    },
+    {
+      getTaskListsById: (taskListIds: string[]) => {
+        return taskListIds.map((tlid) => globalState.taskLists[tlid]);
+      },
     },
   ];
 };
