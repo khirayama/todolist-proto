@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 
-import "./globals.css";
+import "libs/pages/globals.css";
 
 import { GlobalStateProvider } from "libs/globalState";
 import { init as initI18n } from "libs/i18n";
