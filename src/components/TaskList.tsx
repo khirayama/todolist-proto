@@ -56,6 +56,43 @@ export function TaskList(props: {
     (insertPosition === "top" && !isShiftPressed) ||
     (insertPosition === "bottom" && isShiftPressed);
 
+  const clearCompletedTasks = (tl: TaskList) => {
+    const newTaskList = {
+      ...tl,
+      tasks: tl.tasks.filter((t) => !t.complete),
+    };
+    return newTaskList;
+  };
+  const sortTasks = (tl: TaskList) => {
+    const newTaskList = {
+      ...tl,
+      tasks: tl.tasks
+        .sort((a, b) => {
+          if (a.complete && !b.complete) {
+            return 1;
+          }
+          if (!a.complete && b.complete) {
+            return -1;
+          }
+          if (!a.date && b.date) {
+            return 1;
+          }
+          if (a.date && !b.date) {
+            return -1;
+          }
+          if (a.date > b.date) {
+            return 1;
+          }
+          if (a.date < b.date) {
+            return -1;
+          }
+          return 0;
+        })
+        .concat(),
+    };
+    return newTaskList;
+  };
+
   const onPrevTaskListClick = () => {
     const el = document.querySelector<HTMLElement>(
       `[data-tasklistid="${taskList.id}"]`
