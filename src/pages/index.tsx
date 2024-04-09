@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-import { useGlobalState } from "libs";
 import { Icon } from "libs/components/Icon";
+import { useApp } from "hooks/useApp";
+import { useTaskLists } from "hooks/useTaskLists";
 import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
@@ -22,20 +23,24 @@ export default function IndexPage() {
   const tr = (key: string) => t(`pages.index.${key}`);
 
   const router = useRouter();
+
+  const [app, { updatePreferences }] = useApp();
   const [
-    { app, taskLists: tls },
-    { updatePreferences, updateTaskList, updateTaskLists, updateTask },
-  ] = useGlobalState();
+    ,
+    { updateTaskList, updateTaskLists, updateTask },
+    { getTaskListsById },
+  ] = useTaskLists();
+
+  const preferences = app.preferences;
+  const taskLists = getTaskListsById(app.taskListIds);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
-  const taskLists = app.taskListIds.map((tlid) => tls[tlid]);
   const taskListContainerRef = useRef<HTMLElement>(null);
 
-  const preferences = app.preferences;
   if (i18n.resolvedLanguage !== preferences.lang) {
     i18n.changeLanguage(preferences.lang);
   }
