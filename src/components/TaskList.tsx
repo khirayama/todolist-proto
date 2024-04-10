@@ -173,6 +173,83 @@ export function TaskList(props: {
       });
     }
   };
+  const handleTaskListItemKeyDown = (e: KeyboardEvent, task: Task) => {
+    const key = e.key;
+    const shift = e.shiftKey;
+    const ctrl = e.ctrlKey;
+    const meta = e.metaKey;
+    const el = document.querySelector<HTMLElement>(
+      `[data-taskid="${task.id}"]`
+    );
+
+    if (key === "Enter" && !shift && !ctrl && !meta) {
+      e.preventDefault();
+      console.log("TODO: Insert new task next");
+    }
+    if (key === "Enter" && shift && !ctrl && !meta) {
+      e.preventDefault();
+      console.log("TODO: Insert new task prev");
+    }
+    if (key === "Enter" && !shift && (ctrl || meta)) {
+      e.preventDefault();
+      props.handleTaskChange({
+        ...task,
+        complete: !task.complete,
+      });
+    }
+    if ((key === "Backspace" || key === "Delete") && !shift && (ctrl || meta)) {
+      e.preventDefault();
+      console.log("TODO: Delete this task");
+    }
+    if ((key === "Backspace" || key === "Delete") && shift && !ctrl && !meta) {
+      e.preventDefault();
+      props.handleTaskListChange(clearCompletedTasks(taskList));
+    }
+    if (key === "ArrowDown" && !shift && !ctrl && !meta) {
+      const taskEls = document.querySelectorAll<HTMLElement>(
+        `[data-tasklistid="${taskList.id}"] [data-taskid]`
+      );
+      for (let i = 0; i < taskEls.length - 1; i++) {
+        if (taskEls[i] === el) {
+          e.preventDefault();
+          const t = taskEls[i + 1]?.querySelector("textarea");
+          setTimeout(() => {
+            t.focus();
+            t.selectionStart = t.value.length;
+            t.selectionEnd = t.value.length;
+          }, 0);
+          break;
+        }
+      }
+    }
+    if (key === "ArrowUp" && !shift && !ctrl && !meta) {
+      const taskEls = document.querySelectorAll<HTMLElement>(
+        `[data-tasklistid="${taskList.id}"] [data-taskid]`
+      );
+      for (let i = 1; i < taskEls.length; i++) {
+        if (taskEls[i] === el) {
+          e.preventDefault();
+          const t = taskEls[i - 1]?.querySelector("textarea");
+          setTimeout(() => {
+            t.focus();
+            t.selectionStart = t.value.length;
+            t.selectionEnd = t.value.length;
+          }, 0);
+          break;
+        }
+      }
+    }
+    if (key === "d" && !shift && (ctrl || meta)) {
+      const dateInputEl =
+        el.querySelector<HTMLInputElement>("input[type='date']");
+      dateInputEl?.focus();
+      dateInputEl?.showPicker();
+      console.log("TODO: Focus to text area when closing picker");
+    }
+    if (key === "s" && !shift && ctrl && !meta) {
+      props.handleTaskListChange(sortTasks(taskList));
+    }
+  };
 
   return (
     <>
