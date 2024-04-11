@@ -181,6 +181,11 @@ export function TaskList(props: {
     const el = document.querySelector<HTMLElement>(
       `[data-taskid="${task.id}"]`
     );
+    const taskTextEl =
+      document.querySelector<HTMLInputElement>("[data-tasktext]");
+    const taskEls = document.querySelectorAll<HTMLElement>(
+      `[data-tasklistid="${taskList.id}"] [data-taskid]`
+    );
 
     if (key === "Enter" && !shift && !ctrl && !meta) {
       e.preventDefault();
@@ -198,17 +203,34 @@ export function TaskList(props: {
       });
     }
     if ((key === "Backspace" || key === "Delete") && !shift && (ctrl || meta)) {
+      for (let i = 0; i < taskEls.length; i++) {
+        if (taskEls[i] === el) {
+          e.preventDefault();
+          const t =
+            (taskEls[i + 1] || taskEls[i - 1])?.querySelector("textarea") ||
+            taskTextEl;
+          if (t) {
+            setTimeout(() => {
+              t.focus();
+              t.selectionStart = t.value.length;
+              t.selectionEnd = t.value.length;
+            }, 0);
+          }
+          break;
+        }
+      }
       e.preventDefault();
-      console.log("TODO: Delete this task");
+      const newTaskList = {
+        ...taskList,
+        tasks: taskList.tasks.filter((t) => t.id !== task.id),
+      };
+      props.handleTaskListChange(newTaskList);
     }
     if ((key === "Backspace" || key === "Delete") && shift && !ctrl && !meta) {
       e.preventDefault();
       props.handleTaskListChange(clearCompletedTasks(taskList));
     }
     if (key === "ArrowDown" && !shift && !ctrl && !meta) {
-      const taskEls = document.querySelectorAll<HTMLElement>(
-        `[data-tasklistid="${taskList.id}"] [data-taskid]`
-      );
       for (let i = 0; i < taskEls.length - 1; i++) {
         if (taskEls[i] === el) {
           e.preventDefault();
@@ -294,6 +316,7 @@ export function TaskList(props: {
                 )}
               </span>
               <input
+                data-tasktext
                 className="flex-1 rounded-full py-2 px-4 border"
                 value={taskText}
                 placeholder={
