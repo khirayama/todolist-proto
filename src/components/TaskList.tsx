@@ -189,10 +189,59 @@ export function TaskList(props: {
 
     if (key === "Enter" && !shift && !ctrl && !meta) {
       e.preventDefault();
-      console.log("TODO: Insert new task next");
+      for (let i = 0; i < taskEls.length; i++) {
+        if (taskEls[i] === el) {
+          const newTasks = [...taskList.tasks];
+          const newTask = {
+            id: uuid(),
+            text: taskText,
+            complete: false,
+            date: "",
+          };
+          newTasks.splice(i + 1, 0, newTask);
+          props.handleTaskListChange({
+            ...taskList,
+            tasks: newTasks,
+          });
+          setTimeout(() => {
+            const t = document.querySelector<HTMLTextAreaElement>(
+              `[data-taskid="${newTask.id}"] textarea`
+            );
+            t.focus();
+            t.selectionStart = t.value.length;
+            t.selectionEnd = t.value.length;
+          }, 0);
+          break;
+        }
+      }
     }
     if (key === "Enter" && shift && !ctrl && !meta) {
       e.preventDefault();
+      for (let i = 0; i < taskEls.length; i++) {
+        if (taskEls[i] === el) {
+          const newTasks = [...taskList.tasks];
+          const newTask = {
+            id: uuid(),
+            text: taskText,
+            complete: false,
+            date: "",
+          };
+          newTasks.splice(i, 0, newTask);
+          props.handleTaskListChange({
+            ...taskList,
+            tasks: newTasks,
+          });
+          setTimeout(() => {
+            const t = document.querySelector<HTMLTextAreaElement>(
+              `[data-taskid="${newTask.id}"] textarea`
+            );
+            t.focus();
+            t.selectionStart = t.value.length;
+            t.selectionEnd = t.value.length;
+          }, 0);
+          break;
+        }
+      }
       console.log("TODO: Insert new task prev");
     }
     if (key === "Enter" && !shift && (ctrl || meta)) {
@@ -245,9 +294,6 @@ export function TaskList(props: {
       }
     }
     if (key === "ArrowUp" && !shift && !ctrl && !meta) {
-      const taskEls = document.querySelectorAll<HTMLElement>(
-        `[data-tasklistid="${taskList.id}"] [data-taskid]`
-      );
       for (let i = 1; i < taskEls.length; i++) {
         if (taskEls[i] === el) {
           e.preventDefault();
