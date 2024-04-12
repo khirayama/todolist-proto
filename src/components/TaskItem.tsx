@@ -146,9 +146,6 @@ export function TaskItem(props: {
               date: e.currentTarget.value,
             });
           }}
-          onChange={() => {
-            console.log("TODO: focus textarea back");
-          }}
         />
         {task.date || <Icon text="event" />}
       </label>
