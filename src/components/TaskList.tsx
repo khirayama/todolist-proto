@@ -307,14 +307,14 @@ export function TaskList(props: {
         }
       }
     }
-    if (key === "d" && !shift && (ctrl || meta)) {
+    if (key === "c" && !shift && (ctrl || meta)) {
       const dateInputEl =
         el.querySelector<HTMLInputElement>("input[type='date']");
       dateInputEl?.focus();
       dateInputEl?.showPicker();
       console.log("TODO: Focus to text area when closing picker");
     }
-    if (key === "s" && !shift && ctrl && !meta) {
+    if (key === "o" && !shift && ctrl && !meta) {
       props.handleTaskListChange(sortTasks(taskList));
     }
   };
