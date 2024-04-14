@@ -32,6 +32,9 @@ export function init() {
             PreferencesSheet: {
               Preferences: "Preferences",
             },
+            DatePickerSheet: {
+              "Date Picker": "Date Picker",
+            },
           },
         },
       },
@@ -62,6 +65,9 @@ export function init() {
             },
             PreferencesSheet: {
               Preferences: "設定",
+            },
+            DatePickerSheet: {
+              "Date Picker": "日付選択",
             },
           },
         },
