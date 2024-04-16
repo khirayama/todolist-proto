@@ -35,6 +35,15 @@ export function init() {
             DatePickerSheet: {
               "Date Picker": "Date Picker",
             },
+            DatePicker: {
+              Sunday: "Su",
+              Monday: "Mo",
+              Tuesday: "Tu",
+              Wednesday: "We",
+              Thursday: "Th",
+              Friday: "Fr",
+              Saturday: "Sa",
+            },
           },
         },
       },
@@ -68,6 +77,15 @@ export function init() {
             },
             DatePickerSheet: {
               "Date Picker": "日付選択",
+            },
+            DatePicker: {
+              Sunday: "日",
+              Monday: "月",
+              Tuesday: "火",
+              Wednesday: "水",
+              Thursday: "木",
+              Friday: "金",
+              Saturday: "土",
             },
           },
         },
