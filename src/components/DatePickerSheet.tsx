@@ -1,6 +1,8 @@
 import { Sheet } from "libs/components/Sheet";
 import { useTranslation } from "react-i18next";
 
+import { DatePicker } from "libs/components/DatePicker";
+
 export function DatePickerSheet(props: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -14,7 +16,9 @@ export function DatePickerSheet(props: {
       onOpenChange={props.onOpenChange}
       title={tr("Date Picker")}
     >
-      <div>DatePicker</div>
+      <div className="px-12">
+        <DatePicker />
+      </div>
     </Sheet>
   );
 }
