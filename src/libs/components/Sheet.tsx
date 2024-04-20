@@ -35,14 +35,14 @@ export function Sheet(props: {
         />
         <RadixDialog.Content
           className={clsx(
-            "fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-2xl mx-auto min-h-[80%] rounded-t-lg shadow-lg z-[400] bg-white",
+            "flex flex-col fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-2xl mx-auto min-h-[80%] max-h-[95%] rounded-t-lg shadow-lg z-[400] bg-white overflow-hidden",
             props.open &&
               `animate-[contentshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open &&
               `animate-[contenthide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
           )}
         >
-          <header className="flex w-full p-4 items-center justify-center relative">
+          <header className="flex w-full p-4 items-center justify-center sticky top-0 bg-white">
             <div className="flex-1 font-bold text-center">{props.title}</div>
             <div className="absolute right-0 top-0 p-4">
               <RadixDialog.Close>
@@ -50,7 +50,9 @@ export function Sheet(props: {
               </RadixDialog.Close>
             </div>
           </header>
-          {props.children}
+          <div className="flex-1 h-full w-full overflow-scroll">
+            {props.children}
+          </div>
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
