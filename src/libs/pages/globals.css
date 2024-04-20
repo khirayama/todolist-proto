@@ -59,6 +59,11 @@ textarea,
   background-color: transparent;
 }
 
+*[tabindex] {
+  -webkit-appearance: none;
+  outline: none;
+}
+
 textarea {
   resize: none;
 }
