@@ -337,6 +337,7 @@ export function TaskList(props: {
                 <input
                   className="inline-block text-center w-full"
                   type="text"
+                  placeholder={tr("Task list name")}
                   value={taskList.name}
                   onChange={onTaskListNameChange}
                 />

@@ -18,6 +18,7 @@ export function init() {
               "Add task to bottom": "Add task to bottom",
               Sort: "Sort",
               "Clear Completed": "Clear Completed",
+              "Task list name": "Task list name",
             },
             TaskListList: {
               "Add task list to top": "Add task list to top",
@@ -61,6 +62,7 @@ export function init() {
               "Add task to bottom": "タスクを末尾に追加",
               Sort: "並び替え",
               "Clear Completed": "完了タスクを削除",
+              "Task list name": "タスクリスト名",
             },
             TaskListList: {
               "Add task list to top": "タスクリストを先頭に追加",
