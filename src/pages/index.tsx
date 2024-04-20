@@ -67,9 +67,9 @@ export default function IndexPage() {
       parent.scrollLeft = el.offsetLeft;
     }
   };
-  const handleSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
-  const handleUserSheetOpenClick = () => setUserSheetOpen(true);
-  const handleInvitationSheetOpenClick = () => setInvitationSheetOpen(true);
+  const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
+  const onUserSheetOpenClick = () => setUserSheetOpen(true);
+  const onInvitationSheetOpenClick = () => setInvitationSheetOpen(true);
 
   return (
     <>
@@ -92,7 +92,7 @@ export default function IndexPage() {
           <div className="py-2">
             <button
               className="flex items-center justify-center px-4 py-2 w-full"
-              onClick={handleUserSheetOpenClick}
+              onClick={onUserSheetOpenClick}
             >
               <div className="flex-1 text-left">{tr("Log In")}</div>
               <Icon text="person" />
@@ -100,7 +100,7 @@ export default function IndexPage() {
 
             <button
               className="flex items-center justify-center px-4 py-2 w-full"
-              onClick={handleSettingsSheetOpenClick}
+              onClick={onSettingsSheetOpenClick}
             >
               <div className="flex-1 text-left">{tr("Preferences")}</div>
               <Icon text="settings" />
@@ -129,7 +129,7 @@ export default function IndexPage() {
 
             <button
               className="flex items-center justify-center"
-              onClick={handleInvitationSheetOpenClick}
+              onClick={onInvitationSheetOpenClick}
             >
               <Icon text="groups" />
             </button>
