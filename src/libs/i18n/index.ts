@@ -6,6 +6,21 @@ export function init() {
     resources: {
       en: {
         translation: {
+          libs: {
+            components: {
+              DatePicker: {
+                Sunday: "Su",
+                Monday: "Mo",
+                Tuesday: "Tu",
+                Wednesday: "We",
+                Thursday: "Th",
+                Friday: "Fr",
+                Saturday: "Sa",
+                Reset: "Reset",
+                Cancel: "Cancel",
+              },
+            },
+          },
           pages: {
             index: {
               "Log In": "Log In",
@@ -36,20 +51,26 @@ export function init() {
             DatePickerSheet: {
               "Date Picker": "Date Picker",
             },
-            DatePicker: {
-              Sunday: "Su",
-              Monday: "Mo",
-              Tuesday: "Tu",
-              Wednesday: "We",
-              Thursday: "Th",
-              Friday: "Fr",
-              Saturday: "Sa",
-            },
           },
         },
       },
       ja: {
         translation: {
+          libs: {
+            components: {
+              DatePicker: {
+                Sunday: "日",
+                Monday: "月",
+                Tuesday: "火",
+                Wednesday: "水",
+                Thursday: "木",
+                Friday: "金",
+                Saturday: "土",
+                Reset: "リセット",
+                Cancel: "キャンセル",
+              },
+            },
+          },
           pages: {
             index: {
               "Log In": "ログイン",
@@ -79,15 +100,6 @@ export function init() {
             },
             DatePickerSheet: {
               "Date Picker": "日付選択",
-            },
-            DatePicker: {
-              Sunday: "日",
-              Monday: "月",
-              Tuesday: "火",
-              Wednesday: "水",
-              Thursday: "木",
-              Friday: "金",
-              Saturday: "土",
             },
           },
         },
