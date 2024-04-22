@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { useState, FormEvent, KeyboardEvent } from "react";
+import { useState, FormEvent, KeyboardEvent, MouseEvent } from "react";
 import {
   DndContext,
   closestCenter,
@@ -173,7 +173,10 @@ export function TaskList(props: {
       });
     }
   };
-  const handleTaskListItemKeyDown = (e: KeyboardEvent, task: Task) => {
+  const handleTaskListItemKeyDown = (
+    e: KeyboardEvent,
+    { task, setDatePickerSheetOpen }
+  ) => {
     const key = e.key;
     const shift = e.shiftKey;
     const ctrl = e.ctrlKey;
@@ -251,12 +254,18 @@ export function TaskList(props: {
         complete: !task.complete,
       });
     }
-    if ((key === "Backspace" || key === "Delete") && !shift && (ctrl || meta)) {
+    if (
+      ((key === "Backspace" || key === "Delete") && !shift && (ctrl || meta)) ||
+      ((key === "Backspace" || key === "Delete") &&
+        !shift &&
+        !ctrl &&
+        !meta &&
+        task.text === "")
+    ) {
       for (let i = 0; i < taskEls.length; i++) {
         if (taskEls[i] === el) {
-          e.preventDefault();
           const t =
-            (taskEls[i + 1] || taskEls[i - 1])?.querySelector("textarea") ||
+            (taskEls[i - 1] || taskEls[i + 1])?.querySelector("textarea") ||
             taskTextEl;
           if (t) {
             setTimeout(() => {
@@ -277,6 +286,25 @@ export function TaskList(props: {
     }
     if ((key === "Backspace" || key === "Delete") && shift && !ctrl && !meta) {
       e.preventDefault();
+      if (task.complete) {
+        let flag = false;
+        for (let i = 0; i < taskEls.length; i++) {
+          if (taskEls[i] === el) {
+            flag = true;
+          }
+          if (flag && !taskList.tasks[i].complete) {
+            const t = taskEls[i]?.querySelector("textarea") || taskTextEl;
+            if (t) {
+              setTimeout(() => {
+                t.focus();
+                t.selectionStart = t.value.length;
+                t.selectionEnd = t.value.length;
+              }, 0);
+            }
+            break;
+          }
+        }
+      }
       props.handleTaskListChange(clearCompletedTasks(taskList));
     }
     if (key === "ArrowDown" && !shift && !ctrl && !meta) {
@@ -308,11 +336,7 @@ export function TaskList(props: {
       }
     }
     if (key === "c" && !shift && (ctrl || meta)) {
-      const dateInputEl =
-        el.querySelector<HTMLInputElement>("input[type='date']");
-      dateInputEl?.focus();
-      dateInputEl?.showPicker();
-      console.log("TODO: Focus to text area when closing picker");
+      setDatePickerSheetOpen(true);
     }
     if (key === "o" && !shift && ctrl && !meta) {
       props.handleTaskListChange(sortTasks(taskList));
