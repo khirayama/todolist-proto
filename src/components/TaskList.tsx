@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { useState, FormEvent, KeyboardEvent, MouseEvent } from "react";
+import { useState, FormEvent, KeyboardEvent } from "react";
 import {
   DndContext,
   closestCenter,
@@ -175,7 +175,7 @@ export function TaskList(props: {
   };
   const handleTaskListItemKeyDown = (
     e: KeyboardEvent,
-    { task, setDatePickerSheetOpen }
+    { task, setDatePickerSheetOpen, setHasFocusWhenOpeningDatePickerSheet }
   ) => {
     const key = e.key;
     const shift = e.shiftKey;
@@ -337,6 +337,7 @@ export function TaskList(props: {
     }
     if (key === "c" && !shift && (ctrl || meta)) {
       setDatePickerSheetOpen(true);
+      setHasFocusWhenOpeningDatePickerSheet(true);
     }
     if (key === "o" && !shift && ctrl && !meta) {
       props.handleTaskListChange(sortTasks(taskList));

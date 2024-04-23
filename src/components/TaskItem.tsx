@@ -50,7 +50,11 @@ export function TaskItem(props: {
   handleInsertTaskButtonClick: (idx: number) => void;
   handleTaskListItemKeyDown: (
     e: KeyboardEvent,
-    options: { task: Task; setDatePickerSheetOpen: (open: boolean) => void }
+    options: {
+      task: Task;
+      setDatePickerSheetOpen: (open: boolean) => void;
+      setHasFocusWhenOpeningDatePickerSheet: (hasFocus: boolean) => void;
+    }
   ) => void;
 }) {
   const task = props.task;
@@ -64,6 +68,10 @@ export function TaskItem(props: {
     isDragging,
     isSorting,
   } = useSortable({ id: task.id });
+  const [
+    hasFocusWhenOpeningDatePickerSheet,
+    setHasFocusWhenOpeningDatePickerSheet,
+  ] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -132,11 +140,20 @@ export function TaskItem(props: {
             props.handleTaskListItemKeyDown(e, {
               task,
               setDatePickerSheetOpen,
+              setHasFocusWhenOpeningDatePickerSheet,
             });
           }}
         />
         <label
           className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
+          onPointerDown={() => {
+            if (
+              document.activeElement ===
+              document.querySelector(`[data-taskid="${task.id}"] textarea`)
+            ) {
+              setHasFocusWhenOpeningDatePickerSheet(true);
+            }
+          }}
           onClick={() => {
             setDatePickerSheetOpen(true);
           }}
@@ -162,16 +179,22 @@ export function TaskItem(props: {
             ...task,
             date: v,
           });
+          console.log(hasFocusWhenOpeningDatePickerSheet);
+          if (hasFocusWhenOpeningDatePickerSheet) {
+            const t = document.querySelector<HTMLTextAreaElement>(
+              `[data-taskid="${task.id}"] textarea`
+            );
+            t.selectionStart = t.value.length;
+            t.selectionEnd = t.value.length;
+            t?.focus();
+          }
           setDatePickerSheetOpen(false);
-          /* TODO: すでにテキストにフォーカスしてる場合のみ、Sheetクローズ時にフォーカスを戻す */
-          const t = document.querySelector<HTMLTextAreaElement>(
-            `[data-taskid="${task.id}"] textarea`
-          );
-          t.selectionStart = t.value.length;
-          t.selectionEnd = t.value.length;
-          t?.focus();
+          setHasFocusWhenOpeningDatePickerSheet(false);
         }}
-        handleCancel={() => setDatePickerSheetOpen(false)}
+        handleCancel={() => {
+          setDatePickerSheetOpen(false);
+          setHasFocusWhenOpeningDatePickerSheet(false);
+        }}
       />
     </>
   );
