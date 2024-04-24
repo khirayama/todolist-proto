@@ -151,6 +151,7 @@ export function TaskItem(props: {
               document.activeElement ===
               document.querySelector(`[data-taskid="${task.id}"] textarea`)
             ) {
+              // TODO: ここで、targetとしてe.currentTargetを保存し、click event時に同じe.currentTargetか確認する
               setHasFocusWhenOpeningDatePickerSheet(true);
             }
           }}
