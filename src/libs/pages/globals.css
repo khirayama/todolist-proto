@@ -53,15 +53,14 @@ body {
 input,
 button,
 textarea,
+select,
 *[role="button"] {
   -webkit-appearance: none;
-  outline: none;
   background-color: transparent;
 }
 
 *[tabindex] {
   -webkit-appearance: none;
-  outline: none;
 }
 
 textarea {
