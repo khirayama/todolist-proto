@@ -144,7 +144,8 @@ export function TaskItem(props: {
             });
           }}
         />
-        <label
+        <button
+          data-taskdatepicker={task.id}
           className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
           onPointerDown={() => {
             if (
@@ -160,7 +161,7 @@ export function TaskItem(props: {
           }}
         >
           {task.date || <Icon text="event" />}
-        </label>
+        </button>
         {props.newTaskText && !isSorting ? (
           <button
             className="flex items-center justify-center absolute z-10 bottom-0 right-12 translate-y-[50%] bg-white rounded-full w-8 h-8 border text-gray-400"
@@ -180,13 +181,17 @@ export function TaskItem(props: {
             ...task,
             date: v,
           });
-          console.log(hasFocusWhenOpeningDatePickerSheet);
           if (hasFocusWhenOpeningDatePickerSheet) {
             const t = document.querySelector<HTMLTextAreaElement>(
               `[data-taskid="${task.id}"] textarea`
             );
             t.selectionStart = t.value.length;
             t.selectionEnd = t.value.length;
+            t?.focus();
+          } else {
+            const t = document.querySelector<HTMLTextAreaElement>(
+              `[data-taskdatepicker="${task.id}"]`
+            );
             t?.focus();
           }
           setDatePickerSheetOpen(false);
