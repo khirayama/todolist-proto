@@ -13,7 +13,7 @@ type TaskList = {
 
 type Preferences = {
   lang: string;
-  theme: string;
+  theme: 'system' | 'light' | 'dark';
   taskInsertPosition: "bottom" | "top";
 };
 
