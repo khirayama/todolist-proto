@@ -47,6 +47,13 @@ export function init() {
             },
             PreferencesSheet: {
               Preferences: "Preferences",
+              ja: "日本語",
+              en: "English",
+              system: "Use system setting",
+              light: "Light",
+              dark: "Dark",
+              Appearance: "Appearance",
+              Language: "Language",
             },
             DatePickerSheet: {
               "Date Picker": "Date Picker",
@@ -97,6 +104,13 @@ export function init() {
             },
             PreferencesSheet: {
               Preferences: "設定",
+              ja: "日本語",
+              en: "English",
+              system: "システム設定を使用する",
+              light: "ライトモード",
+              dark: "ダークモード",
+              Appearance: "表示設定",
+              Language: "言語",
             },
             DatePickerSheet: {
               "Date Picker": "日付選択",
