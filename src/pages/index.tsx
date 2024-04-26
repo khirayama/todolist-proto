@@ -47,7 +47,32 @@ export default function IndexPage() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      setIsDrawerOpen(isDrawerOpened());
+      const drawer =
+        document.querySelector<HTMLElement>(`[data-sectiondrawer]`);
+      const main = document.querySelector<HTMLElement>(`[data-sectionmain]`);
+      const selector = [
+        "button",
+        "a[href]",
+        "input",
+        "textarea",
+        "select",
+        "[role=button]",
+        "[tabindex]",
+      ].join(",");
+      let el = null;
+      if (isDrawerOpened()) {
+        setIsDrawerOpen(true);
+        el = drawer.querySelector(selector);
+        el = drawer;
+      } else {
+        setIsDrawerOpen(false);
+        el = main.querySelector(selector);
+        el = main;
+      }
+      if (el) {
+        el.focus();
+        el.blur();
+      }
     };
 
     setIsDrawerOpen(isDrawerOpened());
@@ -75,6 +100,7 @@ export default function IndexPage() {
     <>
       <div className="flex w-full h-full bg-gray-100 overflow-hidden">
         <section
+          data-sectiondrawer
           className={clsx(
             "h-full bg-white z-30 border-r md:max-w-sm w-full md:w-[auto] absolute md:relative md:block -translate-x-full md:translate-x-0 transition-transform duration-[320ms]",
             isDrawerOpen && "translate-x-0"
@@ -116,7 +142,10 @@ export default function IndexPage() {
           </div>
         </section>
 
-        <section className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full border-x">
+        <section
+          data-sectionmain
+          className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full border-x"
+        >
           <header className="flex p-4 bg-white">
             <Link
               href="/#opened"
