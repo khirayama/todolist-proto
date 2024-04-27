@@ -222,6 +222,7 @@ export default function IndexPage() {
       </div>
 
       <PreferencesSheet
+        preferences={preferences}
         open={settingsSheetOpen}
         onOpenChange={setSettingsSheetOpen}
         handlePreferencesChange={updatePreferences}
