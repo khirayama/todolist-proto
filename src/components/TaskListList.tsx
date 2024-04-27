@@ -241,14 +241,22 @@ function TaskListListItem(props: {
       >
         {taskList.name}
       </span>
-      <span
+      <button
         onClick={() => {
-          props.handleDeleteTaskListButtonClick(taskList.id);
+          let removeFlag = true;
+          if (taskList.tasks.length !== 0) {
+            removeFlag = window.confirm(
+              "TODO: this task list has tasks. Do you want to delete it?"
+            );
+          }
+          if (removeFlag) {
+            props.handleDeleteTaskListButtonClick(taskList.id);
+          }
         }}
         className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
       >
         <Icon text="delete" />
-      </span>
+      </button>
       {props.newTaskListName && !isSorting ? (
         <button
           className="flex items-center justify-center absolute z-10 bottom-0 right-12 translate-y-[50%] bg-white rounded-full w-8 h-8 border text-gray-400"
