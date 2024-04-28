@@ -1,7 +1,8 @@
+import { useState, ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
+import * as Select from "@radix-ui/react-select";
 
 import { Sheet } from "libs/components/Sheet";
-import { ChangeEvent } from "react";
 
 export function PreferencesSheet(props: {
   preferences: Preferences;
@@ -22,40 +23,60 @@ export function PreferencesSheet(props: {
     >
       <div className="flex p-4">
         <div className="flex-1">{tr("Appearance")}</div>
-        <select
-          className="text-right"
+        <Select.Root
           value={props.preferences.theme}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+          onValueChange={(v: Preferences["theme"]) => {
             props.handlePreferencesChange({
-              theme: e.target.value as Preferences["theme"],
+              theme: v,
             });
           }}
         >
-          {themes.map((theme) => (
-            <option key={theme} value={theme}>
-              {tr(theme)}
-            </option>
-          ))}
-        </select>
+          <Select.Trigger className="px-4 py-2">
+            <Select.Value aria-label={tr(props.preferences.theme)}>
+              {tr(props.preferences.theme)}
+            </Select.Value>
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className="z-[500] bg-white text-right p-2 rounded border">
+              <Select.Viewport>
+                {themes.map((theme) => (
+                  <Select.Item value={theme} className="p-2">
+                    <Select.ItemText>{tr(theme)}</Select.ItemText>
+                  </Select.Item>
+                ))}
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
       </div>
       <div className="flex p-4">
         <div className="flex-1">{tr("Language")}</div>
-        <select
-          className="text-right"
-          value={props.preferences.lang}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-            i18n.changeLanguage(e.target.value);
+        <Select.Root
+          value={props.preferences.theme}
+          onValueChange={(v: string) => {
+            i18n.changeLanguage(v);
             props.handlePreferencesChange({
               lang: i18n.resolvedLanguage,
             });
           }}
         >
-          {supportedLngs.map((lang) => (
-            <option key={lang} value={lang}>
-              {tr(lang)}
-            </option>
-          ))}
-        </select>
+          <Select.Trigger className="px-4 py-2">
+            <Select.Value aria-label={tr(props.preferences.lang)}>
+              {tr(props.preferences.lang)}
+            </Select.Value>
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className="z-[500] bg-white text-right p-2 rounded border">
+              <Select.Viewport>
+                {supportedLngs.map((lang) => (
+                  <Select.Item value={lang} className="p-2">
+                    <Select.ItemText>{tr(lang)}</Select.ItemText>
+                  </Select.Item>
+                ))}
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
       </div>
     </Sheet>
   );
