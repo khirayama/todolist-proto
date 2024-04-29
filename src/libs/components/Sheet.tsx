@@ -26,7 +26,7 @@ export function Sheet(props: {
       <RadixDialog.Portal>
         <RadixDialog.Overlay
           className={clsx(
-            "fixed w-full h-full top-0 left-0 z-[300] bg-gray-900/50",
+            "fixed w-full h-full top-0 left-0 z-[100] bg-gray-900/50",
             props.open &&
               `animate-[overlayshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open &&
