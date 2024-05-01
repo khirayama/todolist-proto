@@ -34,10 +34,8 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return mounted ? (
-    <>
-      <GlobalStateProvider>
-        <Component {...pageProps} />
-      </GlobalStateProvider>
-    </>
+    <GlobalStateProvider>
+      <Component {...pageProps} />
+    </GlobalStateProvider>
   ) : null;
 }
