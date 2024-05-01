@@ -1,6 +1,6 @@
-import { useState, ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import * as Select from "@radix-ui/react-select";
+import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 import { Sheet } from "libs/components/Sheet";
 
@@ -31,17 +31,23 @@ export function PreferencesSheet(props: {
             });
           }}
         >
-          <Select.Trigger className="px-4 py-2">
+          <Select.Trigger className="p-2 border rounded inline-flex items-center">
             <Select.Value aria-label={tr(props.preferences.theme)}>
               {tr(props.preferences.theme)}
             </Select.Value>
+            <Select.Icon className="pl-2">
+              <ChevronDownIcon />
+            </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] bg-white text-right p-2 rounded border">
+            <Select.Content className="z-[500] bg-white p-2 rounded border shadow">
               <Select.Viewport>
                 {themes.map((theme) => (
-                  <Select.Item value={theme} className="p-2">
+                  <Select.Item value={theme} className="p-2 flex items-center">
                     <Select.ItemText>{tr(theme)}</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <CheckIcon />
+                    </Select.ItemIndicator>
                   </Select.Item>
                 ))}
               </Select.Viewport>
@@ -49,10 +55,11 @@ export function PreferencesSheet(props: {
           </Select.Portal>
         </Select.Root>
       </div>
+
       <div className="flex p-4">
         <div className="flex-1">{tr("Language")}</div>
         <Select.Root
-          value={props.preferences.theme}
+          value={props.preferences.lang}
           onValueChange={(v: string) => {
             i18n.changeLanguage(v);
             props.handlePreferencesChange({
@@ -60,17 +67,23 @@ export function PreferencesSheet(props: {
             });
           }}
         >
-          <Select.Trigger className="px-4 py-2">
+          <Select.Trigger className="p-2 border rounded inline-flex items-center">
             <Select.Value aria-label={tr(props.preferences.lang)}>
               {tr(props.preferences.lang)}
             </Select.Value>
+            <Select.Icon className="pl-2">
+              <ChevronDownIcon />
+            </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] bg-white text-right p-2 rounded border">
+            <Select.Content className="z-[500] bg-white p-2 rounded border shadow">
               <Select.Viewport>
-                {supportedLngs.map((lang) => (
-                  <Select.Item value={lang} className="p-2">
-                    <Select.ItemText>{tr(lang)}</Select.ItemText>
+                {supportedLngs.map((ln) => (
+                  <Select.Item value={ln} className="p-2 flex items-center">
+                    <Select.ItemText>{tr(ln)}</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <CheckIcon />
+                    </Select.ItemIndicator>
                   </Select.Item>
                 ))}
               </Select.Viewport>
