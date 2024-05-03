@@ -245,7 +245,6 @@ export function TaskList(props: {
           break;
         }
       }
-      console.log("TODO: Insert new task prev");
     }
     if (key === "Enter" && !shift && (ctrl || meta)) {
       e.preventDefault();
