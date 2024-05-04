@@ -66,3 +66,8 @@ select,
 textarea {
   resize: none;
 }
+
+*:focus {
+  outline: none;
+  background: #eee;
+}
