@@ -10,7 +10,7 @@ import { createClient } from "@supabase/supabase-js";
 
 type SupabaseContextType = {
   supabase: SupabaseClient;
-  user: AuthUser | null;
+  isLoggedIn: boolean;
 };
 
 const supabase = createClient(
@@ -20,7 +20,7 @@ const supabase = createClient(
 
 const SupabaseContext = createContext<SupabaseContextType>({
   supabase,
-  user: null,
+  isLoggedIn: false,
 });
 
 export const SupabaseProvider = (props: { children: ReactNode }) => {
@@ -40,7 +40,6 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
       if (event === "INITIAL_SESSION") {
         setInitialized(true);
       }
-
       console.log(event, session);
       if (session) {
         console.log(session.expires_in, new Date(session.expires_at * 1000));
@@ -56,7 +55,7 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
     <SupabaseContext.Provider
       value={{
         supabase,
-        user,
+        isLoggedIn: !!user,
       }}
     >
       {props.children}
