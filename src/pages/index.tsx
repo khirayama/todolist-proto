@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-import { Icon } from "libs/components/Icon";
 import { useApp } from "hooks/useApp";
+import { usePreferences } from "hooks/usePreferences";
 import { useTaskLists } from "hooks/useTaskLists";
+import { Icon } from "libs/components/Icon";
 import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
@@ -24,14 +25,14 @@ export default function IndexPage() {
 
   const router = useRouter();
 
-  const [app, { updatePreferences }] = useApp();
+  const [app] = useApp();
+  const [preferences, { updatePreferences }] = usePreferences();
   const [
     ,
     { updateTaskList, updateTaskLists, updateTask },
     { getTaskListsById },
   ] = useTaskLists();
 
-  const preferences = app.preferences;
   const taskLists = getTaskListsById(app.taskListIds);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
