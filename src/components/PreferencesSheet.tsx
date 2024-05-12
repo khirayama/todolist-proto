@@ -43,7 +43,11 @@ export function PreferencesSheet(props: {
             <Select.Content className="z-[500] bg-white p-2 rounded border shadow">
               <Select.Viewport>
                 {themes.map((theme) => (
-                  <Select.Item value={theme} className="p-2 flex items-center">
+                  <Select.Item
+                    key={theme}
+                    value={theme}
+                    className="p-2 flex items-center"
+                  >
                     <Select.ItemText>{tr(theme)}</Select.ItemText>
                     <Select.ItemIndicator>
                       <CheckIcon />
@@ -79,7 +83,11 @@ export function PreferencesSheet(props: {
             <Select.Content className="z-[500] bg-white p-2 rounded border shadow">
               <Select.Viewport>
                 {supportedLngs.map((ln) => (
-                  <Select.Item value={ln} className="p-2 flex items-center">
+                  <Select.Item
+                    key={ln}
+                    value={ln}
+                    className="p-2 flex items-center"
+                  >
                     <Select.ItemText>{tr(ln)}</Select.ItemText>
                     <Select.ItemIndicator>
                       <CheckIcon />
