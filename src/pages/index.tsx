@@ -25,7 +25,7 @@ export default function IndexPage() {
 
   const router = useRouter();
 
-  const [app] = useApp();
+  const [app, { updateApp }] = useApp();
   const [preferences, { updatePreferences }] = usePreferences();
   const [
     ,
@@ -201,8 +201,9 @@ export default function IndexPage() {
                       key={taskList.id}
                       hasPrev={i !== 0}
                       hasNext={i !== taskLists.length - 1}
-                      insertPosition={preferences.taskInsertPosition}
+                      insertPosition={app.taskInsertPosition}
                       taskList={taskList}
+                      handleAppChange={updateApp}
                       handlePreferencesChange={updatePreferences}
                       handleTaskChange={handleTaskChange}
                       handleTaskListChange={updateTaskList}

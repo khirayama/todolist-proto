@@ -28,7 +28,8 @@ export function TaskList(props: {
   hasPrev: boolean;
   hasNext: boolean;
   taskList: TaskList;
-  insertPosition: Preferences["taskInsertPosition"];
+  insertPosition: App["taskInsertPosition"];
+  handleAppChange: (updatedApp: Partial<App>) => void;
   handlePreferencesChange: (updatedPreferences: Partial<Preferences>) => void;
   handleTaskChange: (updatedTask: Task) => void;
   handleTaskListChange: (updateTaskList: TaskList) => void;
@@ -142,7 +143,7 @@ export function TaskList(props: {
     setTaskText("");
   };
   const onInsertPositionIconClick = () => {
-    props.handlePreferencesChange({
+    props.handleAppChange({
       taskInsertPosition: insertPosition === "bottom" ? "top" : "bottom",
     });
   };

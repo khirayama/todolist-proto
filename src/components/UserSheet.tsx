@@ -11,7 +11,7 @@ export function UserSheet(props: {
 }) {
   const { t } = useTranslation();
   const tr = (key: string) => t(`components.UserSheet.${key}`);
-  const { supabase, user } = useSupabase();
+  const { supabase, isLoggedIn } = useSupabase();
 
   return (
     <Sheet
@@ -19,7 +19,7 @@ export function UserSheet(props: {
       onOpenChange={props.onOpenChange}
       title={tr("Log In")}
     >
-      {!user ? (
+      {!isLoggedIn ? (
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
@@ -27,7 +27,6 @@ export function UserSheet(props: {
         />
       ) : (
         <div>
-          <div>{JSON.stringify(user, null, 2)}</div>
           <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
         </div>
       )}
