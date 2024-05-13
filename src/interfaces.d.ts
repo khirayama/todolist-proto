@@ -11,19 +11,25 @@ type TaskList = {
   tasks: Task[];
 };
 
-type Preferences = {
-  lang: string;
-  theme: 'system' | 'light' | 'dark';
+type App = {
   taskInsertPosition: "bottom" | "top";
+  taskListIds: string[];
 };
 
-type App = {
-  preferences: Preferences;
-  taskListIds: string[];
+type Profile = {
+  displayName: string;
+  email: string;
+};
+
+type Preferences = {
+  lang: "en" | "ja";
+  theme: "system" | "light" | "dark";
 };
 
 type State = {
   app: App;
+  profile: Profile;
+  preferences: Preferences;
   taskLists: {
     [id: string]: TaskList;
   };

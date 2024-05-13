@@ -13,12 +13,16 @@ const config = {
     };
     return {
       app: {
-        preferences: {
-          lang: "ja",
-          theme: "system",
-          taskInsertPosition: "bottom",
-        },
+        taskInsertPosition: "bottom",
         taskListIds: [taskList.id],
+      },
+      profile: {
+        displayName: "",
+        email: "",
+      },
+      preferences: {
+        lang: "ja",
+        theme: "system",
       },
       taskLists: {
         [taskList.id]: taskList,
