@@ -4,7 +4,17 @@ import { useGlobalState } from "libs/globalState";
 // App, Profile, Preferences, TaskList-Task
 
 export const useApp = (): [App, {}] => {
-  const [globalState] = useGlobalState();
+  const [globalState, setGlobalState] = useGlobalState();
 
-  return [globalState.app, {}];
+  const updateApp = (newApp: Partial<App>) => {
+    setGlobalState({
+      ...globalState,
+      app: {
+        ...globalState.app,
+        ...newApp,
+      },
+    });
+  };
+
+  return [globalState.app, { updateApp }];
 };

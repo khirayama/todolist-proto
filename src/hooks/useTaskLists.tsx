@@ -1,7 +1,7 @@
 import { useGlobalState } from "libs/globalState";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
-// App-Preferences, TaskList-Task
+// App, Profile, Preferences, TaskList-Task
 
 export const useTaskLists = (): [
   { [id: string]: TaskList },
@@ -30,9 +30,13 @@ export const useTaskLists = (): [
     const newTaskListsMap = {
       ...globalState.taskLists,
     };
-    newTaskLists.forEach((tl) => {
-      newTaskListsMap[tl.id] = tl;
-    });
+    newTaskLists.forEach((tl) => (newTaskListsMap[tl.id] = tl));
+
+    globalState.app.taskListIds
+      .filter((tlid) => newTaskLists.map((tl) => tl.id).indexOf(tlid) === -1)
+      .forEach((tlid) => {
+        delete newTaskListsMap[tlid];
+      });
 
     setGlobalState({
       ...globalState,
