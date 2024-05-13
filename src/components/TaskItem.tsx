@@ -23,7 +23,7 @@ function TaskTextArea(props: {
     <div
       className={clsx(
         "relative flex-1 py-4",
-        task.complete ? "line-through text-gray-400" : ""
+        task.completed ? "line-through text-gray-400" : ""
       )}
     >
       <div className="whitespace-break-spaces invisible">
@@ -32,7 +32,7 @@ function TaskTextArea(props: {
       <textarea
         className={clsx(
           "absolute inline-block top-0 left-0 w-full h-full flex-1 py-4 whitespace-break-spaces",
-          task.complete ? "line-through text-gray-400" : ""
+          task.completed ? "line-through text-gray-400" : ""
         )}
         value={task.text}
         onChange={props.onTaskTextChange}
@@ -89,7 +89,7 @@ export function TaskItem(props: {
         className={clsx(
           "relative flex border-b",
           isDragging && "z-10 border-t",
-          task.complete ? "bg-gray-100" : "bg-white"
+          task.completed ? "bg-gray-100" : "bg-white"
         )}
       >
         {props.newTaskText && props.index === 0 && !isSorting ? (
@@ -114,11 +114,11 @@ export function TaskItem(props: {
         <span className="flex items-center pr-4 py-2">
           <Checkbox
             className="border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden"
-            checked={task.complete}
+            checked={task.completed}
             onCheckedChange={(v: boolean) => {
               props.handleTaskChange({
                 ...task,
-                complete: v,
+                completed: v,
               });
             }}
           >

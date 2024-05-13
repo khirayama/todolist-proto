@@ -1,7 +1,7 @@
 type Task = {
   id: string;
   text: string;
-  complete: boolean;
+  completed: boolean;
   date: string;
 };
 

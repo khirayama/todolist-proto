@@ -59,7 +59,7 @@ export function TaskList(props: {
   const clearCompletedTasks = (tl: TaskList) => {
     const newTaskList = {
       ...tl,
-      tasks: tl.tasks.filter((t) => !t.complete),
+      tasks: tl.tasks.filter((t) => !t.completed),
     };
     return newTaskList;
   };
@@ -68,10 +68,10 @@ export function TaskList(props: {
       ...tl,
       tasks: tl.tasks
         .sort((a, b) => {
-          if (a.complete && !b.complete) {
+          if (a.completed && !b.completed) {
             return 1;
           }
-          if (!a.complete && b.complete) {
+          if (!a.completed && b.completed) {
             return -1;
           }
           if (!a.date && b.date) {
@@ -125,7 +125,7 @@ export function TaskList(props: {
     const newTask = {
       id: uuid(),
       text: taskText,
-      complete: false,
+      completed: false,
       date: "",
     };
     if (isInsertTop) {
@@ -198,7 +198,7 @@ export function TaskList(props: {
           const newTask = {
             id: uuid(),
             text: taskText,
-            complete: false,
+            completed: false,
             date: "",
           };
           newTasks.splice(i + 1, 0, newTask);
@@ -226,7 +226,7 @@ export function TaskList(props: {
           const newTask = {
             id: uuid(),
             text: taskText,
-            complete: false,
+            completed: false,
             date: "",
           };
           newTasks.splice(i, 0, newTask);
@@ -250,7 +250,7 @@ export function TaskList(props: {
       e.preventDefault();
       props.handleTaskChange({
         ...task,
-        complete: !task.complete,
+        completed: !task.completed,
       });
     }
     if (
@@ -285,13 +285,13 @@ export function TaskList(props: {
     }
     if ((key === "Backspace" || key === "Delete") && shift && !ctrl && !meta) {
       e.preventDefault();
-      if (task.complete) {
+      if (task.completed) {
         let flag = false;
         for (let i = 0; i < taskEls.length; i++) {
           if (taskEls[i] === el) {
             flag = true;
           }
-          if (flag && !taskList.tasks[i].complete) {
+          if (flag && !taskList.tasks[i].completed) {
             const t = taskEls[i]?.querySelector("textarea") || taskTextEl;
             if (t) {
               setTimeout(() => {
@@ -434,7 +434,7 @@ export function TaskList(props: {
                   newTasks.splice(idx, 0, {
                     id: uuid(),
                     text: taskText,
-                    complete: false,
+                    completed: false,
                     date: "",
                   });
                   props.handleTaskListChange({
