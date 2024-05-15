@@ -144,7 +144,7 @@ export function TaskList(props: {
   };
   const onInsertPositionIconClick = () => {
     props.handleAppChange({
-      taskInsertPosition: insertPosition === "bottom" ? "top" : "bottom",
+      taskInsertPosition: insertPosition === "BOTTOM" ? "TOP" : "BOTTOM",
     });
   };
   const onTaskTextChange = (e: FormEvent<HTMLInputElement>) => {

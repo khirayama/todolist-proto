@@ -40,10 +40,12 @@ export default function IndexPage() {
   const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
+
   const taskListContainerRef = useRef<HTMLElement>(null);
 
-  if (i18n.resolvedLanguage !== preferences.lang) {
-    i18n.changeLanguage(preferences.lang);
+  const lang = preferences.lang.toLowerCase();
+  if (i18n.resolvedLanguage !== lang) {
+    i18n.changeLanguage(lang);
   }
 
   useEffect(() => {

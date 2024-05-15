@@ -11,9 +11,12 @@ export function PreferencesSheet(props: {
   handlePreferencesChange: (updatedPreferences: Partial<Preferences>) => void;
 }) {
   const { t, i18n } = useTranslation();
-  const supportedLngs = Object.keys(i18n.options.resources);
-  const themes = ["system", "light", "dark"];
   const tr = (key: string) => t(`components.PreferencesSheet.${key}`);
+  const supportedLngs = Object.keys(i18n.options.resources).map((lang) =>
+    lang.toUpperCase()
+  );
+  const themes = ["SYSTEM", "LIGHT", "DARK"];
+  const lang = props.preferences.lang.toLowerCase();
 
   return (
     <Sheet
@@ -63,12 +66,12 @@ export function PreferencesSheet(props: {
       <div className="flex p-4">
         <div className="flex-1">{tr("Language")}</div>
         <Select.Root
-          value={props.preferences.lang}
-          onValueChange={(v: string) => {
-            i18n.changeLanguage(v);
+          value={lang}
+          onValueChange={(v: Preferences["lang"]) => {
             props.handlePreferencesChange({
-              lang: i18n.resolvedLanguage,
+              lang: v,
             });
+            i18n.changeLanguage(v);
           }}
         >
           <Select.Trigger className="p-2 border rounded inline-flex items-center">
