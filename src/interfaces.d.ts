@@ -12,7 +12,7 @@ type TaskList = {
 };
 
 type App = {
-  taskInsertPosition: "bottom" | "top";
+  taskInsertPosition: "BOTTOM" | "TOP";
   taskListIds: string[];
 };
 
@@ -22,8 +22,8 @@ type Profile = {
 };
 
 type Preferences = {
-  lang: "en" | "ja";
-  theme: "system" | "light" | "dark";
+  lang: "EN" | "JA";
+  theme: "SYSTEM" | "LIGHT" | "DARK";
 };
 
 type State = {
