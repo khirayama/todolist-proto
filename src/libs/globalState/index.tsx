@@ -35,7 +35,7 @@ const GlobalStateContext = createContext<
   [GlobalState, (newState: GlobalState) => void]
 >([config.initialValue(), () => {}]);
 
-export const loadGlobalState = () => {
+const loadGlobalState = () => {
   return (
     JSON.parse(window.localStorage.getItem(config.key)) || config.initialValue()
   );
