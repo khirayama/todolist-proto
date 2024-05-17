@@ -5,13 +5,15 @@ import {
   ReactNode,
   useState,
 } from "react";
-import { type SupabaseClient, type AuthUser } from "@supabase/supabase-js";
+import { type Session, type SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 
 type SupabaseContextType = {
   supabase: SupabaseClient;
   isLoggedIn: boolean;
 };
+
+let ss: Session = null;
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,6 +31,7 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      ss = session;
       if (session) {
         setUser(session.user);
       }
@@ -37,6 +40,7 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      ss = session;
       if (event === "INITIAL_SESSION") {
         setInitialized(true);
       }
@@ -68,3 +72,5 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
 export const useSupabase = (): SupabaseContextType => {
   return useContext(SupabaseContext);
 };
+
+export const getSession = (): Session => ss;
