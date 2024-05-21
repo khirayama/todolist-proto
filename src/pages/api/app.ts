@@ -16,9 +16,12 @@ export default async function handler(
       where: {
         userId: user.id,
       },
+      include: {
+        taskLists: true,
+      },
     });
     return res.json({
-      app: exclude(app, ["userId"]),
+      app: exclude(app, ["id", "userId"]),
     });
   }
   if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {
