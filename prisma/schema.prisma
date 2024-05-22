@@ -58,7 +58,7 @@ model TaskListsOnApps {
 model App {
   id         Int                @id @default(autoincrement())
   userId     String             @unique @db.Uuid
-  taskInsert TaskInsertPosition @default(BOTTOM)
+  taskInsertPosition TaskInsertPosition @default(BOTTOM)
   taskLists  TaskListsOnApps[]
 }
 
