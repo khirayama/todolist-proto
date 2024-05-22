@@ -1,5 +1,13 @@
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import { initReactI18next, useTranslation } from "react-i18next";
+
+export const useCustomTranslation = (prefix: string) => {
+  const tr = useTranslation();
+  return {
+    ...tr,
+    t: (key: string) => tr.t(`${prefix}.${key}`),
+  };
+};
 
 export function init() {
   i18n.use(initReactI18next).init({
