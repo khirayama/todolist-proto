@@ -19,9 +19,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { clsx } from "clsx";
-import { useTranslation } from "react-i18next";
 
 import { Icon } from "libs/components/Icon";
+import { useCustomTranslation } from "libs/i18n";
 
 export function TaskListList(props: {
   taskLists: TaskList[];
@@ -29,8 +29,7 @@ export function TaskListList(props: {
   handleTaskListsChange: (updateTaskLists: TaskList[]) => void;
   handleTaskListLinkClick: (taskListId: string) => void;
 }) {
-  const { t } = useTranslation();
-  const tr = (key: string) => t(`components.TaskListList.${key}`);
+  const { t } = useCustomTranslation("components.TaskListList");
 
   const [taskListName, setTaskListName] = useState<string>("");
   const [insertPosition, setInsertPosition] = useState<"bottom" | "top">(
@@ -112,8 +111,8 @@ export function TaskListList(props: {
               value={taskListName}
               placeholder={
                 isInsertTop
-                  ? tr("Add task list to top")
-                  : tr("Add task list to bottom")
+                  ? t("Add task list to top")
+                  : t("Add task list to bottom")
               }
               onChange={onTaskListNameChange}
               onKeyDown={onTaskListNameKeyDownAndKeyUp}

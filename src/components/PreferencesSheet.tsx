@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
 import * as Select from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 import { Sheet } from "libs/components/Sheet";
+import { useCustomTranslation } from "libs/i18n";
 
 export function PreferencesSheet(props: {
   preferences: Preferences;
@@ -10,8 +10,7 @@ export function PreferencesSheet(props: {
   onOpenChange: (open: boolean) => void;
   handlePreferencesChange: (updatedPreferences: Partial<Preferences>) => void;
 }) {
-  const { t, i18n } = useTranslation();
-  const tr = (key: string) => t(`components.PreferencesSheet.${key}`);
+  const { t, i18n } = useCustomTranslation("components.PreferencesSheet");
   const supportedLngs = Object.keys(i18n.options.resources).map((lang) =>
     lang.toUpperCase()
   );
@@ -22,10 +21,10 @@ export function PreferencesSheet(props: {
     <Sheet
       open={props.open}
       onOpenChange={props.onOpenChange}
-      title={tr("Preferences")}
+      title={t("Preferences")}
     >
       <div className="flex p-4">
-        <div className="flex-1">{tr("Appearance")}</div>
+        <div className="flex-1">{t("Appearance")}</div>
         <Select.Root
           value={props.preferences.theme}
           onValueChange={(v: Preferences["theme"]) => {
@@ -35,8 +34,8 @@ export function PreferencesSheet(props: {
           }}
         >
           <Select.Trigger className="p-2 border rounded inline-flex items-center">
-            <Select.Value aria-label={tr(props.preferences.theme)}>
-              {tr(props.preferences.theme)}
+            <Select.Value aria-label={t(props.preferences.theme)}>
+              {t(props.preferences.theme)}
             </Select.Value>
             <Select.Icon className="pl-2">
               <ChevronDownIcon />
@@ -51,7 +50,7 @@ export function PreferencesSheet(props: {
                     value={theme}
                     className="p-2 flex items-center"
                   >
-                    <Select.ItemText>{tr(theme)}</Select.ItemText>
+                    <Select.ItemText>{t(theme)}</Select.ItemText>
                     <Select.ItemIndicator>
                       <CheckIcon />
                     </Select.ItemIndicator>
@@ -64,19 +63,18 @@ export function PreferencesSheet(props: {
       </div>
 
       <div className="flex p-4">
-        <div className="flex-1">{tr("Language")}</div>
+        <div className="flex-1">{t("Language")}</div>
         <Select.Root
           value={lang}
           onValueChange={(v: Preferences["lang"]) => {
             props.handlePreferencesChange({
               lang: v,
             });
-            i18n.changeLanguage(v);
           }}
         >
           <Select.Trigger className="p-2 border rounded inline-flex items-center">
-            <Select.Value aria-label={tr(props.preferences.lang)}>
-              {tr(props.preferences.lang)}
+            <Select.Value aria-label={t(props.preferences.lang)}>
+              {t(props.preferences.lang)}
             </Select.Value>
             <Select.Icon className="pl-2">
               <ChevronDownIcon />
@@ -91,7 +89,7 @@ export function PreferencesSheet(props: {
                     value={ln}
                     className="p-2 flex items-center"
                   >
-                    <Select.ItemText>{tr(ln)}</Select.ItemText>
+                    <Select.ItemText>{t(ln)}</Select.ItemText>
                     <Select.ItemIndicator>
                       <CheckIcon />
                     </Select.ItemIndicator>

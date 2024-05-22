@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
-import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -13,6 +12,7 @@ import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
 import { InvitationSheet } from "components/InvitationSheet";
+import { useCustomTranslation } from "libs/i18n";
 
 function isDrawerOpened() {
   const hash = location.href.split("#")[1];
@@ -20,10 +20,9 @@ function isDrawerOpened() {
 }
 
 export default function IndexPage() {
-  const { t, i18n } = useTranslation();
-  const tr = (key: string) => t(`pages.index.${key}`);
-
   const router = useRouter();
+
+  const { t } = useCustomTranslation("pages.index");
 
   const [app, { updateApp }] = useApp();
   const [preferences, { updatePreferences }] = usePreferences();
@@ -123,7 +122,7 @@ export default function IndexPage() {
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onUserSheetOpenClick}
             >
-              <div className="flex-1 text-left">{tr("Log In")}</div>
+              <div className="flex-1 text-left">{t("Log In")}</div>
               <Icon text="person" />
             </button>
 
@@ -131,7 +130,7 @@ export default function IndexPage() {
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onSettingsSheetOpenClick}
             >
-              <div className="flex-1 text-left">{tr("Preferences")}</div>
+              <div className="flex-1 text-left">{t("Preferences")}</div>
               <Icon text="settings" />
             </button>
           </div>

@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import {
   addDays,
   addMonths,
@@ -14,14 +13,15 @@ import {
 } from "date-fns";
 import clsx from "clsx";
 
+import { useCustomTranslation } from "libs/i18n";
+
 export function DatePicker(props: {
   value: string;
   autoFocus?: boolean;
   handleChange: (val: string) => void;
   handleCancel: () => void;
 }) {
-  const { t } = useTranslation();
-  const tr = (key: string) => t(`libs.components.DatePicker.${key}`);
+  const { t } = useCustomTranslation("libs.components.DatePicker");
 
   const refDate = new Date();
   const ref = useRef<HTMLDivElement>(null);
@@ -125,7 +125,7 @@ export function DatePicker(props: {
                       props.handleChange("");
                     }}
                   >
-                    {tr("Reset")}
+                    {t("Reset")}
                   </button>
                   <button
                     className="pl-4 pr-3"
@@ -134,19 +134,19 @@ export function DatePicker(props: {
                       props.handleCancel();
                     }}
                   >
-                    {tr("Cancel")}
+                    {t("Cancel")}
                   </button>
                 </div>
               </th>
             </tr>
             <tr>
-              <th className="p-2 pb-4">{tr("Sunday")}</th>
-              <th className="p-2 pb-4">{tr("Monday")}</th>
-              <th className="p-2 pb-4">{tr("Tuesday")}</th>
-              <th className="p-2 pb-4">{tr("Wednesday")}</th>
-              <th className="p-2 pb-4">{tr("Thursday")}</th>
-              <th className="p-2 pb-4">{tr("Friday")}</th>
-              <th className="p-2 pb-4">{tr("Saturday")}</th>
+              <th className="p-2 pb-4">{t("Sunday")}</th>
+              <th className="p-2 pb-4">{t("Monday")}</th>
+              <th className="p-2 pb-4">{t("Tuesday")}</th>
+              <th className="p-2 pb-4">{t("Wednesday")}</th>
+              <th className="p-2 pb-4">{t("Thursday")}</th>
+              <th className="p-2 pb-4">{t("Friday")}</th>
+              <th className="p-2 pb-4">{t("Saturday")}</th>
             </tr>
           </thead>
           {months.map((d) => {

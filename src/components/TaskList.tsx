@@ -19,10 +19,10 @@ import {
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { clsx } from "clsx";
-import { useTranslation } from "react-i18next";
 
 import { Icon } from "libs/components/Icon";
 import { TaskItem } from "components/TaskItem";
+import { useCustomTranslation } from "libs/i18n";
 
 export function TaskList(props: {
   hasPrev: boolean;
@@ -37,8 +37,7 @@ export function TaskList(props: {
   handleDragCancel: (e: DragCancelEvent) => void;
   handleDragEnd: (e: DragEndEvent) => void;
 }) {
-  const { t } = useTranslation();
-  const tr = (key: string) => t(`components.TaskList.${key}`);
+  const { t } = useCustomTranslation("components.TaskList");
 
   const [taskText, setTaskText] = useState<string>("");
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
@@ -362,7 +361,7 @@ export function TaskList(props: {
                 <input
                   className="inline-block text-center w-full"
                   type="text"
-                  placeholder={tr("Task list name")}
+                  placeholder={t("Task list name")}
                   value={taskList.name}
                   onChange={onTaskListNameChange}
                 />
@@ -392,7 +391,7 @@ export function TaskList(props: {
                 className="flex-1 rounded-full py-2 px-4 border"
                 value={taskText}
                 placeholder={
-                  isInsertTop ? tr("Add task to top") : tr("Add task to bottom")
+                  isInsertTop ? t("Add task to top") : t("Add task to bottom")
                 }
                 onChange={onTaskTextChange}
                 onKeyDown={onTaskTextKeyDownAndKeyUp}
@@ -406,11 +405,11 @@ export function TaskList(props: {
           <section className="flex py-2 pl-4 pr-3 text-gray-400">
             <button className="flex" onClick={onSortTasksButtonClick}>
               <Icon text="sort" />
-              <span className="pl-1">{tr("Sort")}</span>
+              <span className="pl-1">{t("Sort")}</span>
             </button>
             <div className="inline-block flex-1"></div>
             <button className="flex" onClick={onClearCompletedTasksButtonClick}>
-              <span className="pr-1">{tr("Clear Completed")}</span>
+              <span className="pr-1">{t("Clear Completed")}</span>
               <Icon text="delete" />
             </button>
           </section>

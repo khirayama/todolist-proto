@@ -1,7 +1,7 @@
 import { Sheet } from "libs/components/Sheet";
-import { useTranslation } from "react-i18next";
 
 import { DatePicker } from "libs/components/DatePicker";
+import { useCustomTranslation } from "libs/i18n";
 
 export function DatePickerSheet(props: {
   value: string;
@@ -10,14 +10,13 @@ export function DatePickerSheet(props: {
   handleChange: (val: string) => void;
   handleCancel: () => void;
 }) {
-  const { t } = useTranslation();
-  const tr = (key: string) => t(`components.DatePickerSheet.${key}`);
+  const { t } = useCustomTranslation("components.DatePickerSheet");
 
   return (
     <Sheet
       open={props.open}
       onOpenChange={props.onOpenChange}
-      title={tr("Date Picker")}
+      title={t("Date Picker")}
     >
       <div className="px-12">
         <DatePicker
