@@ -31,35 +31,23 @@ enum Lang {
 }
 
 model Task {
-  id         String    @unique
-  text       String
-  completed  Boolean
-  date       DateTime
-  TaskList   TaskList? @relation(fields: [taskListId], references: [id])
-  taskListId String?
+  id        String   @unique
+  text      String
+  completed Boolean
+  date      DateTime
 }
 
 model TaskList {
-  id    String            @unique
-  name  String
-  tasks Task[]
-  apps  TaskListsOnApps[]
-}
-
-model TaskListsOnApps {
-  app        App      @relation(fields: [appId], references: [id])
-  appId      Int
-  taskList   TaskList @relation(fields: [taskListId], references: [id])
-  taskListId String
-
-  @@id([appId, taskListId])
+  id      String   @unique
+  name    String
+  taskIds String[]
 }
 
 model App {
-  id         Int                @id @default(autoincrement())
-  userId     String             @unique @db.Uuid
+  id                 Int                @id @default(autoincrement())
+  userId             String             @unique @db.Uuid
   taskInsertPosition TaskInsertPosition @default(BOTTOM)
-  taskLists  TaskListsOnApps[]
+  taskListIds        String[]
 }
 
 model Profile {
