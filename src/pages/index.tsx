@@ -42,11 +42,6 @@ export default function IndexPage() {
 
   const taskListContainerRef = useRef<HTMLElement>(null);
 
-  const lang = preferences.lang.toLowerCase();
-  if (i18n.resolvedLanguage !== lang) {
-    i18n.changeLanguage(lang);
-  }
-
   useEffect(() => {
     const handleHashChange = () => {
       const drawer =

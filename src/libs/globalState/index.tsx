@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import { useTranslation } from "react-i18next";
 import { createContext, useContext, ReactNode, useState } from "react";
 
 type GlobalState = State;
@@ -43,9 +44,14 @@ const loadGlobalState = () => {
 
 export const GlobalStateProvider = (props: { children: ReactNode }) => {
   const [globalState, nativeSetGlobalState] = useState(loadGlobalState);
+  const { i18n } = useTranslation();
 
   const setGlobalState = (newState: GlobalState) => {
     window.localStorage.setItem(config.key, JSON.stringify(newState));
+    const lang = newState.preferences.lang.toLowerCase();
+    if (i18n.resolvedLanguage !== lang) {
+      i18n.changeLanguage(lang);
+    }
     return nativeSetGlobalState(newState);
   };
 
