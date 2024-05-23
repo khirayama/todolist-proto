@@ -53,8 +53,8 @@ export function TaskList(props: {
   const taskList = props.taskList;
   const tasks = taskList.tasks;
   const isInsertTop =
-    (insertPosition === "top" && !isShiftPressed) ||
-    (insertPosition === "bottom" && isShiftPressed);
+    (insertPosition === "TOP" && !isShiftPressed) ||
+    (insertPosition === "BOTTOM" && isShiftPressed);
 
   const clearCompletedTasks = (tl: TaskList) => {
     const newTaskList = {
