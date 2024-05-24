@@ -8,7 +8,7 @@ type Task = {
 type TaskList = {
   id: string;
   name: string;
-  tasks: Task[];
+  taskIds: string[];
 };
 
 type App = {
@@ -32,5 +32,8 @@ type State = {
   preferences: Preferences;
   taskLists: {
     [id: string]: TaskList;
+  };
+  tasks: {
+    [id: string]: Task;
   };
 };
