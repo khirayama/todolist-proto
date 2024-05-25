@@ -10,7 +10,7 @@ const config = {
     const taskList = {
       id: uuid(),
       name: "やることリスト",
-      tasks: [],
+      taskIds: [],
     };
     return {
       app: {
@@ -28,13 +28,16 @@ const config = {
       taskLists: {
         [taskList.id]: taskList,
       },
+      tasks: {},
     };
   },
 };
 
+let snapshot: GlobalState = null;
+
 const GlobalStateContext = createContext<
-  [GlobalState, (newState: GlobalState) => void]
->([config.initialValue(), () => {}]);
+  [GlobalState, (newState: GlobalState) => void, () => GlobalState]
+>([snapshot, () => {}, () => snapshot]);
 
 const loadGlobalState = () => {
   return (
@@ -43,20 +46,32 @@ const loadGlobalState = () => {
 };
 
 export const GlobalStateProvider = (props: { children: ReactNode }) => {
-  const [globalState, nativeSetGlobalState] = useState(loadGlobalState);
-  const { i18n } = useTranslation();
-
-  const setGlobalState = (newState: GlobalState) => {
-    window.localStorage.setItem(config.key, JSON.stringify(newState));
-    const lang = newState.preferences.lang.toLowerCase();
+  const changeLanguage = () => {
+    const lang = snapshot.preferences.lang.toLowerCase();
     if (i18n.resolvedLanguage !== lang) {
       i18n.changeLanguage(lang);
     }
-    return nativeSetGlobalState(newState);
   };
 
+  const [globalState, nativeSetGlobalState] = useState(loadGlobalState());
+  const { i18n } = useTranslation();
+
+  snapshot = globalState;
+  changeLanguage();
+
+  const setGlobalState = (newState: GlobalState) => {
+    window.localStorage.setItem(config.key, JSON.stringify(newState));
+    changeLanguage();
+    snapshot = newState;
+    nativeSetGlobalState(snapshot);
+  };
+
+  const getGlobalStateSnapshot = () => snapshot;
+
   return (
-    <GlobalStateContext.Provider value={[globalState, setGlobalState]}>
+    <GlobalStateContext.Provider
+      value={[globalState, setGlobalState, getGlobalStateSnapshot]}
+    >
       {props.children}
     </GlobalStateContext.Provider>
   );
@@ -65,6 +80,7 @@ export const GlobalStateProvider = (props: { children: ReactNode }) => {
 export const useGlobalState = (): [
   GlobalState,
   (newState: GlobalState) => void,
+  () => GlobalState,
 ] => {
   return useContext(GlobalStateContext);
 };
