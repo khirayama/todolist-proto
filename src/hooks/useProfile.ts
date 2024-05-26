@@ -1,5 +1,6 @@
 import { useGlobalState } from "libs/globalState";
 import { useEffect } from "react";
+import { type Profile as ProfileData } from "@prisma/client";
 
 import { client } from "hooks/common";
 import { useSupabase } from "libs/supabase";
@@ -7,24 +8,37 @@ import { useSupabase } from "libs/supabase";
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
 
-export const useApp = (): [
-  App,
-  { updateApp: (newApp: Partial<App>) => void },
+const transform = (
+  data: ProfileData & { email: string }
+): { profile: Profile } => {
+  return {
+    profile: {
+      displayName: data.displayName,
+      email: data.email,
+    },
+  };
+};
+
+export const useProfile = (): [
+  Profile,
+  {
+    updateProfile: (newProfile: Partial<Profile>) => void;
+  },
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
 
-  const fetchApp = () => {
+  const fetchProfile = () => {
     client()
-      .get("/api/app")
+      .get("/api/profile")
       .then((res) => {
         const snapshot = getGlobalStateSnapshot();
         setGlobalState({
           ...snapshot,
-          app: {
-            ...snapshot.app,
-            ...res.data.app,
+          profile: {
+            ...snapshot.profile,
+            ...transform(res.data.profile).profile,
           },
         });
       })
@@ -34,29 +48,30 @@ export const useApp = (): [
   };
 
   useEffect(() => {
+    console.log(isLoggedIn);
     if (isLoggedIn) {
-      fetchApp();
+      fetchProfile();
     }
   }, [isLoggedIn]);
 
-  const updateApp = (newApp: Partial<App>) => {
+  const updateProfile = (newProfile: Partial<Profile>) => {
     const snapshot = getGlobalStateSnapshot();
     setGlobalState({
       ...snapshot,
-      app: {
-        ...snapshot.app,
-        ...newApp,
+      profile: {
+        ...snapshot.profile,
+        ...newProfile,
       },
     });
     client()
-      .patch("/api/app", newApp)
+      .patch("/api/profile", newProfile)
       .then((res) => {
         const snapshot = getGlobalStateSnapshot();
         setGlobalState({
           ...snapshot,
-          app: {
-            ...snapshot.app,
-            ...res.data.app,
+          profile: {
+            ...snapshot.profile,
+            ...transform(res.data.profile).profile,
           },
         });
       })
@@ -65,5 +80,10 @@ export const useApp = (): [
       });
   };
 
-  return [globalState.app, { updateApp }];
+  return [
+    globalState.profile,
+    {
+      updateProfile,
+    },
+  ];
 };

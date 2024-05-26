@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Preferences as PreferencesData } from "@prisma/client";
 
 import { client } from "hooks/common";
+import { useSupabase } from "libs/supabase";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
@@ -21,6 +22,7 @@ export const usePreferences = (): [
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
+  const { isLoggedIn } = useSupabase();
 
   const fetchPreferences = () => {
     client()
@@ -41,8 +43,10 @@ export const usePreferences = (): [
   };
 
   useEffect(() => {
-    fetchPreferences();
-  }, []);
+    if (isLoggedIn) {
+      fetchPreferences();
+    }
+  }, [isLoggedIn]);
 
   const updatePreferences = (newPreferences: Partial<Preferences>) => {
     const snapshot = getGlobalStateSnapshot();
@@ -64,6 +68,9 @@ export const usePreferences = (): [
             ...transform(res.data.preferences).preferences,
           },
         });
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
