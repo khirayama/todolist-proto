@@ -59,16 +59,6 @@ export const usePreferences = (): [
     });
     client()
       .patch("/api/preferences", newPreferences)
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          preferences: {
-            ...snapshot.preferences,
-            ...transform(res.data.preferences).preferences,
-          },
-        });
-      })
       .catch((err) => {
         console.log(err);
       });

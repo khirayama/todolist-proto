@@ -50,16 +50,6 @@ export const useApp = (): [
     });
     client()
       .patch("/api/app", newApp)
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          app: {
-            ...snapshot.app,
-            ...res.data.app,
-          },
-        });
-      })
       .catch((err) => {
         console.log(err);
       });

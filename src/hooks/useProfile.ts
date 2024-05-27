@@ -65,16 +65,6 @@ export const useProfile = (): [
     });
     client()
       .patch("/api/profile", newProfile)
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          profile: {
-            ...snapshot.profile,
-            ...transform(res.data.profile).profile,
-          },
-        });
-      })
       .catch((err) => {
         console.log(err);
       });
