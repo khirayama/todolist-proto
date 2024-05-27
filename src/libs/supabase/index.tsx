@@ -44,9 +44,7 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
       if (event === "INITIAL_SESSION") {
         setInitialized(true);
       }
-      console.log(event, session);
       if (session) {
-        console.log(session.expires_in, new Date(session.expires_at * 1000));
         setUser(session.user);
       } else {
         setUser(null);

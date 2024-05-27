@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { useTranslation } from "react-i18next";
 import { createContext, useContext, ReactNode, useState } from "react";
 
@@ -7,15 +6,10 @@ type GlobalState = State;
 const config = {
   key: "__global_state",
   initialValue: (): GlobalState => {
-    const taskList = {
-      id: uuid(),
-      name: "やることリスト",
-      taskIds: [],
-    };
     return {
       app: {
         taskInsertPosition: "BOTTOM",
-        taskListIds: [taskList.id],
+        taskListIds: [],
       },
       profile: {
         displayName: "",
@@ -25,9 +19,7 @@ const config = {
         lang: "EN",
         theme: "SYSTEM",
       },
-      taskLists: {
-        [taskList.id]: taskList,
-      },
+      taskLists: {},
       tasks: {},
     };
   },
@@ -39,28 +31,23 @@ const GlobalStateContext = createContext<
   [GlobalState, (newState: GlobalState) => void, () => GlobalState]
 >([snapshot, () => {}, () => snapshot]);
 
-const loadGlobalState = () => {
-  return (
-    JSON.parse(window.localStorage.getItem(config.key)) || config.initialValue()
-  );
-};
-
 export const GlobalStateProvider = (props: { children: ReactNode }) => {
   const changeLanguage = () => {
     const lang = snapshot.preferences.lang.toLowerCase();
     if (i18n.resolvedLanguage !== lang) {
-      i18n.changeLanguage(lang);
+      window.requestAnimationFrame(() => {
+        i18n.changeLanguage(lang);
+      });
     }
   };
 
-  const [globalState, nativeSetGlobalState] = useState(loadGlobalState());
+  const [globalState, nativeSetGlobalState] = useState(config.initialValue());
   const { i18n } = useTranslation();
 
   snapshot = globalState;
   changeLanguage();
 
   const setGlobalState = (newState: GlobalState) => {
-    window.localStorage.setItem(config.key, JSON.stringify(newState));
     changeLanguage();
     snapshot = newState;
     nativeSetGlobalState(snapshot);
