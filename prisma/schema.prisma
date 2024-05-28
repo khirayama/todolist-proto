@@ -31,10 +31,10 @@ enum Lang {
 }
 
 model Task {
-  id        String   @unique
+  id        String  @unique
   text      String
   completed Boolean
-  date      DateTime
+  date      String
 }
 
 model TaskList {
