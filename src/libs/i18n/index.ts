@@ -50,8 +50,8 @@ export function init() {
             UserSheet: {
               "Log In": "Log In",
             },
-            InvitationSheet: {
-              Invite: "Invite",
+            SharingSheet: {
+              Share: "Share",
             },
             PreferencesSheet: {
               Preferences: "Preferences",
@@ -107,8 +107,8 @@ export function init() {
             UserSheet: {
               "Log In": "ログイン",
             },
-            InvitationSheet: {
-              Invite: "招待",
+            SharingSheet: {
+              Share: "共有",
             },
             PreferencesSheet: {
               Preferences: "設定",
