@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import type { App as AppType } from "@prisma/client";
 
 import { prisma, exclude, auth } from "libs/pages/api";
 
@@ -11,21 +12,27 @@ export default async function handler(
     return res.status(401).json({ error: errorMessage });
   }
 
+  const unsafeKeys: (keyof AppType)[] = ["id", "userId"];
+
   if (req.method === "GET") {
     const app = await prisma.app.findUnique({
       where: {
         userId: user.id,
       },
-      include: {
-        taskLists: true,
-      },
     });
     return res.json({
-      app: exclude(app, ["id", "userId"]),
+      app: exclude(app, unsafeKeys),
     });
   }
-  if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {
-    // do something
+  if (req.method === "PATCH") {
+    const app = await prisma.app.update({
+      where: {
+        userId: user.id,
+      },
+      data: exclude(req.body, unsafeKeys),
+    });
+    return res.json({
+      app: exclude(app, unsafeKeys),
+    });
   }
-  return res.json({ user });
 }
