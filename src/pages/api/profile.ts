@@ -21,7 +21,10 @@ export default async function handler(
       },
     });
     return res.json({
-      profile: exclude(profile, unsafeKeys),
+      profile: {
+        ...exclude(profile, unsafeKeys),
+        email: user.email,
+      },
     });
   }
   if (req.method === "PATCH") {
@@ -32,7 +35,10 @@ export default async function handler(
       data: exclude(req.body, unsafeKeys),
     });
     return res.json({
-      profile: exclude(profile, unsafeKeys),
+      profile: {
+        ...exclude(profile, unsafeKeys),
+        email: user.email,
+      },
     });
   }
 }
