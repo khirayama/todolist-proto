@@ -31,14 +31,14 @@ enum Lang {
 }
 
 model Task {
-  id        String  @unique
+  id        String  @id
   text      String
   completed Boolean
   date      String
 }
 
 model TaskList {
-  id      String   @unique
+  id      String   @id
   name    String
   taskIds String[]
 }
