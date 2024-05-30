@@ -46,7 +46,7 @@ export function DatePicker(props: {
     });
   };
 
-  const numOfMonths = 3;
+  const numOfMonths = 24;
   const months = [];
   for (let i = 0; i < numOfMonths; i += 1) {
     months.push(i);
