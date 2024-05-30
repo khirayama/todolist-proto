@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 
 import { useApp } from "hooks/useApp";
+import { useProfile } from "hooks/useProfile";
 import { usePreferences } from "hooks/usePreferences";
 import { useTaskLists } from "hooks/useTaskLists";
 import { Icon } from "libs/components/Icon";
@@ -11,7 +12,7 @@ import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
-import { InvitationSheet } from "components/InvitationSheet";
+import { SharingSheet } from "components/SharingSheet";
 import { useCustomTranslation } from "libs/i18n";
 
 function isDrawerOpened() {
@@ -25,19 +26,16 @@ export default function IndexPage() {
   const { t } = useCustomTranslation("pages.index");
 
   const [app, { updateApp }] = useApp();
+  const [profile, { updateProfile }] = useProfile();
   const [preferences, { updatePreferences }] = usePreferences();
-  const [
-    ,
-    { updateTaskList, updateTaskLists, updateTask },
-    { getTaskListsById },
-  ] = useTaskLists();
+  const [, , { getTaskListsById }] = useTaskLists();
 
   const taskLists = getTaskListsById(app.taskListIds);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
-  const [invitationSheetOpen, setInvitationSheetOpen] = useState(false);
+  const [sharingSheetOpen, setSharingSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
 
   const taskListContainerRef = useRef<HTMLElement>(null);
@@ -89,9 +87,20 @@ export default function IndexPage() {
       parent.scrollLeft = el.offsetLeft;
     }
   };
+
+  const handleSignOut = () => {
+    updateApp({
+      taskListIds: [],
+    });
+    updateProfile({
+      displayName: "",
+      email: "",
+    });
+  };
+
   const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
   const onUserSheetOpenClick = () => setUserSheetOpen(true);
-  const onInvitationSheetOpenClick = () => setInvitationSheetOpen(true);
+  const onSharingSheetOpenClick = () => setSharingSheetOpen(true);
 
   return (
     <>
@@ -117,7 +126,9 @@ export default function IndexPage() {
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onUserSheetOpenClick}
             >
-              <div className="flex-1 text-left">{t("Log In")}</div>
+              <div className="flex-1 text-left">
+                {profile?.displayName || profile?.email || t("Log In")}
+              </div>
               <Icon text="person" />
             </button>
 
@@ -132,8 +143,6 @@ export default function IndexPage() {
           <div className="pt-2 border-t">
             <TaskListList
               taskLists={taskLists}
-              handleTaskListChange={updateTaskList}
-              handleTaskListsChange={updateTaskLists}
               handleTaskListLinkClick={handleTaskListLinkClick}
             />
           </div>
@@ -155,9 +164,9 @@ export default function IndexPage() {
 
             <button
               className="flex items-center justify-center"
-              onClick={onInvitationSheetOpenClick}
+              onClick={onSharingSheetOpenClick}
             >
-              <Icon text="groups" />
+              <Icon text="share" />
             </button>
           </header>
 
@@ -170,9 +179,6 @@ export default function IndexPage() {
             )}
           >
             {taskLists.map((taskList: TaskList, i: number) => {
-              const handleTaskChange = (newTask: Task) => {
-                updateTask(taskList, newTask);
-              };
               const handleDragStart = () => {
                 setSortingTaskListId(taskList.id);
               };
@@ -197,12 +203,7 @@ export default function IndexPage() {
                       key={taskList.id}
                       hasPrev={i !== 0}
                       hasNext={i !== taskLists.length - 1}
-                      insertPosition={app.taskInsertPosition}
                       taskList={taskList}
-                      handleAppChange={updateApp}
-                      handlePreferencesChange={updatePreferences}
-                      handleTaskChange={handleTaskChange}
-                      handleTaskListChange={updateTaskList}
                       handleDragStart={handleDragStart}
                       handleDragCancel={handleDragEnd}
                       handleDragEnd={handleDragEnd}
@@ -226,11 +227,15 @@ export default function IndexPage() {
         handlePreferencesChange={updatePreferences}
       />
 
-      <UserSheet open={userSheetOpen} onOpenChange={setUserSheetOpen} />
+      <UserSheet
+        open={userSheetOpen}
+        onOpenChange={setUserSheetOpen}
+        handleSignOut={handleSignOut}
+      />
 
-      <InvitationSheet
-        open={invitationSheetOpen}
-        onOpenChange={setInvitationSheetOpen}
+      <SharingSheet
+        open={sharingSheetOpen}
+        onOpenChange={setSharingSheetOpen}
       />
     </>
   );
