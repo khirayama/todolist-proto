@@ -1,11 +1,18 @@
+import { useEffect } from "react";
+
 import { useGlobalState } from "libs/globalState";
+import { useSupabase } from "libs/supabase";
+import { client, createDebounce } from "hooks/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
 
+const updateDebounce = createDebounce();
+
 export const useTasks = (): [
   { [id: string]: Task },
   {
+    createTask: (newTask: Task) => void;
     updateTask: (newTask: Task) => void;
     deleteTask: (taskId: string) => void;
   },
@@ -15,6 +22,48 @@ export const useTasks = (): [
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
+  const { isLoggedIn } = useSupabase();
+
+  const fetchTasks = () => {
+    client()
+      .get("/api/tasks")
+      .then((res) => {
+        const tasks: Task[] = res.data.tasks;
+        const snapshot = getGlobalStateSnapshot();
+        setGlobalState({
+          ...snapshot,
+          tasks: {
+            ...snapshot.tasks,
+            ...tasks.reduce((acc, t) => ({ ...acc, [t.id]: t }), {}),
+          },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchTasks();
+    }
+  }, [isLoggedIn]);
+
+  const createTask = (newTask: Task) => {
+    const snapshot = getGlobalStateSnapshot();
+    setGlobalState({
+      ...snapshot,
+      tasks: {
+        ...snapshot.tasks,
+        [newTask.id]: newTask,
+      },
+    });
+    client()
+      .post("/api/tasks", newTask)
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const updateTask = (newTask: Task) => {
     const snapshot = getGlobalStateSnapshot();
@@ -22,36 +71,50 @@ export const useTasks = (): [
       ...snapshot,
       tasks: {
         ...snapshot.tasks,
-        [newTask.id]: {
-          ...(snapshot.tasks[newTask.id] || {}),
-          ...newTask,
-        },
+        [newTask.id]: newTask,
       },
     });
+    updateDebounce(() => {
+      client()
+        .patch(`/api/tasks/${newTask.id}`, newTask)
+        .catch((err) => {
+          console.log(err);
+        });
+    }, 400);
   };
 
-  const deleteTask = (taskId: string) => {
+  const deleteTask = (deletedTaskId: string) => {
     const snapshot = getGlobalStateSnapshot();
-    const newTasks = {
-      ...snapshot.tasks,
-    };
-    delete newTasks[taskId];
     setGlobalState({
       ...snapshot,
-      tasks: newTasks,
+      tasks: {
+        ...snapshot.tasks,
+        [deletedTaskId]: undefined,
+      },
     });
+    client()
+      .delete(`/api/tasks/${deletedTaskId}`)
+      .catch(() => {
+        const snapshot = getGlobalStateSnapshot();
+        setGlobalState({
+          ...globalState,
+          taskLists: {
+            ...snapshot.taskLists,
+          },
+        });
+      });
   };
 
   return [
     globalState.tasks,
     {
+      createTask,
       updateTask,
       deleteTask,
     },
     {
-      getTasksById: (taskIds: string[]) => {
-        return taskIds.map((tid) => globalState.tasks[tid]);
-      },
+      getTasksById: (taskIds: string[]) =>
+        taskIds.map((tid) => globalState.tasks[tid]).filter((t) => !!t),
     },
   ];
 };
