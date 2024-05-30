@@ -48,7 +48,6 @@ export const useProfile = (): [
   };
 
   useEffect(() => {
-    console.log(isLoggedIn);
     if (isLoggedIn) {
       fetchProfile();
     }
