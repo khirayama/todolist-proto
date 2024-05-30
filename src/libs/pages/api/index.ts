@@ -13,9 +13,11 @@ export function exclude<T, Key extends keyof T>(
   obj: T,
   keys: Key[]
 ): Omit<T, Key> {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([key]: any) => !keys.includes(key))
-  ) as Omit<T, Key>;
+  return obj
+    ? (Object.fromEntries(
+        Object.entries(obj).filter(([key]: any) => !keys.includes(key))
+      ) as Omit<T, Key>)
+    : obj;
 }
 
 export async function auth(req: NextApiRequest) {
