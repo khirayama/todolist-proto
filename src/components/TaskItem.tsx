@@ -8,6 +8,7 @@ import {
 import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
 
+import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
 import { DatePickerSheet } from "components/DatePickerSheet";
 
@@ -46,7 +47,6 @@ export function TaskItem(props: {
   index: number;
   task: Task;
   newTaskText: string;
-  handleTaskChange: (task: Task) => void;
   handleInsertTaskButtonClick: (idx: number) => void;
   handleTaskListItemKeyDown: (
     e: KeyboardEvent,
@@ -58,6 +58,7 @@ export function TaskItem(props: {
   ) => void;
 }) {
   const task = props.task;
+
   const {
     attributes,
     listeners,
@@ -72,6 +73,7 @@ export function TaskItem(props: {
     hasFocusWhenOpeningDatePickerSheet,
     setHasFocusWhenOpeningDatePickerSheet,
   ] = useState(false);
+  const [, { updateTask }] = useTasks();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -116,7 +118,7 @@ export function TaskItem(props: {
             className="border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden"
             checked={task.completed}
             onCheckedChange={(v: boolean) => {
-              props.handleTaskChange({
+              updateTask({
                 ...task,
                 completed: v,
               });
@@ -131,7 +133,7 @@ export function TaskItem(props: {
           task={task}
           // onFocus, onBlurで、focus状態か保存して、DatePickerから戻ってきた時に維持するか考える
           onTaskTextChange={(e) => {
-            props.handleTaskChange({
+            updateTask({
               ...task,
               text: e.currentTarget.value,
             });
@@ -177,7 +179,7 @@ export function TaskItem(props: {
         open={datePickerSheetOpen}
         onOpenChange={setDatePickerSheetOpen}
         handleChange={(v) => {
-          props.handleTaskChange({
+          updateTask({
             ...task,
             date: v,
           });

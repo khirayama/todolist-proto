@@ -20,19 +20,17 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { clsx } from "clsx";
 
+import { useApp } from "hooks/useApp";
+import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
 import { TaskItem } from "components/TaskItem";
 import { useCustomTranslation } from "libs/i18n";
+import { useTaskLists } from "hooks/useTaskLists";
 
 export function TaskList(props: {
   hasPrev: boolean;
   hasNext: boolean;
   taskList: TaskList;
-  insertPosition: App["taskInsertPosition"];
-  handleAppChange: (updatedApp: Partial<App>) => void;
-  handlePreferencesChange: (updatedPreferences: Partial<Preferences>) => void;
-  handleTaskChange: (updatedTask: Task) => void;
-  handleTaskListChange: (updateTaskList: TaskList) => void;
   handleDragStart: (e: DragStartEvent) => void;
   handleDragCancel: (e: DragCancelEvent) => void;
   handleDragEnd: (e: DragEndEvent) => void;
@@ -41,6 +39,10 @@ export function TaskList(props: {
 
   const [taskText, setTaskText] = useState<string>("");
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
+  const [, { createTask, updateTask, deleteTask }, { getTasksById }] =
+    useTasks();
+  const [app, { updateApp }] = useApp();
+  const [, { updateTaskList }] = useTaskLists();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -49,24 +51,32 @@ export function TaskList(props: {
     })
   );
 
-  const insertPosition = props.insertPosition;
+  const insertPosition = app.taskInsertPosition;
   const taskList = props.taskList;
-  const tasks = taskList.tasks;
+  const tasks = getTasksById(taskList.taskIds);
   const isInsertTop =
     (insertPosition === "TOP" && !isShiftPressed) ||
     (insertPosition === "BOTTOM" && isShiftPressed);
 
-  const clearCompletedTasks = (tl: TaskList) => {
+  const clearCompletedTasks = () => {
+    const ts = [...tasks];
+    ts.forEach((t) => {
+      if (t.completed) {
+        deleteTask(t.id);
+      }
+    });
     const newTaskList = {
-      ...tl,
-      tasks: tl.tasks.filter((t) => !t.completed),
+      ...taskList,
+      taskIds: ts.filter((t) => !t.completed).map((t) => t.id),
     };
-    return newTaskList;
+    updateTaskList(newTaskList);
   };
-  const sortTasks = (tl: TaskList) => {
+
+  const sortTasks = () => {
+    const ts = [...tasks];
     const newTaskList = {
-      ...tl,
-      tasks: tl.tasks
+      ...taskList,
+      taskIds: ts
         .sort((a, b) => {
           if (a.completed && !b.completed) {
             return 1;
@@ -88,9 +98,10 @@ export function TaskList(props: {
           }
           return 0;
         })
-        .concat(),
+        .concat()
+        .map((t) => t.id),
     };
-    return newTaskList;
+    updateTaskList(newTaskList);
   };
 
   const onPrevTaskListClick = () => {
@@ -112,7 +123,7 @@ export function TaskList(props: {
     });
   };
   const onTaskListNameChange = (e: FormEvent<HTMLInputElement>) => {
-    props.handleTaskListChange({
+    updateTaskList({
       ...taskList,
       name: e.currentTarget.value,
     });
@@ -129,20 +140,22 @@ export function TaskList(props: {
       date: "",
     };
     if (isInsertTop) {
-      props.handleTaskListChange({
+      createTask(newTask);
+      updateTaskList({
         ...props.taskList,
-        tasks: [newTask, ...tasks],
+        taskIds: [newTask.id, ...taskList.taskIds],
       });
     } else {
-      props.handleTaskListChange({
+      createTask(newTask);
+      updateTaskList({
         ...props.taskList,
-        tasks: [...tasks, newTask],
+        taskIds: [...taskList.taskIds, newTask.id],
       });
     }
     setTaskText("");
   };
   const onInsertPositionIconClick = () => {
-    props.handleAppChange({
+    updateApp({
       taskInsertPosition: insertPosition === "BOTTOM" ? "TOP" : "BOTTOM",
     });
   };
@@ -153,10 +166,10 @@ export function TaskList(props: {
     setIsShiftPressed(e.shiftKey);
   };
   const onSortTasksButtonClick = () => {
-    props.handleTaskListChange(sortTasks(taskList));
+    sortTasks();
   };
   const onClearCompletedTasksButtonClick = () => {
-    props.handleTaskListChange(clearCompletedTasks(taskList));
+    clearCompletedTasks();
   };
   const handleDragEnd = (e: DragEndEvent) => {
     props.handleDragEnd(e);
@@ -167,9 +180,9 @@ export function TaskList(props: {
       const newIndex = tasks.findIndex((t) => t.id === over.id);
 
       const newTasks = arrayMove(tasks, oldIndex, newIndex);
-      props.handleTaskListChange({
+      updateTaskList({
         ...taskList,
-        tasks: newTasks,
+        taskIds: newTasks.map((t) => t.id),
       });
     }
   };
@@ -190,11 +203,14 @@ export function TaskList(props: {
       `[data-tasklistid="${taskList.id}"] [data-taskid]`
     );
 
+    if (key === "Escape" && !shift && !ctrl && !meta) {
+      e.currentTarget.blur();
+    }
     if (key === "Enter" && !shift && !ctrl && !meta) {
       e.preventDefault();
       for (let i = 0; i < taskEls.length; i++) {
         if (taskEls[i] === el) {
-          const newTasks = [...taskList.tasks];
+          const newTasks = [...tasks];
           const newTask = {
             id: uuid(),
             text: taskText,
@@ -202,9 +218,10 @@ export function TaskList(props: {
             date: "",
           };
           newTasks.splice(i + 1, 0, newTask);
-          props.handleTaskListChange({
+          createTask(newTask);
+          updateTaskList({
             ...taskList,
-            tasks: newTasks,
+            taskIds: newTasks.map((t) => t.id),
           });
           setTimeout(() => {
             const t = document.querySelector<HTMLTextAreaElement>(
@@ -222,7 +239,7 @@ export function TaskList(props: {
       e.preventDefault();
       for (let i = 0; i < taskEls.length; i++) {
         if (taskEls[i] === el) {
-          const newTasks = [...taskList.tasks];
+          const newTasks = [...tasks];
           const newTask = {
             id: uuid(),
             text: taskText,
@@ -230,9 +247,10 @@ export function TaskList(props: {
             date: "",
           };
           newTasks.splice(i, 0, newTask);
-          props.handleTaskListChange({
+          createTask(newTask);
+          updateTaskList({
             ...taskList,
-            tasks: newTasks,
+            taskIds: newTasks.map((t) => t.id),
           });
           setTimeout(() => {
             const t = document.querySelector<HTMLTextAreaElement>(
@@ -248,7 +266,7 @@ export function TaskList(props: {
     }
     if (key === "Enter" && !shift && (ctrl || meta)) {
       e.preventDefault();
-      props.handleTaskChange({
+      updateTask({
         ...task,
         completed: !task.completed,
       });
@@ -277,21 +295,23 @@ export function TaskList(props: {
         }
       }
       e.preventDefault();
+      const ts = [...tasks];
       const newTaskList = {
         ...taskList,
-        tasks: taskList.tasks.filter((t) => t.id !== task.id),
+        taskIds: ts.filter((t) => t.id !== task.id).map((t) => t.id),
       };
-      props.handleTaskListChange(newTaskList);
+      updateTaskList(newTaskList);
     }
     if ((key === "Backspace" || key === "Delete") && shift && !ctrl && !meta) {
       e.preventDefault();
       if (task.completed) {
         let flag = false;
+        const ts = [...tasks];
         for (let i = 0; i < taskEls.length; i++) {
           if (taskEls[i] === el) {
             flag = true;
           }
-          if (flag && !taskList.tasks[i].completed) {
+          if (flag && !ts[i].completed) {
             const t = taskEls[i]?.querySelector("textarea") || taskTextEl;
             if (t) {
               setTimeout(() => {
@@ -304,7 +324,7 @@ export function TaskList(props: {
           }
         }
       }
-      props.handleTaskListChange(clearCompletedTasks(taskList));
+      clearCompletedTasks();
     }
     if (key === "ArrowDown" && !shift && !ctrl && !meta) {
       for (let i = 0; i < taskEls.length - 1; i++) {
@@ -339,7 +359,7 @@ export function TaskList(props: {
       setHasFocusWhenOpeningDatePickerSheet(true);
     }
     if (key === "o" && !shift && ctrl && !meta) {
-      props.handleTaskListChange(sortTasks(taskList));
+      sortTasks();
     }
   };
 
@@ -379,13 +399,13 @@ export function TaskList(props: {
               className="flex items-center py-2 bg-white"
               onSubmit={onTaskFormSubmit}
             >
-              <span className="p-2 flex" onClick={onInsertPositionIconClick}>
+              <button className="p-2 flex" onClick={onInsertPositionIconClick}>
                 {isInsertTop ? (
                   <Icon text="vertical_align_top" />
                 ) : (
                   <Icon text="vertical_align_bottom" />
                 )}
-              </span>
+              </button>
               <input
                 data-tasktext
                 className="flex-1 rounded-full py-2 px-4 border"
@@ -430,16 +450,18 @@ export function TaskList(props: {
             >
               {tasks.map((task, i) => {
                 const handleInsertTaskButtonClick = (idx: number) => {
-                  const newTasks = [...taskList.tasks];
-                  newTasks.splice(idx, 0, {
+                  const newTasks = [...tasks];
+                  const newTask = {
                     id: uuid(),
                     text: taskText,
                     completed: false,
                     date: "",
-                  });
-                  props.handleTaskListChange({
+                  };
+                  newTasks.splice(idx, 0, newTask);
+                  createTask(newTask);
+                  updateTaskList({
                     ...taskList,
-                    tasks: newTasks,
+                    taskIds: newTasks.map((t) => t.id),
                   });
                   setTaskText("");
                 };
@@ -450,7 +472,6 @@ export function TaskList(props: {
                     index={i}
                     task={task}
                     newTaskText={taskText}
-                    handleTaskChange={props.handleTaskChange}
                     handleInsertTaskButtonClick={handleInsertTaskButtonClick}
                     handleTaskListItemKeyDown={handleTaskListItemKeyDown}
                   />

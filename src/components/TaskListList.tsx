@@ -20,13 +20,13 @@ import { CSS } from "@dnd-kit/utilities";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { clsx } from "clsx";
 
+import { useApp } from "hooks/useApp";
+import { useTaskLists } from "hooks/useTaskLists";
 import { Icon } from "libs/components/Icon";
 import { useCustomTranslation } from "libs/i18n";
 
 export function TaskListList(props: {
   taskLists: TaskList[];
-  handleTaskListChange: (updatedTaskList: TaskList) => void;
-  handleTaskListsChange: (updateTaskLists: TaskList[]) => void;
   handleTaskListLinkClick: (taskListId: string) => void;
 }) {
   const { t } = useCustomTranslation("components.TaskListList");
@@ -36,6 +36,8 @@ export function TaskListList(props: {
     "bottom"
   );
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
+  const [, { updateApp }] = useApp();
+  const [, { createTaskList, deleteTaskList }] = useTaskLists();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -57,13 +59,16 @@ export function TaskListList(props: {
     const newTaskList: TaskList = {
       id: uuid(),
       name: taskListName,
-      tasks: [],
+      taskIds: [],
     };
+    let newTaskLists = [];
     if (isInsertTop) {
-      props.handleTaskListsChange([newTaskList, ...taskLists]);
+      newTaskLists = [newTaskList, ...taskLists];
     } else {
-      props.handleTaskListsChange([...taskLists, newTaskList]);
+      newTaskLists = [...taskLists, newTaskList];
     }
+    createTaskList(newTaskList);
+    updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
     setTaskListName("");
     setTimeout(() => {
       props.handleTaskListLinkClick(newTaskList.id);
@@ -86,7 +91,9 @@ export function TaskListList(props: {
       const newIndex = taskLists.findIndex((tl) => tl.id === over.id);
 
       const newTaskLists = arrayMove(taskLists, oldIndex, newIndex);
-      props.handleTaskListsChange(newTaskLists);
+      updateApp({
+        taskListIds: newTaskLists.map((tl) => tl.id),
+      });
     }
   };
 
@@ -139,18 +146,22 @@ export function TaskListList(props: {
             {taskLists.map((taskList, i) => {
               const handleInsertTaskListButtonClick = (idx: number) => {
                 const newTaskLists = [...taskLists];
-                newTaskLists.splice(idx, 0, {
+                const newTaskList = {
                   id: uuid(),
                   name: taskListName,
-                  tasks: [],
-                });
-                props.handleTaskListsChange(newTaskLists);
+                  taskIds: [],
+                };
+                newTaskLists.splice(idx, 0, newTaskList);
+                createTaskList(newTaskList);
+                updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
                 setTaskListName("");
               };
               const handleDeleteTaskListButtonClick = (taskListId: string) => {
-                props.handleTaskListsChange(
-                  taskLists.filter((tl) => tl.id !== taskListId)
+                const newTaskLists = taskLists.filter(
+                  (tl) => tl.id !== taskListId
                 );
+                deleteTaskList(taskListId);
+                updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
               };
 
               return (
@@ -159,7 +170,6 @@ export function TaskListList(props: {
                   index={i}
                   taskList={taskList}
                   newTaskListName={taskListName}
-                  handleTaskListChange={props.handleTaskListChange}
                   handleInsertTaskListButtonClick={
                     handleInsertTaskListButtonClick
                   }
@@ -181,7 +191,6 @@ function TaskListListItem(props: {
   index: number;
   taskList: TaskList;
   newTaskListName: string;
-  handleTaskListChange: (taskList: TaskList) => void;
   handleInsertTaskListButtonClick: (idx: number) => void;
   handleDeleteTaskListButtonClick: (taskListId: string) => void;
   handleTaskListLinkClick: (taskListId: string) => void;
@@ -232,18 +241,18 @@ function TaskListListItem(props: {
       >
         <Icon text="drag_indicator" />
       </span>
-      <span
-        className={clsx("flex-1 py-4 cursor-pointer")}
+      <button
+        className={clsx("flex-1 py-4 cursor-pointer text-left")}
         onClick={() => {
           props.handleTaskListLinkClick(taskList.id);
         }}
       >
         {taskList.name}
-      </span>
+      </button>
       <button
         onClick={() => {
           let removeFlag = true;
-          if (taskList.tasks.length !== 0) {
+          if (taskList.taskIds.length !== 0) {
             removeFlag = window.confirm(
               "TODO: this task list has tasks. Do you want to delete it?"
             );
