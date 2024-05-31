@@ -30,6 +30,11 @@ enum Lang {
   JA
 }
 
+model ShareCode {
+  code       String @id @default(uuid())
+  taskListId String
+}
+
 model Task {
   id        String  @id
   text      String
