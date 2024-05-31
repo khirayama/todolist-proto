@@ -31,9 +31,9 @@ export function TaskList(props: {
   hasPrev: boolean;
   hasNext: boolean;
   taskList: TaskList;
-  handleDragStart: (e: DragStartEvent) => void;
-  handleDragCancel: (e: DragCancelEvent) => void;
-  handleDragEnd: (e: DragEndEvent) => void;
+  handleDragStart?: (e: DragStartEvent) => void;
+  handleDragCancel?: (e: DragCancelEvent) => void;
+  handleDragEnd?: (e: DragEndEvent) => void;
 }) {
   const { t } = useCustomTranslation("components.TaskList");
 
@@ -172,7 +172,9 @@ export function TaskList(props: {
     clearCompletedTasks();
   };
   const handleDragEnd = (e: DragEndEvent) => {
-    props.handleDragEnd(e);
+    if (props.handleDragEnd) {
+      props.handleDragEnd(e);
+    }
     const { active, over } = e;
 
     if (active && over && active.id !== over.id) {
