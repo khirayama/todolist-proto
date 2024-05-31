@@ -9,6 +9,7 @@ type TaskList = {
   id: string;
   name: string;
   taskIds: string[];
+  shareCode: string;
 };
 
 type App = {
