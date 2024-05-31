@@ -9,7 +9,11 @@ import { client, createDebounce } from "hooks/common";
 
 const updateDebounce = createDebounce();
 
-export const useTaskLists = (): [
+export const useTaskLists = (
+  params: {
+    shareCodes?: string[];
+  } = {}
+): [
   { [id: string]: TaskList },
   {
     createTaskList: (newTaskList: TaskList) => void;
@@ -26,7 +30,10 @@ export const useTaskLists = (): [
 
   const fetchTaskLists = () => {
     client()
-      .get("/api/task-lists")
+      .get("/api/task-lists", {
+        params,
+        paramsSerializer: { indexes: null },
+      })
       .then((res) => {
         const taskLists: TaskList[] = res.data.taskLists;
         const snapshot = getGlobalStateSnapshot();
@@ -44,7 +51,7 @@ export const useTaskLists = (): [
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn || params.shareCodes) {
       fetchTaskLists();
     }
   }, [isLoggedIn]);
