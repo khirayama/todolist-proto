@@ -12,45 +12,53 @@ export default async function handler(
     return res.status(401).json({ error: errorMessage });
   }
 
+  const taskListId = req.query.id as string;
   const unsafeKeys: (keyof TaskListType)[] = ["id"];
+  delete req.body?.shareCode;
 
   if (req.method === "PATCH") {
     const taskList = await prisma.taskList.update({
       where: {
-        id: req.query.id as string,
+        id: taskListId,
       },
       data: exclude(req.body, unsafeKeys),
     });
     return res.json({ taskList });
   }
+
   if (req.method === "DELETE") {
     const apps = await prisma.app.findMany({
       where: {
         taskListIds: {
-          has: req.query.id as string,
+          has: taskListId,
         },
       },
     });
     if (apps.length === 1) {
       const taskList = await prisma.taskList.findUnique({
         where: {
-          id: req.query.id as string,
+          id: taskListId,
         },
       });
-      await prisma.task.deleteMany({
-        where: {
-          id: {
-            in: taskList.taskIds,
+      await prisma.$transaction([
+        prisma.task.deleteMany({
+          where: {
+            id: {
+              in: taskList.taskIds,
+            },
           },
-        },
-      });
-      await prisma.taskList.delete({
-        where: {
-          id: req.query.id as string,
-        },
-      });
-    } else {
-      console.log("no deleted");
+        }),
+        prisma.shareCode.deleteMany({
+          where: {
+            taskListId,
+          },
+        }),
+        prisma.taskList.delete({
+          where: {
+            id: taskListId,
+          },
+        }),
+      ]);
     }
     return res.status(204).end();
   }

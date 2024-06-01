@@ -7,42 +7,82 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { user, errorMessage } = await auth(req);
-  if (errorMessage) {
-    return res.status(401).json({ error: errorMessage });
-  }
 
   if (req.method === "POST") {
-    const newTaskList = req.body;
-    const taskList = await prisma.taskList.create({
-      data: newTaskList,
-    });
-    return res.json({ taskList });
-  }
-  if (req.method === "GET") {
-    const app = await prisma.app.findUnique({
-      where: {
-        userId: user.id,
-      },
-    });
-    const taskLists = await prisma.taskList.findMany({
-      where: {
-        id: { in: app.taskListIds },
-      },
-    });
+    if (errorMessage) {
+      return res.status(401).json({ error: errorMessage });
+    }
 
-    // for (const taskList of taskLists) {
-    //   const tmp = await prisma.app.findMany({
-    //     where: {
-    //       taskListIds: {
-    //         has: taskList.id,
-    //       },
-    //     },
-    //   });
-    //   console.log(tmp);
-    // }
+    const newTaskList = req.body;
+    const [taskList, shareCode] = await prisma.$transaction([
+      prisma.taskList.create({
+        data: newTaskList,
+      }),
+      prisma.shareCode.create({
+        data: {
+          taskListId: newTaskList.id,
+        },
+      }),
+    ]);
+    return res.json({
+      taskList: {
+        ...taskList,
+        shareCode: shareCode.code,
+      },
+    });
+  }
+
+  if (req.method === "GET") {
+    let taskLists = [];
+    let shareCodes = [];
+
+    const params = req.query;
+
+    if (params.shareCodes) {
+      const codes: string[] = Array.isArray(params.shareCodes)
+        ? params.shareCodes
+        : [params.shareCodes];
+      shareCodes = await prisma.shareCode.findMany({
+        where: {
+          code: { in: codes },
+        },
+      });
+      taskLists = await prisma.taskList.findMany({
+        where: {
+          id: { in: shareCodes.map((shareCode) => shareCode.taskListId) },
+        },
+      });
+    } else {
+      if (errorMessage) {
+        return res.status(401).json({ error: errorMessage });
+      }
+
+      const app = await prisma.app.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
+      [taskLists, shareCodes] = await prisma.$transaction([
+        prisma.taskList.findMany({
+          where: {
+            id: { in: app.taskListIds },
+          },
+        }),
+        prisma.shareCode.findMany({
+          where: {
+            taskListId: { in: app.taskListIds },
+          },
+        }),
+      ]);
+    }
 
     return res.json({
-      taskLists,
+      taskLists: taskLists.map((taskList) => ({
+        ...taskList,
+        shareCode: shareCodes.find(
+          (shareCode) => shareCode.taskListId === taskList.id
+        )?.code,
+      })),
     });
   }
 }
