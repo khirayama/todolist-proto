@@ -9,7 +9,9 @@ import { client, createDebounce } from "hooks/common";
 
 const updateDebounce = createDebounce();
 
-export const useTasks = (): [
+export const useTasks = (
+  params: { taskListIds?: string[] } = {}
+): [
   { [id: string]: Task },
   {
     createTask: (newTask: Task) => void;
@@ -26,7 +28,10 @@ export const useTasks = (): [
 
   const fetchTasks = () => {
     client()
-      .get("/api/tasks")
+      .get("/api/tasks", {
+        params,
+        paramsSerializer: { indexes: null },
+      })
       .then((res) => {
         const tasks: Task[] = res.data.tasks;
         const snapshot = getGlobalStateSnapshot();
@@ -44,7 +49,7 @@ export const useTasks = (): [
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn || params.taskListIds) {
       fetchTasks();
     }
   }, [isLoggedIn]);
