@@ -39,8 +39,9 @@ export function TaskList(props: {
 
   const [taskText, setTaskText] = useState<string>("");
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
-  const [, { createTask, updateTask, deleteTask }, { getTasksById }] =
-    useTasks();
+  const [, { createTask, updateTask, deleteTask }, { getTasksById }] = useTasks(
+    { taskListIds: [props.taskList.id] }
+  );
   const [app, { updateApp }] = useApp();
   const [, { updateTaskList }] = useTaskLists();
 
