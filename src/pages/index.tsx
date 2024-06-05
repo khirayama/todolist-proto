@@ -88,7 +88,20 @@ export default function IndexPage() {
     }
   };
 
-  const handleSignOut = () => {
+  const currentTaskListId = () => {
+    const parent = taskListContainerRef.current;
+    if (parent) {
+      const els = parent.querySelectorAll<HTMLElement>(`[data-tasklistid]`);
+      for (let i = 0; i < els.length; i++) {
+        if (els[i].offsetLeft === parent.scrollLeft) {
+          return els[i].dataset.tasklistid;
+        }
+      }
+    }
+  };
+  const currentTaskList = taskLists.find((tl) => tl.id === currentTaskListId());
+
+  const handleSignedOut = () => {
     updateApp({
       taskListIds: [],
     });
@@ -230,12 +243,14 @@ export default function IndexPage() {
       <UserSheet
         open={userSheetOpen}
         onOpenChange={setUserSheetOpen}
-        handleSignOut={handleSignOut}
+        handleSignedIn={() => setUserSheetOpen(false)}
+        handleSignedOut={handleSignedOut}
       />
 
       <SharingSheet
         open={sharingSheetOpen}
         onOpenChange={setSharingSheetOpen}
+        taskList={currentTaskList}
       />
     </>
   );
