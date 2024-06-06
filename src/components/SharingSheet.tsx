@@ -18,23 +18,29 @@ export function SharingSheet(props: {
       <div>Share {props.taskList?.name}</div>
       <button
         onClick={() => {
-          navigator.clipboard.writeText(url);
-          window.alert("Copied to clipboard!");
+          /* FYI: Only work under https or localhost */
+          try {
+            window.navigator.clipboard.writeText(url);
+            window.alert("Copied to clipboard!");
+          } catch (err) {
+            window.alert("Need to run this under https or localhost");
+          }
         }}
       >
         {url}
       </button>
       <button
-        disabled={!navigator.share}
+        disabled={!window?.navigator?.share}
         onClick={async () => {
           try {
+            /* FYI: Only work under https or localhost */
             await window.navigator.share({
               title: `Share ${props.taskList.name} list!`,
               text: `Please join ${props.taskList?.name} list!`,
               url,
             });
           } catch (err) {
-            window.alert(err);
+            window.alert("Need to run this under https or localhost");
           }
         }}
       >
