@@ -44,7 +44,6 @@ export function init() {
               "Task list name": "Task list name",
             },
             TaskListList: {
-              "Add task list to top": "Add task list to top",
               "Add task list to bottom": "Add task list to bottom",
             },
             UserSheet: {
@@ -101,7 +100,6 @@ export function init() {
               "Task list name": "タスクリスト名",
             },
             TaskListList: {
-              "Add task list to top": "タスクリストを先頭に追加",
               "Add task list to bottom": "タスクリストを末尾に追加",
             },
             UserSheet: {
