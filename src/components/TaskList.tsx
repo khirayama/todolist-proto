@@ -28,8 +28,6 @@ import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
 
 export function TaskList(props: {
-  hasPrev: boolean;
-  hasNext: boolean;
   taskList: TaskList;
   handleDragStart?: (e: DragStartEvent) => void;
   handleDragCancel?: (e: DragCancelEvent) => void;
@@ -105,24 +103,6 @@ export function TaskList(props: {
     updateTaskList(newTaskList);
   };
 
-  const onPrevTaskListClick = () => {
-    const el = document.querySelector<HTMLElement>(
-      `[data-tasklistid="${taskList.id}"]`
-    );
-    el.parentElement.scrollTo({
-      behavior: "smooth",
-      left: el.parentElement.scrollLeft - el.offsetWidth,
-    });
-  };
-  const onNextTaskListClick = () => {
-    const el = document.querySelector<HTMLElement>(
-      `[data-tasklistid="${taskList.id}"]`
-    );
-    el.parentElement.scrollTo({
-      behavior: "smooth",
-      left: el.parentElement.scrollLeft + el.offsetWidth,
-    });
-  };
   const onTaskListNameChange = (e: FormEvent<HTMLInputElement>) => {
     updateTaskList({
       ...taskList,
@@ -372,14 +352,6 @@ export function TaskList(props: {
         <header className="sticky w-full top-0 border-b z-20 bg-white">
           <section className={clsx("px-1")}>
             <div className="relative">
-              {props.hasPrev && (
-                <button
-                  className="absolute top-0 left-0 py-2 text-gray-400"
-                  onClick={onPrevTaskListClick}
-                >
-                  <Icon text="navigate_before" />
-                </button>
-              )}
               <h1 className="py-2 text-center font-bold">
                 <input
                   className="inline-block text-center w-full"
@@ -389,14 +361,6 @@ export function TaskList(props: {
                   onChange={onTaskListNameChange}
                 />
               </h1>
-              {props.hasNext && (
-                <button
-                  className="absolute top-0 right-0 py-2 text-gray-400"
-                  onClick={onNextTaskListClick}
-                >
-                  <Icon text="navigate_next" />
-                </button>
-              )}
             </div>
             <form
               className="flex items-center py-2 bg-white"

@@ -191,7 +191,7 @@ export default function IndexPage() {
               sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}
           >
-            {taskLists.map((taskList: TaskList, i: number) => {
+            {taskLists.map((taskList: TaskList) => {
               const handleDragStart = () => {
                 setSortingTaskListId(taskList.id);
               };
@@ -214,8 +214,6 @@ export default function IndexPage() {
                   <div className="absolute w-full h-full overflow-scroll">
                     <TaskList
                       key={taskList.id}
-                      hasPrev={i !== 0}
-                      hasNext={i !== taskLists.length - 1}
                       taskList={taskList}
                       handleDragStart={handleDragStart}
                       handleDragCancel={handleDragEnd}
