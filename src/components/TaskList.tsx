@@ -50,12 +50,11 @@ export function TaskList(props: {
     })
   );
 
-  const insertPosition = app.taskInsertPosition;
   const taskList = props.taskList;
   const tasks = getTasksById(taskList.taskIds);
   const isInsertTop =
-    (insertPosition === "TOP" && !isShiftPressed) ||
-    (insertPosition === "BOTTOM" && isShiftPressed);
+    (app.taskInsertPosition === "TOP" && !isShiftPressed) ||
+    (app.taskInsertPosition === "BOTTOM" && isShiftPressed);
 
   const clearCompletedTasks = () => {
     const ts = [...tasks];
@@ -137,7 +136,8 @@ export function TaskList(props: {
   };
   const onInsertPositionIconClick = () => {
     updateApp({
-      taskInsertPosition: insertPosition === "BOTTOM" ? "TOP" : "BOTTOM",
+      taskInsertPosition:
+        app.taskInsertPosition === "BOTTOM" ? "TOP" : "BOTTOM",
     });
   };
   const onTaskTextChange = (e: FormEvent<HTMLInputElement>) => {
@@ -145,6 +145,9 @@ export function TaskList(props: {
   };
   const onTaskTextKeyDownAndKeyUp = (e: KeyboardEvent) => {
     setIsShiftPressed(e.shiftKey);
+  };
+  const onTaskTextBlur = (e: FormEvent<HTMLInputElement>) => {
+    setIsShiftPressed(false);
   };
   const onSortTasksButtonClick = () => {
     sortTasks();
@@ -170,7 +173,7 @@ export function TaskList(props: {
     }
   };
   const handleTaskListItemKeyDown = (
-    e: KeyboardEvent,
+    e: KeyboardEvent<HTMLInputElement>,
     { task, setDatePickerSheetOpen, setHasFocusWhenOpeningDatePickerSheet }
   ) => {
     const key = e.key;
