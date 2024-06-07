@@ -29,6 +29,7 @@ import { useTaskLists } from "hooks/useTaskLists";
 
 export function TaskList(props: {
   taskList: TaskList;
+  disabled?: boolean;
   handleDragStart?: (e: DragStartEvent) => void;
   handleDragCancel?: (e: DragCancelEvent) => void;
   handleDragEnd?: (e: DragEndEvent) => void;
@@ -357,6 +358,7 @@ export function TaskList(props: {
             <div className="relative">
               <h1 className="py-2 text-center font-bold">
                 <input
+                  disabled={props.disabled}
                   className="inline-block text-center w-full"
                   type="text"
                   placeholder={t("Task list name")}
@@ -365,40 +367,60 @@ export function TaskList(props: {
                 />
               </h1>
             </div>
-            <form
-              className="flex items-center py-2 bg-white"
-              onSubmit={onTaskFormSubmit}
-            >
-              <button className="p-2 flex" onClick={onInsertPositionIconClick}>
+            <div className="flex items-center py-2 bg-white">
+              <button
+                disabled={props.disabled}
+                className="p-2 flex"
+                onClick={onInsertPositionIconClick}
+              >
                 {isInsertTop ? (
                   <Icon text="vertical_align_top" />
                 ) : (
                   <Icon text="vertical_align_bottom" />
                 )}
               </button>
-              <input
-                data-tasktext
-                className="flex-1 rounded-full py-2 px-4 border"
-                value={taskText}
-                placeholder={
-                  isInsertTop ? t("Add task to top") : t("Add task to bottom")
-                }
-                onChange={onTaskTextChange}
-                onKeyDown={onTaskTextKeyDownAndKeyUp}
-                onKeyUp={onTaskTextKeyDownAndKeyUp}
-              />
-              <button className="p-2 flex" type="submit">
-                <Icon text="send" />
-              </button>
-            </form>
+              <form
+                className="flex flex-1 items-center py-2 bg-white"
+                onSubmit={onTaskFormSubmit}
+              >
+                <input
+                  data-tasktext
+                  disabled={props.disabled}
+                  className="flex-1 rounded-full py-2 px-4 border"
+                  value={taskText}
+                  placeholder={
+                    isInsertTop ? t("Add task to top") : t("Add task to bottom")
+                  }
+                  onChange={onTaskTextChange}
+                  onKeyDown={onTaskTextKeyDownAndKeyUp}
+                  onKeyUp={onTaskTextKeyDownAndKeyUp}
+                  onBlur={onTaskTextBlur}
+                />
+                <button
+                  disabled={props.disabled}
+                  className="p-2 flex"
+                  type="submit"
+                >
+                  <Icon text="send" />
+                </button>
+              </form>
+            </div>
           </section>
           <section className="flex py-2 pl-4 pr-3 text-gray-400">
-            <button className="flex" onClick={onSortTasksButtonClick}>
+            <button
+              disabled={props.disabled}
+              className="flex"
+              onClick={onSortTasksButtonClick}
+            >
               <Icon text="sort" />
               <span className="pl-1">{t("Sort")}</span>
             </button>
             <div className="inline-block flex-1"></div>
-            <button className="flex" onClick={onClearCompletedTasksButtonClick}>
+            <button
+              disabled={props.disabled}
+              className="flex"
+              onClick={onClearCompletedTasksButtonClick}
+            >
               <span className="pr-1">{t("Clear Completed")}</span>
               <Icon text="delete" />
             </button>
@@ -439,6 +461,7 @@ export function TaskList(props: {
                 return (
                   <TaskItem
                     key={task.id}
+                    disabled={props.disabled}
                     index={i}
                     task={task}
                     newTaskText={taskText}

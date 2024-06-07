@@ -14,6 +14,7 @@ import { DatePickerSheet } from "components/DatePickerSheet";
 
 function TaskTextArea(props: {
   task: Task;
+  disabled?: boolean;
   onTaskTextChange: (event: FormEvent<HTMLTextAreaElement>) => void;
   onTaskTextKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
 }) {
@@ -31,6 +32,7 @@ function TaskTextArea(props: {
         {task.text + "\u200b"}
       </div>
       <textarea
+        disabled={props.disabled}
         className={clsx(
           "absolute inline-block top-0 left-0 w-full h-full flex-1 py-4 whitespace-break-spaces",
           task.completed ? "line-through text-gray-400" : ""
@@ -44,6 +46,7 @@ function TaskTextArea(props: {
 }
 
 export function TaskItem(props: {
+  disabled?: boolean;
   index: number;
   task: Task;
   newTaskText: string;
@@ -69,6 +72,12 @@ export function TaskItem(props: {
     isDragging,
     isSorting,
   } = useSortable({ id: task.id });
+
+  if (props.disabled) {
+    delete attributes["tabIndex"];
+    delete attributes["aria-disabled"];
+  }
+
   const [
     hasFocusWhenOpeningDatePickerSheet,
     setHasFocusWhenOpeningDatePickerSheet,
@@ -96,6 +105,7 @@ export function TaskItem(props: {
       >
         {props.newTaskText && props.index === 0 && !isSorting ? (
           <button
+            disabled={props.disabled}
             className="flex items-center justify-center absolute z-10 top-0 right-12 translate-y-[-50%] bg-white rounded-full w-8 h-8 border text-gray-400"
             onClick={() => props.handleInsertTaskButtonClick(0)}
           >
@@ -115,6 +125,7 @@ export function TaskItem(props: {
         </span>
         <span className="flex items-center pr-4 py-2">
           <Checkbox
+            disabled={props.disabled}
             className="border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden"
             checked={task.completed}
             onCheckedChange={(v: boolean) => {
@@ -130,6 +141,7 @@ export function TaskItem(props: {
           </Checkbox>
         </span>
         <TaskTextArea
+          disabled={props.disabled}
           task={task}
           // onFocus, onBlurで、focus状態か保存して、DatePickerから戻ってきた時に維持するか考える
           onTaskTextChange={(e) => {
@@ -148,6 +160,7 @@ export function TaskItem(props: {
         />
         <button
           data-taskdatepicker={task.id}
+          disabled={props.disabled}
           className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
           onPointerDown={() => {
             if (
@@ -166,6 +179,7 @@ export function TaskItem(props: {
         </button>
         {props.newTaskText && !isSorting ? (
           <button
+            disabled={props.disabled}
             className="flex items-center justify-center absolute z-10 bottom-0 right-12 translate-y-[50%] bg-white rounded-full w-8 h-8 border text-gray-400"
             onClick={() => props.handleInsertTaskButtonClick(props.index + 1)}
           >
