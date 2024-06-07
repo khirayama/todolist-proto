@@ -74,8 +74,11 @@ export function TaskItem(props: {
   } = useSortable({ id: task.id });
 
   if (props.disabled) {
-    delete attributes["tabIndex"];
-    delete attributes["aria-disabled"];
+    attributes["tabIndex"] = -1;
+    attributes["aria-disabled"] = true;
+  } else {
+    attributes["tabIndex"] = 0;
+    attributes["aria-disabled"] = false;
   }
 
   const [
