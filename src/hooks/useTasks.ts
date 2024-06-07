@@ -2,7 +2,8 @@ import { useEffect } from "react";
 
 import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
-import { client, createDebounce } from "hooks/common";
+import { createDebounce } from "libs/common";
+import { client } from "hooks/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
