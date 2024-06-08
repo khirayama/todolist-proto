@@ -26,6 +26,7 @@ import { Icon } from "libs/components/Icon";
 import { TaskItem } from "components/TaskItem";
 import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
+import { SharingSheet } from "components/SharingSheet";
 
 export function TaskList(props: {
   taskList: TaskList;
@@ -41,6 +42,7 @@ export function TaskList(props: {
   const [, { createTask, updateTask, deleteTask }, { getTasksById }] = useTasks(
     { taskListIds: [props.taskList.id] }
   );
+  const [sharingSheetOpen, setSharingSheetOpen] = useState(false);
   const [app, { updateApp }] = useApp();
   const [, { updateTaskList }] = useTaskLists();
 
@@ -147,7 +149,7 @@ export function TaskList(props: {
   const onTaskTextKeyDownAndKeyUp = (e: KeyboardEvent) => {
     setIsShiftPressed(e.shiftKey);
   };
-  const onTaskTextBlur = (e: FormEvent<HTMLInputElement>) => {
+  const onTaskTextBlur = () => {
     setIsShiftPressed(false);
   };
   const onSortTasksButtonClick = () => {
@@ -366,6 +368,13 @@ export function TaskList(props: {
                   onChange={onTaskListNameChange}
                 />
               </h1>
+              <button
+                disabled={props.disabled}
+                className="absolute top-0 right-0 py-2 px-2"
+                onClick={() => setSharingSheetOpen(true)}
+              >
+                <Icon text="share" />
+              </button>
             </div>
             <div className="flex items-center py-2 bg-white">
               <button
@@ -474,6 +483,12 @@ export function TaskList(props: {
           </DndContext>
         </section>
       </div>
+
+      <SharingSheet
+        open={sharingSheetOpen}
+        onOpenChange={setSharingSheetOpen}
+        taskList={taskList}
+      />
     </>
   );
 }
