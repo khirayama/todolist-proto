@@ -14,6 +14,7 @@ export default async function handler(
     }
 
     const newTaskList = req.body;
+    delete newTaskList.shareCode;
     const [taskList, shareCode] = await prisma.$transaction([
       prisma.taskList.create({
         data: newTaskList,
