@@ -13,7 +13,7 @@ import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
 import { useCustomTranslation } from "libs/i18n";
-import { createDebounce } from "libs/common";
+import { createDebounce, isNarrowLayout } from "libs/common";
 
 const scrollDebounce = createDebounce();
 
@@ -110,7 +110,7 @@ export default function IndexPage() {
 
   const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
   const onUserSheetOpenClick = () => setUserSheetOpen(true);
-  const isDrawerSectionDisabled = false;
+  const isDrawerSectionDisabled = isNarrowLayout() && !isDrawerOpen;
 
   return (
     <>
@@ -124,6 +124,7 @@ export default function IndexPage() {
         >
           <div className="flex md:hidden">
             <Link
+              tabIndex={isDrawerSectionDisabled ? -1 : 0}
               href="/app"
               className="flex items-center justify-center px-4 pt-4 w-full"
             >
