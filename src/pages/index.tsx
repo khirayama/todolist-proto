@@ -13,6 +13,9 @@ import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
 import { useCustomTranslation } from "libs/i18n";
+import { createDebounce } from "libs/common";
+
+const scrollDebounce = createDebounce();
 
 function isDrawerOpened() {
   const hash = location.href.split("#")[1];
@@ -35,8 +38,17 @@ export default function IndexPage() {
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
+  const [currentTaskListId, setCurrentTaskListId] = useState<string>(
+    app?.taskListIds[0] || ""
+  );
 
   const taskListContainerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!currentTaskListId) {
+      setCurrentTaskListId(app.taskListIds[0]);
+    }
+  }, [app]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -86,19 +98,6 @@ export default function IndexPage() {
     }
   };
 
-  const currentTaskListId = () => {
-    const parent = taskListContainerRef.current;
-    if (parent) {
-      const els = parent.querySelectorAll<HTMLElement>(`[data-tasklistid]`);
-      for (let i = 0; i < els.length; i++) {
-        if (els[i].offsetLeft === parent.scrollLeft) {
-          return els[i].dataset.tasklistid;
-        }
-      }
-    }
-  };
-  const currentTaskList = taskLists.find((tl) => tl.id === currentTaskListId());
-
   const handleSignedOut = () => {
     updateApp({
       taskListIds: [],
@@ -118,7 +117,7 @@ export default function IndexPage() {
         <section
           data-sectiondrawer
           className={clsx(
-            "h-full bg-white z-30 border-r md:max-w-sm w-full md:w-[auto] absolute md:relative md:block -translate-x-full md:translate-x-0 transition-transform duration-[320ms]",
+            "h-full bg-white z-30 border-r md:max-w-sm min-w-[320px] w-full md:w-[auto] absolute md:relative md:block -translate-x-full md:translate-x-0 transition-transform duration-[320ms]",
             isDrawerOpen && "translate-x-0"
           )}
         >
@@ -180,6 +179,28 @@ export default function IndexPage() {
               /* FYI: Prevent x-scroll position when sorting after 2nd taskLists */
               sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}
+            onScroll={() => {
+              scrollDebounce(() => {
+                const parent = taskListContainerRef.current;
+                if (parent) {
+                  const els =
+                    parent.querySelectorAll<HTMLElement>(`[data-tasklistid]`);
+                  for (let i = 0; i < els.length; i++) {
+                    if (Math.abs(els[i].offsetLeft - parent.scrollLeft) < 10) {
+                      const taskListId = els[i].dataset.tasklistid;
+                      if (taskListId !== currentTaskListId) {
+                        setCurrentTaskListId(taskListId);
+                        const el = window.document.activeElement as HTMLElement;
+                        if (el?.blur) {
+                          el.blur();
+                        }
+                      }
+                      break;
+                    }
+                  }
+                }
+              }, 20);
+            }}
           >
             {taskLists.map((taskList: TaskList) => {
               const handleDragStart = () => {
@@ -204,6 +225,7 @@ export default function IndexPage() {
                   <div className="absolute w-full h-full overflow-scroll">
                     <TaskList
                       key={taskList.id}
+                      disabled={currentTaskListId !== taskList.id}
                       taskList={taskList}
                       handleDragStart={handleDragStart}
                       handleDragCancel={handleDragEnd}
