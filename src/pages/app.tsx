@@ -110,6 +110,7 @@ export default function IndexPage() {
 
   const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
   const onUserSheetOpenClick = () => setUserSheetOpen(true);
+  const isDrawerSectionDisabled = false;
 
   return (
     <>
@@ -130,8 +131,10 @@ export default function IndexPage() {
               <div className="flex-1" />
             </Link>
           </div>
+
           <div className="py-2">
             <button
+              disabled={isDrawerSectionDisabled}
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onUserSheetOpenClick}
             >
@@ -142,6 +145,7 @@ export default function IndexPage() {
             </button>
 
             <button
+              disabled={isDrawerSectionDisabled}
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onSettingsSheetOpenClick}
             >
@@ -151,6 +155,7 @@ export default function IndexPage() {
           </div>
           <div className="pt-2 border-t">
             <TaskListList
+              disabled={isDrawerSectionDisabled}
               taskLists={taskLists}
               handleTaskListLinkClick={handleTaskListLinkClick}
             />
