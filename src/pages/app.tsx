@@ -88,7 +88,7 @@ export default function IndexPage() {
   }, []);
 
   const handleTaskListLinkClick = (taskListId: string) => {
-    router.push("/");
+    router.push("/app");
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
       `[data-tasklistid="${taskListId}"]`
@@ -123,7 +123,7 @@ export default function IndexPage() {
         >
           <div className="flex md:hidden">
             <Link
-              href="/"
+              href="/app"
               className="flex items-center justify-center px-4 pt-4 w-full"
             >
               <Icon text="close" />
@@ -163,7 +163,7 @@ export default function IndexPage() {
         >
           <header className="flex p-4 bg-white">
             <Link
-              href="/#opened"
+              href="/app#opened"
               className="flex md:hidden items-center justify-center"
             >
               <Icon text="list" />
