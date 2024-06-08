@@ -26,6 +26,7 @@ import { Icon } from "libs/components/Icon";
 import { useCustomTranslation } from "libs/i18n";
 
 export function TaskListList(props: {
+  disabled?: boolean;
   taskLists: TaskList[];
   handleTaskListLinkClick: (taskListId: string) => void;
 }) {
@@ -89,13 +90,18 @@ export function TaskListList(props: {
             onSubmit={onTaskListFormSubmit}
           >
             <input
+              disabled={props.disabled}
               className="flex-1 rounded-full py-2 px-4 border"
               type="text"
               value={taskListName}
               placeholder={t("Add task list to bottom")}
               onChange={onTaskListNameChange}
             />
-            <button className="p-2 flex" type="submit">
+            <button
+              disabled={props.disabled}
+              className="p-2 flex"
+              type="submit"
+            >
               <Icon text="send" />
             </button>
           </form>
@@ -138,6 +144,7 @@ export function TaskListList(props: {
               return (
                 <TaskListListItem
                   key={taskList.id}
+                  disabled={props.disabled}
                   index={i}
                   taskList={taskList}
                   newTaskListName={taskListName}
@@ -159,6 +166,7 @@ export function TaskListList(props: {
 }
 
 function TaskListListItem(props: {
+  disabled?: boolean;
   index: number;
   taskList: TaskList;
   newTaskListName: string;
@@ -178,6 +186,14 @@ function TaskListListItem(props: {
     isSorting,
   } = useSortable({ id: taskList.id });
 
+  if (props.disabled) {
+    attributes["tabIndex"] = -1;
+    attributes["aria-disabled"] = true;
+  } else {
+    attributes["tabIndex"] = 0;
+    attributes["aria-disabled"] = false;
+  }
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -195,6 +211,7 @@ function TaskListListItem(props: {
     >
       {props.newTaskListName && props.index === 0 && !isSorting ? (
         <button
+          disabled={props.disabled}
           className="flex items-center justify-center absolute z-10 top-0 right-12 translate-y-[-50%] bg-white rounded-full w-8 h-8 border text-gray-400"
           onClick={() => props.handleInsertTaskListButtonClick(0)}
         >
@@ -213,6 +230,7 @@ function TaskListListItem(props: {
         <Icon text="drag_indicator" />
       </span>
       <button
+        disabled={props.disabled}
         className={clsx("flex-1 py-4 cursor-pointer text-left")}
         onClick={() => {
           props.handleTaskListLinkClick(taskList.id);
@@ -221,6 +239,7 @@ function TaskListListItem(props: {
         {taskList.name}
       </button>
       <button
+        disabled={props.disabled}
         onClick={() => {
           let removeFlag = true;
           if (taskList.taskIds.length !== 0) {
@@ -238,6 +257,7 @@ function TaskListListItem(props: {
       </button>
       {props.newTaskListName && !isSorting ? (
         <button
+          disabled={props.disabled}
           className="flex items-center justify-center absolute z-10 bottom-0 right-12 translate-y-[50%] bg-white rounded-full w-8 h-8 border text-gray-400"
           onClick={() => props.handleInsertTaskListButtonClick(props.index + 1)}
         >
