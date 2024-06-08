@@ -35,6 +35,9 @@ export default function IndexPage() {
   const taskLists = getTaskListsById(app.taskListIds);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
+  const [isDrawerDisabled, setIsDrawerDisabled] = useState(
+    isNarrowLayout() && !isDrawerOpen
+  );
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
@@ -48,6 +51,46 @@ export default function IndexPage() {
     if (!currentTaskListId) {
       setCurrentTaskListId(app.taskListIds[0]);
     }
+  }, [app]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDrawerDisabled(isNarrowLayout() && !isDrawerOpen);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isNarrowLayout(), isDrawerOpen]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      scrollDebounce(() => {
+        const parent = taskListContainerRef.current;
+        if (parent) {
+          const els = parent.querySelectorAll<HTMLElement>(`[data-tasklistid]`);
+          for (let i = 0; i < els.length; i++) {
+            if (Math.abs(els[i].offsetLeft - parent.scrollLeft) < 10) {
+              const taskListId = els[i].dataset.tasklistid;
+              if (taskListId !== currentTaskListId) {
+                setCurrentTaskListId(taskListId);
+                const el = window.document.activeElement as HTMLElement;
+                el.blur();
+              }
+              break;
+            }
+          }
+        }
+      }, 20);
+    };
+
+    handleScroll();
+    taskListContainerRef.current.addEventListener("scroll", handleScroll);
+    return () => {
+      taskListContainerRef.current.removeEventListener("scroll", handleScroll);
+    };
   }, [app]);
 
   useEffect(() => {
@@ -107,10 +150,8 @@ export default function IndexPage() {
       email: "",
     });
   };
-
   const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
   const onUserSheetOpenClick = () => setUserSheetOpen(true);
-  const isDrawerSectionDisabled = isNarrowLayout() && !isDrawerOpen;
 
   return (
     <>
@@ -124,7 +165,7 @@ export default function IndexPage() {
         >
           <div className="flex md:hidden">
             <Link
-              tabIndex={isDrawerSectionDisabled ? -1 : 0}
+              tabIndex={isDrawerDisabled ? -1 : 0}
               href="/app"
               className="flex items-center justify-center px-4 pt-4 w-full"
             >
@@ -135,7 +176,7 @@ export default function IndexPage() {
 
           <div className="py-2">
             <button
-              disabled={isDrawerSectionDisabled}
+              disabled={isDrawerDisabled}
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onUserSheetOpenClick}
             >
@@ -146,7 +187,7 @@ export default function IndexPage() {
             </button>
 
             <button
-              disabled={isDrawerSectionDisabled}
+              disabled={isDrawerDisabled}
               className="flex items-center justify-center px-4 py-2 w-full"
               onClick={onSettingsSheetOpenClick}
             >
@@ -156,7 +197,7 @@ export default function IndexPage() {
           </div>
           <div className="pt-2 border-t">
             <TaskListList
-              disabled={isDrawerSectionDisabled}
+              disabled={isDrawerDisabled}
               taskLists={taskLists}
               handleTaskListLinkClick={handleTaskListLinkClick}
             />
@@ -185,28 +226,6 @@ export default function IndexPage() {
               /* FYI: Prevent x-scroll position when sorting after 2nd taskLists */
               sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}
-            onScroll={() => {
-              scrollDebounce(() => {
-                const parent = taskListContainerRef.current;
-                if (parent) {
-                  const els =
-                    parent.querySelectorAll<HTMLElement>(`[data-tasklistid]`);
-                  for (let i = 0; i < els.length; i++) {
-                    if (Math.abs(els[i].offsetLeft - parent.scrollLeft) < 10) {
-                      const taskListId = els[i].dataset.tasklistid;
-                      if (taskListId !== currentTaskListId) {
-                        setCurrentTaskListId(taskListId);
-                        const el = window.document.activeElement as HTMLElement;
-                        if (el?.blur) {
-                          el.blur();
-                        }
-                      }
-                      break;
-                    }
-                  }
-                }
-              }, 20);
-            }}
           >
             {taskLists.map((taskList: TaskList) => {
               const handleDragStart = () => {
