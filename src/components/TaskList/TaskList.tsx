@@ -23,14 +23,14 @@ import { clsx } from "clsx";
 import { useApp } from "hooks/useApp";
 import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
-import { TaskItem } from "components/TaskItem";
 import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
 import { SharingSheet } from "components/SharingSheet";
+import { TaskItem } from "components/TaskList";
 
 export function TaskList(props: {
-  taskList: TaskList;
   disabled?: boolean;
+  taskList: TaskList;
   handleDragStart?: (e: DragStartEvent) => void;
   handleDragCancel?: (e: DragCancelEvent) => void;
   handleDragEnd?: (e: DragEndEvent) => void;

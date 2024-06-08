@@ -1,4 +1,4 @@
-import { FormEvent, KeyboardEvent, useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -11,39 +11,7 @@ import { clsx } from "clsx";
 import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
 import { DatePickerSheet } from "components/DatePickerSheet";
-
-function TaskTextArea(props: {
-  task: Task;
-  disabled?: boolean;
-  onTaskTextChange: (event: FormEvent<HTMLTextAreaElement>) => void;
-  onTaskTextKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
-}) {
-  const task = props.task;
-
-  /* FYI: Autoresize textarea */
-  return (
-    <div
-      className={clsx(
-        "relative flex-1 py-4",
-        task.completed ? "line-through text-gray-400" : ""
-      )}
-    >
-      <div className="whitespace-break-spaces invisible">
-        {task.text + "\u200b"}
-      </div>
-      <textarea
-        disabled={props.disabled}
-        className={clsx(
-          "absolute inline-block top-0 left-0 w-full h-full flex-1 py-4 whitespace-break-spaces",
-          task.completed ? "line-through text-gray-400" : ""
-        )}
-        value={task.text}
-        onChange={props.onTaskTextChange}
-        onKeyDown={props.onTaskTextKeyDown}
-      />
-    </div>
-  );
-}
+import { TaskTextArea } from "components/TaskList";
 
 export function TaskItem(props: {
   disabled?: boolean;
