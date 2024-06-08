@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { useState, KeyboardEvent } from "react";
+import { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -32,10 +32,6 @@ export function TaskListList(props: {
   const { t } = useCustomTranslation("components.TaskListList");
 
   const [taskListName, setTaskListName] = useState<string>("");
-  const [insertPosition, setInsertPosition] = useState<"bottom" | "top">(
-    "bottom"
-  );
-  const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
   const [, { updateApp }] = useApp();
   const [, { createTaskList, deleteTaskList }] = useTaskLists();
 
@@ -47,9 +43,6 @@ export function TaskListList(props: {
   );
 
   const taskLists = props.taskLists;
-  const isInsertTop =
-    (insertPosition === "top" && !isShiftPressed) ||
-    (insertPosition === "bottom" && isShiftPressed);
 
   const onTaskListFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,13 +53,9 @@ export function TaskListList(props: {
       id: uuid(),
       name: taskListName,
       taskIds: [],
+      shareCode: "",
     };
-    let newTaskLists = [];
-    if (isInsertTop) {
-      newTaskLists = [newTaskList, ...taskLists];
-    } else {
-      newTaskLists = [...taskLists, newTaskList];
-    }
+    const newTaskLists = [...taskLists, newTaskList];
     createTaskList(newTaskList);
     updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
     setTaskListName("");
@@ -74,14 +63,8 @@ export function TaskListList(props: {
       props.handleTaskListLinkClick(newTaskList.id);
     }, 0);
   };
-  const onInsertPositionIconClick = () => {
-    setInsertPosition(insertPosition === "bottom" ? "top" : "bottom");
-  };
   const onTaskListNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTaskListName(e.target.value);
-  };
-  const onTaskListNameKeyDownAndKeyUp = (e: KeyboardEvent) => {
-    setIsShiftPressed(e.shiftKey);
   };
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
@@ -105,25 +88,12 @@ export function TaskListList(props: {
             className="flex items-center py-2 bg-white"
             onSubmit={onTaskListFormSubmit}
           >
-            <span className="p-2 flex" onClick={onInsertPositionIconClick}>
-              {isInsertTop ? (
-                <Icon text="vertical_align_top" />
-              ) : (
-                <Icon text="vertical_align_bottom" />
-              )}
-            </span>
             <input
               className="flex-1 rounded-full py-2 px-4 border"
               type="text"
               value={taskListName}
-              placeholder={
-                isInsertTop
-                  ? t("Add task list to top")
-                  : t("Add task list to bottom")
-              }
+              placeholder={t("Add task list to bottom")}
               onChange={onTaskListNameChange}
-              onKeyDown={onTaskListNameKeyDownAndKeyUp}
-              onKeyUp={onTaskListNameKeyDownAndKeyUp}
             />
             <button className="p-2 flex" type="submit">
               <Icon text="send" />
@@ -150,6 +120,7 @@ export function TaskListList(props: {
                   id: uuid(),
                   name: taskListName,
                   taskIds: [],
+                  shareCode: "",
                 };
                 newTaskLists.splice(idx, 0, newTaskList);
                 createTaskList(newTaskList);
