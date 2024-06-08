@@ -12,7 +12,6 @@ import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
-import { SharingSheet } from "components/SharingSheet";
 import { useCustomTranslation } from "libs/i18n";
 
 function isDrawerOpened() {
@@ -35,7 +34,6 @@ export default function IndexPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [userSheetOpen, setUserSheetOpen] = useState(false);
-  const [sharingSheetOpen, setSharingSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
 
   const taskListContainerRef = useRef<HTMLElement>(null);
@@ -113,7 +111,6 @@ export default function IndexPage() {
 
   const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
   const onUserSheetOpenClick = () => setUserSheetOpen(true);
-  const onSharingSheetOpenClick = () => setSharingSheetOpen(true);
 
   return (
     <>
@@ -174,13 +171,6 @@ export default function IndexPage() {
             </Link>
 
             <div className="flex-1" />
-
-            <button
-              className="flex items-center justify-center"
-              onClick={onSharingSheetOpenClick}
-            >
-              <Icon text="share" />
-            </button>
           </header>
 
           <section
@@ -243,12 +233,6 @@ export default function IndexPage() {
         onOpenChange={setUserSheetOpen}
         handleSignedIn={() => setUserSheetOpen(false)}
         handleSignedOut={handleSignedOut}
-      />
-
-      <SharingSheet
-        open={sharingSheetOpen}
-        onOpenChange={setSharingSheetOpen}
-        taskList={currentTaskList}
       />
     </>
   );
