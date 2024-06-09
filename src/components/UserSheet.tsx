@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
+import qs from "query-string";
 
-import { Sheet } from "libs/components/Sheet";
+import { ParamsSheet } from "libs/components/ParamsSheet";
 import { useSupabase } from "libs/supabase";
 import { useCustomTranslation } from "libs/i18n";
 import { useApp } from "hooks/useApp";
@@ -10,8 +11,7 @@ import { useProfile } from "hooks/useProfile";
 import { useTaskLists } from "hooks/useTaskLists";
 
 export function UserSheet(props: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: (q?: Query) => boolean;
   handleSignedIn?: () => void;
   handleSignedOut?: () => void;
 }) {
@@ -38,17 +38,14 @@ export function UserSheet(props: {
   }, [props.open, profile.displayName]);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    const q = qs.parse(window.location.search);
+    if (isLoggedIn && props.open(q)) {
       props.handleSignedIn?.();
     }
   }, [isLoggedIn]);
 
   return (
-    <Sheet
-      open={props.open}
-      onOpenChange={props.onOpenChange}
-      title={t("Log In")}
-    >
+    <ParamsSheet open={props.open} title={t("Log In")}>
       {!isLoggedIn ? (
         <Auth
           supabaseClient={supabase}
@@ -157,6 +154,6 @@ export function UserSheet(props: {
           </div>
         </div>
       )}
-    </Sheet>
+    </ParamsSheet>
   );
 }

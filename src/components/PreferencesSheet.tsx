@@ -1,15 +1,16 @@
 import * as Select from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
-import { Sheet } from "libs/components/Sheet";
+import { ParamsSheet } from "libs/components/ParamsSheet";
 import { useCustomTranslation } from "libs/i18n";
+import { usePreferences } from "hooks/usePreferences";
 
 export function PreferencesSheet(props: {
   preferences: Preferences;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  handlePreferencesChange: (updatedPreferences: Partial<Preferences>) => void;
+  open: (q?: Query) => boolean;
 }) {
+  const [, { updatePreferences }] = usePreferences();
+
   const { t, i18n } = useCustomTranslation("components.PreferencesSheet");
   const supportedLngs = Object.keys(i18n.options.resources).map((lang) =>
     lang.toUpperCase()
@@ -18,17 +19,13 @@ export function PreferencesSheet(props: {
   const lang = props.preferences.lang.toLowerCase();
 
   return (
-    <Sheet
-      open={props.open}
-      onOpenChange={props.onOpenChange}
-      title={t("Preferences")}
-    >
+    <ParamsSheet open={props.open} title={t("Preferences")}>
       <div className="flex p-4">
         <div className="flex-1">{t("Appearance")}</div>
         <Select.Root
           value={props.preferences.theme}
           onValueChange={(v: Preferences["theme"]) => {
-            props.handlePreferencesChange({
+            updatePreferences({
               theme: v,
             });
           }}
@@ -67,7 +64,7 @@ export function PreferencesSheet(props: {
         <Select.Root
           value={lang}
           onValueChange={(v: Preferences["lang"]) => {
-            props.handlePreferencesChange({
+            updatePreferences({
               lang: v,
             });
           }}
@@ -100,6 +97,6 @@ export function PreferencesSheet(props: {
           </Select.Portal>
         </Select.Root>
       </div>
-    </Sheet>
+    </ParamsSheet>
   );
 }

@@ -1,20 +1,15 @@
-import { Sheet } from "libs/components/Sheet";
+import { ParamsSheet } from "libs/components/ParamsSheet";
 import { useCustomTranslation } from "libs/i18n";
 
 export function SharingSheet(props: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: (q?: Query) => boolean;
   taskList: TaskList;
 }) {
   const { t } = useCustomTranslation("components.SharingSheet");
   const url = `${window?.location?.origin}/share?code=${props.taskList?.shareCode}`;
 
   return (
-    <Sheet
-      open={props.open}
-      onOpenChange={props.onOpenChange}
-      title={t("Share")}
-    >
+    <ParamsSheet open={props.open} title={t("Share")}>
       <div>Share {props.taskList?.name}</div>
       <button
         onClick={() => {
@@ -46,6 +41,6 @@ export function SharingSheet(props: {
       >
         Share API
       </button>
-    </Sheet>
+    </ParamsSheet>
   );
 }
