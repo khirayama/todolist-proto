@@ -1,3 +1,7 @@
+import { type ParsedQuery } from "query-string";
+
+type Query = ParsedQuery<string>;
+
 type Task = {
   id: string;
   text: string;
