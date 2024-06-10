@@ -1,6 +1,4 @@
-import { type ParsedQuery } from "query-string";
-
-type Query = ParsedQuery<string>;
+type Query = { [key: string]: string | string[] | null };
 
 type Task = {
   id: string;
