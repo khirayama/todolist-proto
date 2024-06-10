@@ -1,4 +1,4 @@
-import { KeyboardEvent, useState } from "react";
+import { KeyboardEvent } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -7,11 +7,19 @@ import {
 } from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
+import { useRouter } from "next/router";
+import qs from "query-string";
 
 import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
 import { DatePickerSheet } from "components/DatePickerSheet";
 import { TaskTextArea } from "components/TaskList";
+import { ParamsLink } from "libs/components/ParamsLink";
+
+function isDatePickerSheetOpened(taskId: string) {
+  const query = qs.parse(window.location.search);
+  return query.sheet === "datepicker" && query.taskid === taskId;
+}
 
 export function TaskItem(props: {
   disabled?: boolean;
@@ -23,11 +31,10 @@ export function TaskItem(props: {
     e: KeyboardEvent,
     options: {
       task: Task;
-      setDatePickerSheetOpen: (open: boolean) => void;
-      setHasFocusWhenOpeningDatePickerSheet: (hasFocus: boolean) => void;
     }
   ) => void;
 }) {
+  const router = useRouter();
   const task = props.task;
 
   const {
@@ -49,10 +56,6 @@ export function TaskItem(props: {
     attributes["aria-disabled"] = false;
   }
 
-  const [
-    hasFocusWhenOpeningDatePickerSheet,
-    setHasFocusWhenOpeningDatePickerSheet,
-  ] = useState(false);
   const [, { updateTask }] = useTasks();
 
   const style = {
@@ -60,7 +63,6 @@ export function TaskItem(props: {
     transition,
   };
   const mustHaveClassNames = ["touch-none"];
-  const [datePickerSheetOpen, setDatePickerSheetOpen] = useState(false);
 
   return (
     <>
@@ -124,30 +126,19 @@ export function TaskItem(props: {
           onTaskTextKeyDown={(e) => {
             props.handleTaskListItemKeyDown(e, {
               task,
-              setDatePickerSheetOpen,
-              setHasFocusWhenOpeningDatePickerSheet,
             });
           }}
         />
-        <button
+        <ParamsLink
           data-taskdatepicker={task.id}
-          disabled={props.disabled}
+          tabIndex={props.disabled ? -1 : 0}
           className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
-          onPointerDown={() => {
-            if (
-              document.activeElement ===
-              document.querySelector(`[data-taskid="${task.id}"] textarea`)
-            ) {
-              // TODO: ここで、targetとしてe.currentTargetを保存し、click event時に同じe.currentTargetか確認する
-              setHasFocusWhenOpeningDatePickerSheet(true);
-            }
-          }}
-          onClick={() => {
-            setDatePickerSheetOpen(true);
-          }}
+          href="/app"
+          params={{ sheet: "datepicker", taskid: task.id }}
+          mergeParams
         >
           {task.date || <Icon text="event" />}
-        </button>
+        </ParamsLink>
         {props.newTaskText && !isSorting ? (
           <button
             disabled={props.disabled}
@@ -161,32 +152,16 @@ export function TaskItem(props: {
 
       <DatePickerSheet
         value={task.date}
-        open={datePickerSheetOpen}
-        onOpenChange={setDatePickerSheetOpen}
+        open={() => isDatePickerSheetOpened(task.id)}
         handleChange={(v) => {
           updateTask({
             ...task,
             date: v,
           });
-          if (hasFocusWhenOpeningDatePickerSheet) {
-            const t = document.querySelector<HTMLTextAreaElement>(
-              `[data-taskid="${task.id}"] textarea`
-            );
-            t.selectionStart = t.value.length;
-            t.selectionEnd = t.value.length;
-            t?.focus();
-          } else {
-            const t = document.querySelector<HTMLTextAreaElement>(
-              `[data-taskdatepicker="${task.id}"]`
-            );
-            t?.focus();
-          }
-          setDatePickerSheetOpen(false);
-          setHasFocusWhenOpeningDatePickerSheet(false);
+          router.back();
         }}
         handleCancel={() => {
-          setDatePickerSheetOpen(false);
-          setHasFocusWhenOpeningDatePickerSheet(false);
+          router.back();
         }}
       />
     </>

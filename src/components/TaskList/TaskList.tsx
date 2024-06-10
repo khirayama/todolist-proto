@@ -19,14 +19,22 @@ import {
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { clsx } from "clsx";
+import { useRouter } from "next/router";
+import qs from "query-string";
 
 import { useApp } from "hooks/useApp";
 import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
+import { ParamsLink } from "libs/components/ParamsLink";
 import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
 import { SharingSheet } from "components/SharingSheet";
 import { TaskItem } from "components/TaskList";
+
+const isSharingSheetOpened = (taskListId: string) => {
+  const query = qs.parse(window.location.search);
+  return query.sheet === "sharing" && query.tasklistid === taskListId;
+};
 
 export function TaskList(props: {
   disabled?: boolean;
@@ -35,6 +43,9 @@ export function TaskList(props: {
   handleDragCancel?: (e: DragCancelEvent) => void;
   handleDragEnd?: (e: DragEndEvent) => void;
 }) {
+  const taskList = props.taskList;
+
+  const router = useRouter();
   const { t } = useCustomTranslation("components.TaskList");
 
   const [taskText, setTaskText] = useState<string>("");
@@ -42,7 +53,6 @@ export function TaskList(props: {
   const [, { createTask, updateTask, deleteTask }, { getTasksById }] = useTasks(
     { taskListIds: [props.taskList.id] }
   );
-  const [sharingSheetOpen, setSharingSheetOpen] = useState(false);
   const [app, { updateApp }] = useApp();
   const [, { updateTaskList }] = useTaskLists();
 
@@ -53,7 +63,6 @@ export function TaskList(props: {
     })
   );
 
-  const taskList = props.taskList;
   const tasks = getTasksById(taskList.taskIds);
   const isInsertTop =
     (app.taskInsertPosition === "TOP" && !isShiftPressed) ||
@@ -177,7 +186,7 @@ export function TaskList(props: {
   };
   const handleTaskListItemKeyDown = (
     e: KeyboardEvent<HTMLInputElement>,
-    { task, setDatePickerSheetOpen, setHasFocusWhenOpeningDatePickerSheet }
+    { task }
   ) => {
     const key = e.key;
     const shift = e.shiftKey;
@@ -344,8 +353,10 @@ export function TaskList(props: {
       }
     }
     if (key === "c" && !shift && (ctrl || meta)) {
-      setDatePickerSheetOpen(true);
-      setHasFocusWhenOpeningDatePickerSheet(true);
+      const query = qs.parse(window.location.search);
+      query.sheet = "datepicker";
+      query.taskid = task.id;
+      router.push("/app", { query });
     }
     if (key === "o" && !shift && ctrl && !meta) {
       sortTasks();
@@ -368,13 +379,15 @@ export function TaskList(props: {
                   onChange={onTaskListNameChange}
                 />
               </h1>
-              <button
-                disabled={props.disabled}
+              <ParamsLink
+                tabIndex={props.disabled ? -1 : 0}
                 className="absolute top-0 right-0 py-2 px-2"
-                onClick={() => setSharingSheetOpen(true)}
+                href="/app"
+                params={{ sheet: "sharing", tasklistid: taskList.id }}
+                mergeParams
               >
                 <Icon text="share" />
-              </button>
+              </ParamsLink>
             </div>
             <div className="flex items-center py-2 bg-white">
               <button
@@ -485,8 +498,7 @@ export function TaskList(props: {
       </div>
 
       <SharingSheet
-        open={sharingSheetOpen}
-        onOpenChange={setSharingSheetOpen}
+        open={() => isSharingSheetOpened(taskList.id)}
         taskList={taskList}
       />
     </>
