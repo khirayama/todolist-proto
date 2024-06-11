@@ -66,9 +66,9 @@ export function DatePicker(props: {
       tabIndex={0}
       className="w-full max-w-[420px] mx-auto relative"
       onKeyDown={(e) => {
-        e.preventDefault();
         const key = e.key;
         if (key === "ArrowDown") {
+          e.preventDefault();
           if (val) {
             const d = addDays(val, 7);
             if (isAfter(d, lastDate)) {
@@ -80,6 +80,7 @@ export function DatePicker(props: {
             setVal(format(headDate, "yyyy-MM-dd"));
           }
         } else if (key === "ArrowUp") {
+          e.preventDefault();
           if (val) {
             const d = addDays(val, -7);
             if (isBefore(d, headDate)) {
@@ -91,23 +92,28 @@ export function DatePicker(props: {
             setVal(format(lastDate, "yyyy-MM-dd"));
           }
         } else if (key === "ArrowLeft") {
+          e.preventDefault();
           if (val) {
             setVal(format(addDays(val, -1), "yyyy-MM-dd"));
           } else {
             setVal(format(startOfMonth(refDate), "yyyy-MM-dd"));
           }
         } else if (key === "ArrowRight") {
+          e.preventDefault();
           if (val) {
             setVal(format(addDays(val, 1), "yyyy-MM-dd"));
           } else {
             setVal(format(startOfMonth(refDate), "yyyy-MM-dd"));
           }
         } else if (key === "Enter") {
+          e.preventDefault();
           props.handleChange(val);
-        } else if (key === "Escape") {
-          setVal(props.value);
         } else if (key === "Backspace" || key === "Delete") {
+          e.preventDefault();
           setVal("");
+        } else if (key === "Escape") {
+          /* FYI: No calling e.preventDefault */
+          setVal(props.value);
         }
       }}
     >
