@@ -4,6 +4,8 @@ import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
 import { client } from "hooks/common";
+import { extractScheduleFromText } from "libs/extractScheduleFromText";
+import { format } from "date-fns";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
@@ -56,6 +58,13 @@ export const useTasks = (
   }, [isLoggedIn]);
 
   const createTask = (newTask: Task) => {
+    if (newTask.text) {
+      const { text, date } = extractScheduleFromText(newTask.text, new Date());
+      newTask.text = text;
+      if (date) {
+        newTask.date = format(date, "yyyy-MM-dd") || "";
+      }
+    }
     const snapshot = getGlobalStateSnapshot();
     setGlobalState({
       ...snapshot,
@@ -72,6 +81,13 @@ export const useTasks = (
   };
 
   const updateTask = (newTask: Task) => {
+    if (newTask.text) {
+      const { text, date } = extractScheduleFromText(newTask.text, new Date());
+      newTask.text = text;
+      if (date) {
+        newTask.date = format(date, "yyyy-MM-dd") || "";
+      }
+    }
     const snapshot = getGlobalStateSnapshot();
     setGlobalState({
       ...snapshot,
