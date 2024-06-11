@@ -14,6 +14,7 @@ import {
 import clsx from "clsx";
 
 import { useCustomTranslation } from "libs/i18n";
+import { Icon } from "libs/components/Icon";
 
 export function DatePicker(props: {
   value: string;
@@ -23,9 +24,11 @@ export function DatePicker(props: {
 }) {
   const { t } = useCustomTranslation("libs.components.DatePicker");
 
-  const refDate = new Date();
   const ref = useRef<HTMLDivElement>(null);
   const [val, setVal] = useState<string>(props.value);
+  const [refDate, setRefDate] = useState<Date>(
+    props.value ? new Date(props.value) : new Date()
+  );
 
   const handleDateClick = (d: Date) => {
     const v = format(d, "yyyy-MM-dd");
@@ -46,13 +49,9 @@ export function DatePicker(props: {
     });
   };
 
-  const numOfMonths = 24;
-  const months = [];
-  for (let i = 0; i < numOfMonths; i += 1) {
-    months.push(i);
-  }
+  const cal = getCal(refDate);
   const headDate = startOfMonth(refDate);
-  const lastDate = endOfMonth(addMonths(refDate, numOfMonths - 1));
+  const lastDate = endOfMonth(addMonths(refDate, 0));
 
   useEffect(() => {
     if (props.autoFocus) {
@@ -146,6 +145,29 @@ export function DatePicker(props: {
               </th>
             </tr>
             <tr>
+              <td colSpan={7}>
+                <div className="flex px-4 pt-8 pb-2 font-bold text-center">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setRefDate(addMonths(refDate, -1));
+                    }}
+                  >
+                    <Icon text="arrow_left" />
+                  </button>
+                  <div className="flex-1">{format(refDate, "yyyy/MM")}</div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setRefDate(addMonths(refDate, 1));
+                    }}
+                  >
+                    <Icon text="arrow_right" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
               <th className="p-2 pb-4">{t("Sunday")}</th>
               <th className="p-2 pb-4">{t("Monday")}</th>
               <th className="p-2 pb-4">{t("Tuesday")}</th>
@@ -155,42 +177,31 @@ export function DatePicker(props: {
               <th className="p-2 pb-4">{t("Saturday")}</th>
             </tr>
           </thead>
-          {months.map((d) => {
-            const r = addMonths(refDate, d);
-            const cal = getCal(r);
-            return (
-              <tbody key={d.toString()}>
-                <tr>
-                  <td className="px-4 pt-8 pb-2 font-bold" colSpan={7}>
-                    <div>{format(r, "yyyy/MM")}</div>
-                  </td>
-                </tr>
-                {cal.map((week) => (
-                  <tr key={week.toString()}>
-                    {week.map((day) => (
-                      <td
-                        key={day.toString()}
-                        className="text-center p-2 cursor-pointer"
-                        onClick={() => handleDateClick(day)}
-                      >
-                        {day.getMonth() === r.getMonth() && (
-                          <div
-                            className={clsx(
-                              "flex p-4 rounded-full w-8 h-8 items-center justify-center",
-                              val === format(day, "yyyy-MM-dd") &&
-                                "text-white bg-gray-600"
-                            )}
-                          >
-                            <span>{day.getDate()}</span>
-                          </div>
+          <tbody>
+            {cal.map((week) => (
+              <tr key={week.toString()}>
+                {week.map((day) => (
+                  <td
+                    key={day.toString()}
+                    className="text-center p-2 cursor-pointer"
+                    onClick={() => handleDateClick(day)}
+                  >
+                    {day.getMonth() === refDate.getMonth() && (
+                      <div
+                        className={clsx(
+                          "flex p-4 rounded-full w-8 h-8 items-center justify-center",
+                          val === format(day, "yyyy-MM-dd") &&
+                            "text-white bg-gray-600"
                         )}
-                      </td>
-                    ))}
-                  </tr>
+                      >
+                        <span>{day.getDate()}</span>
+                      </div>
+                    )}
+                  </td>
                 ))}
-              </tbody>
-            );
-          })}
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
