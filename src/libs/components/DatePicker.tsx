@@ -8,8 +8,6 @@ import {
   endOfWeek,
   format,
   startOfMonth,
-  isBefore,
-  isAfter,
 } from "date-fns";
 import clsx from "clsx";
 
@@ -24,7 +22,7 @@ export function DatePicker(props: {
 }) {
   const { t } = useCustomTranslation("libs.components.DatePicker");
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLTableSectionElement>(null);
   const [val, setVal] = useState<string>(props.value);
   const [refDate, setRefDate] = useState<Date>(
     props.value ? new Date(props.value) : new Date()
@@ -60,62 +58,7 @@ export function DatePicker(props: {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      tabIndex={0}
-      className="w-full max-w-[420px] mx-auto relative"
-      onKeyDown={(e) => {
-        const key = e.key;
-        if (key === "ArrowDown") {
-          e.preventDefault();
-          if (val) {
-            const d = addDays(val, 7);
-            if (isAfter(d, lastDate)) {
-              setVal("");
-            } else {
-              setVal(format(d, "yyyy-MM-dd"));
-            }
-          } else {
-            setVal(format(headDate, "yyyy-MM-dd"));
-          }
-        } else if (key === "ArrowUp") {
-          e.preventDefault();
-          if (val) {
-            const d = addDays(val, -7);
-            if (isBefore(d, headDate)) {
-              setVal("");
-            } else {
-              setVal(format(d, "yyyy-MM-dd"));
-            }
-          } else {
-            setVal(format(lastDate, "yyyy-MM-dd"));
-          }
-        } else if (key === "ArrowLeft") {
-          e.preventDefault();
-          if (val) {
-            setVal(format(addDays(val, -1), "yyyy-MM-dd"));
-          } else {
-            setVal(format(startOfMonth(refDate), "yyyy-MM-dd"));
-          }
-        } else if (key === "ArrowRight") {
-          e.preventDefault();
-          if (val) {
-            setVal(format(addDays(val, 1), "yyyy-MM-dd"));
-          } else {
-            setVal(format(startOfMonth(refDate), "yyyy-MM-dd"));
-          }
-        } else if (key === "Enter") {
-          e.preventDefault();
-          props.handleChange(val);
-        } else if (key === "Backspace" || key === "Delete") {
-          e.preventDefault();
-          setVal("");
-        } else if (key === "Escape") {
-          /* FYI: No calling e.preventDefault */
-          setVal(props.value);
-        }
-      }}
-    >
+    <div>
       <div>
         <table className="w-full">
           <thead className="sticky top-0 bg-white">
@@ -177,7 +120,44 @@ export function DatePicker(props: {
               <th className="p-2 pb-4">{t("Saturday")}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody
+            ref={ref}
+            tabIndex={0}
+            className="w-full max-w-[420px] mx-auto relative"
+            onKeyDown={(e) => {
+              const key = e.key;
+              if (key === "ArrowDown") {
+                e.preventDefault();
+                const d = val ? addDays(val, 7) : headDate;
+                setVal(format(d, "yyyy-MM-dd"));
+                setRefDate(d);
+              } else if (key === "ArrowUp") {
+                e.preventDefault();
+                const d = val ? addDays(val, -7) : lastDate;
+                setVal(format(d, "yyyy-MM-dd"));
+                setRefDate(d);
+              } else if (key === "ArrowLeft") {
+                e.preventDefault();
+                const d = val ? addDays(val, -1) : startOfMonth(refDate);
+                setVal(format(d, "yyyy-MM-dd"));
+                setRefDate(d);
+              } else if (key === "ArrowRight") {
+                e.preventDefault();
+                const d = val ? addDays(val, 1) : startOfMonth(refDate);
+                setVal(format(d, "yyyy-MM-dd"));
+                setRefDate(d);
+              } else if (key === "Enter") {
+                e.preventDefault();
+                props.handleChange(val);
+              } else if (key === "Backspace" || key === "Delete") {
+                e.preventDefault();
+                setVal("");
+              } else if (key === "Escape") {
+                /* FYI: No calling e.preventDefault */
+                setVal(props.value);
+              }
+            }}
+          >
             {cal.map((week) => (
               <tr key={week.toString()}>
                 {week.map((day) => (
