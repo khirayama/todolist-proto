@@ -1,5 +1,6 @@
 import { ParamsSheet } from "libs/components/ParamsSheet";
 import { useCustomTranslation } from "libs/i18n";
+import { useTaskLists } from "hooks/useTaskLists";
 
 export function SharingSheet(props: {
   open: (q?: Query) => boolean;
@@ -7,6 +8,7 @@ export function SharingSheet(props: {
 }) {
   const { t } = useCustomTranslation("components.SharingSheet");
   const url = `${window?.location?.origin}/share?code=${props.taskList?.shareCode}`;
+  const [, { refreshShareCode }] = useTaskLists();
 
   return (
     <ParamsSheet open={props.open} title={t("Share")}>
@@ -40,6 +42,14 @@ export function SharingSheet(props: {
         }}
       >
         Share API
+      </button>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          refreshShareCode(props.taskList.id);
+        }}
+      >
+        Refresh share code
       </button>
     </ParamsSheet>
   );
