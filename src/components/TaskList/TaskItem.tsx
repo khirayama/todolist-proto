@@ -37,6 +37,7 @@ export function TaskItem(props: {
   const router = useRouter();
   const task = props.task;
 
+  const [, { updateTask }] = useTasks();
   const {
     attributes,
     listeners,
@@ -48,21 +49,13 @@ export function TaskItem(props: {
     isSorting,
   } = useSortable({ id: task.id });
 
-  if (props.disabled) {
-    attributes["tabIndex"] = -1;
-    attributes["aria-disabled"] = true;
-  } else {
-    attributes["tabIndex"] = 0;
-    attributes["aria-disabled"] = false;
-  }
-
-  const [, { updateTask }] = useTasks();
+  attributes["tabIndex"] = props.disabled ? -1 : 0;
+  attributes["aria-disabled"] = props.disabled;
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || "",
   };
-  const mustHaveClassNames = ["touch-none"];
 
   return (
     <>
@@ -90,8 +83,7 @@ export function TaskItem(props: {
           {...attributes}
           {...listeners}
           className={clsx(
-            "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400",
-            mustHaveClassNames
+            "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400 touch-none"
           )}
         >
           <Icon text="drag_indicator" />
