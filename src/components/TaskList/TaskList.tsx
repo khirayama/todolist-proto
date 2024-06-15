@@ -30,6 +30,7 @@ import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
 import { SharingSheet } from "components/SharingSheet";
 import { TaskItem } from "components/TaskList";
+import { kmh } from "libs/keymap";
 
 const isSharingSheetOpened = (taskListId: string) => {
   const query = qs.parse(window.location.search);
@@ -184,7 +185,6 @@ export function TaskList(props: {
       });
     }
   };
-
   const handleTaskListKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const el: {
       taskList: HTMLDivElement;
@@ -199,104 +199,58 @@ export function TaskList(props: {
     };
 
     let taskId = "";
-    while (el.taskItem !== e.currentTarget && !taskId) {
+    while (el.taskItem && el.taskItem !== e.currentTarget && !taskId) {
       taskId = el.taskItem.getAttribute("data-taskid");
       if (!taskId) {
         el.taskItem = el.taskItem.parentElement;
       }
     }
-
     const task = tasks.find((t) => t.id === taskId);
 
-    const key = e.key;
-    const shift = e.shiftKey;
-    const ctrl = e.ctrlKey;
-    const meta = e.metaKey;
+    /* Keymap
+     * Escape: blur task text
+     * Ctrl-o: sort tasks
+     *
+     * On Task Text
+     * Shift-Delete: clear completed tasks
+     * ArrowDown: focus first task text
+     *
+     * On Task Item
+     * Enter: insert task below
+     * Shift-Enter: insert task above
+     * Mod-Enter: toggle task completed
+     * Mod-Delete: delete task
+     * Delete: delete task
+     * Shift-Delete: delete completed tasks
+     * ArrowDown: focus next task text
+     * ArrowUp: focus previous task text
+     * Mod-c: open datepicker
+     */
 
+    /* task text and task item event */
+    kmh("Escape", e.nativeEvent, () => (e.target as HTMLElement).blur());
+    kmh("Ctrl-o", e.nativeEvent, () => sortTasks());
+    /* task text event */
     if (!task) {
-      /* task text event */
-      console.log("task text event");
-    } else {
-      console.log("task item event");
-      /* task item event */
-      if (key === "Escape" && !shift && !ctrl && !meta) {
-        el.taskItem.blur();
-      }
-      if (key === "Enter" && !shift && !ctrl && !meta) {
+      kmh("Shift-Delete", e.nativeEvent, () => {
         e.preventDefault();
-        for (let i = 0; i < el.taskItems.length; i++) {
-          if (el.taskItems[i] === el.taskItem) {
-            const newTasks = [...tasks];
-            const newTask = {
-              id: uuid(),
-              text: taskText,
-              completed: false,
-              date: "",
-            };
-            newTasks.splice(i + 1, 0, newTask);
-            createTask(newTask);
-            updateTaskList({
-              ...taskList,
-              taskIds: newTasks.map((t) => t.id),
-            });
-            setTimeout(() => {
-              const t = document.querySelector<HTMLTextAreaElement>(
-                `[data-taskid="${newTask.id}"] textarea`
-              );
-              t.focus();
-              t.selectionStart = t.value.length;
-              t.selectionEnd = t.value.length;
-            }, 0);
-            break;
-          }
+        clearCompletedTasks();
+      });
+      kmh("ArrowDown", e.nativeEvent, () => {
+        e.preventDefault();
+        const t = el.taskItems[0]?.querySelector("textarea");
+        if (t) {
+          setTimeout(() => {
+            t.focus();
+            t.selectionStart = t.value.length;
+            t.selectionEnd = t.value.length;
+          }, 0);
         }
-      }
-      if (key === "Enter" && shift && !ctrl && !meta) {
-        e.preventDefault();
-        for (let i = 0; i < el.taskItems.length; i++) {
-          if (el.taskItems[i] === el.taskItem) {
-            const newTasks = [...tasks];
-            const newTask = {
-              id: uuid(),
-              text: taskText,
-              completed: false,
-              date: "",
-            };
-            newTasks.splice(i, 0, newTask);
-            createTask(newTask);
-            updateTaskList({
-              ...taskList,
-              taskIds: newTasks.map((t) => t.id),
-            });
-            setTimeout(() => {
-              const t = document.querySelector<HTMLTextAreaElement>(
-                `[data-taskid="${newTask.id}"] textarea`
-              );
-              t.focus();
-              t.selectionStart = t.value.length;
-              t.selectionEnd = t.value.length;
-            }, 0);
-            break;
-          }
-        }
-      }
-      if (key === "Enter" && !shift && (ctrl || meta)) {
-        e.preventDefault();
-        updateTask({
-          ...task,
-          completed: !task.completed,
-        });
-      }
-      if (
-        ((key === "Backspace" || key === "Delete") &&
-          !shift &&
-          (ctrl || meta)) ||
-        ((key === "Backspace" || key === "Delete") &&
-          !shift &&
-          !ctrl &&
-          !meta &&
-          task.text === "")
-      ) {
+      });
+    }
+    /* task item event */
+    if (task) {
+      const handleDeleteKey = () => {
         for (let i = 0; i < el.taskItems.length; i++) {
           if (el.taskItems[i] === el.taskItem) {
             const t =
@@ -320,13 +274,76 @@ export function TaskList(props: {
           taskIds: ts.filter((t) => t.id !== task.id).map((t) => t.id),
         };
         updateTaskList(newTaskList);
-      }
-      if (
-        (key === "Backspace" || key === "Delete") &&
-        shift &&
-        !ctrl &&
-        !meta
-      ) {
+      };
+
+      kmh("Enter", e.nativeEvent, () => {
+        e.preventDefault();
+        for (let i = 0; i < el.taskItems.length; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            const newTasks = [...tasks];
+            const newTask = {
+              id: uuid(),
+              text: "",
+              completed: false,
+              date: "",
+            };
+            newTasks.splice(i + 1, 0, newTask);
+            createTask(newTask);
+            updateTaskList({
+              ...taskList,
+              taskIds: newTasks.map((t) => t.id),
+            });
+            setTimeout(() => {
+              const t = document.querySelector<HTMLTextAreaElement>(
+                `[data-taskid="${newTask.id}"] textarea`
+              );
+              t.focus();
+              t.selectionStart = t.value.length;
+              t.selectionEnd = t.value.length;
+            }, 0);
+            break;
+          }
+        }
+      });
+      kmh("Shift-Enter", e.nativeEvent, () => {
+        e.preventDefault();
+        for (let i = 0; i < el.taskItems.length; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            const newTasks = [...tasks];
+            const newTask = {
+              id: uuid(),
+              text: "",
+              completed: false,
+              date: "",
+            };
+            newTasks.splice(i, 0, newTask);
+            createTask(newTask);
+            updateTaskList({
+              ...taskList,
+              taskIds: newTasks.map((t) => t.id),
+            });
+            setTimeout(() => {
+              const t = document.querySelector<HTMLTextAreaElement>(
+                `[data-taskid="${newTask.id}"] textarea`
+              );
+              t.focus();
+              t.selectionStart = t.value.length;
+              t.selectionEnd = t.value.length;
+            }, 0);
+            break;
+          }
+        }
+      });
+      kmh("Mod-Enter", e.nativeEvent, () => {
+        e.preventDefault();
+        updateTask({
+          ...task,
+          completed: !task.completed,
+        });
+      });
+      kmh("Mod-Delete", e.nativeEvent, handleDeleteKey);
+      kmh("Delete", e.nativeEvent, handleDeleteKey, () => !task.text);
+      kmh("Shift-Delete", e.nativeEvent, () => {
         e.preventDefault();
         if (task.completed) {
           let flag = false;
@@ -350,8 +367,8 @@ export function TaskList(props: {
           }
         }
         clearCompletedTasks();
-      }
-      if (key === "ArrowDown" && !shift && !ctrl && !meta) {
+      });
+      kmh("ArrowDown", e.nativeEvent, () => {
         for (let i = 0; i < el.taskItems.length - 1; i++) {
           if (el.taskItems[i] === el.taskItem) {
             e.preventDefault();
@@ -364,12 +381,15 @@ export function TaskList(props: {
             break;
           }
         }
-      }
-      if (key === "ArrowUp" && !shift && !ctrl && !meta) {
-        for (let i = 1; i < el.taskItems.length; i++) {
+      });
+      kmh("ArrowUp", e.nativeEvent, () => {
+        for (let i = 0; i < el.taskItems.length; i++) {
           if (el.taskItems[i] === el.taskItem) {
             e.preventDefault();
-            const t = el.taskItems[i - 1]?.querySelector("textarea");
+            const t =
+              i !== 0
+                ? el.taskItems[i - 1]?.querySelector("textarea")
+                : el.taskText;
             setTimeout(() => {
               t.focus();
               t.selectionStart = t.value.length;
@@ -378,16 +398,13 @@ export function TaskList(props: {
             break;
           }
         }
-      }
-      if (key === "c" && !shift && (ctrl || meta)) {
+      });
+      kmh("Mod-c", e.nativeEvent, () => {
         const query = qs.parse(window.location.search);
         query.sheet = "datepicker";
         query.taskid = task.id;
         router.push("/app", { query });
-      }
-      if (key === "o" && !shift && ctrl && !meta) {
-        sortTasks();
-      }
+      });
     }
   };
 
