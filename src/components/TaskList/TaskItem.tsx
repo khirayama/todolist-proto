@@ -27,12 +27,6 @@ export function TaskItem(props: {
   task: Task;
   newTaskText: string;
   handleInsertTaskButtonClick: (idx: number) => void;
-  handleTaskListItemKeyDown: (
-    e: KeyboardEvent,
-    options: {
-      task: Task;
-    }
-  ) => void;
 }) {
   const router = useRouter();
   const task = props.task;
@@ -113,11 +107,6 @@ export function TaskItem(props: {
             updateTask({
               ...task,
               text: e.currentTarget.value,
-            });
-          }}
-          onTaskTextKeyDown={(e) => {
-            props.handleTaskListItemKeyDown(e, {
-              task,
             });
           }}
         />

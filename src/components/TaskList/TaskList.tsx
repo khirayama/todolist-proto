@@ -184,133 +184,125 @@ export function TaskList(props: {
       });
     }
   };
-  const handleTaskListItemKeyDown = (
-    e: KeyboardEvent<HTMLInputElement>,
-    { task }
-  ) => {
+
+  const handleTaskListKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const el: {
+      taskList: HTMLDivElement;
+      taskText: HTMLInputElement;
+      taskItem: HTMLElement;
+      taskItems: NodeListOf<HTMLElement>;
+    } = {
+      taskList: e.currentTarget,
+      taskText: e.currentTarget.querySelector("[data-tasktext]"),
+      taskItem: e.target as HTMLElement,
+      taskItems: e.currentTarget.querySelectorAll(`[data-taskid]`),
+    };
+
+    let taskId = "";
+    while (el.taskItem !== e.currentTarget && !taskId) {
+      taskId = el.taskItem.getAttribute("data-taskid");
+      if (!taskId) {
+        el.taskItem = el.taskItem.parentElement;
+      }
+    }
+
+    const task = tasks.find((t) => t.id === taskId);
+
     const key = e.key;
     const shift = e.shiftKey;
     const ctrl = e.ctrlKey;
     const meta = e.metaKey;
-    const el = document.querySelector<HTMLElement>(
-      `[data-taskid="${task.id}"]`
-    );
-    const taskTextEl =
-      document.querySelector<HTMLInputElement>("[data-tasktext]");
-    const taskEls = document.querySelectorAll<HTMLElement>(
-      `[data-tasklistid="${taskList.id}"] [data-taskid]`
-    );
 
-    if (key === "Escape" && !shift && !ctrl && !meta) {
-      e.currentTarget.blur();
-    }
-    if (key === "Enter" && !shift && !ctrl && !meta) {
-      e.preventDefault();
-      for (let i = 0; i < taskEls.length; i++) {
-        if (taskEls[i] === el) {
-          const newTasks = [...tasks];
-          const newTask = {
-            id: uuid(),
-            text: taskText,
-            completed: false,
-            date: "",
-          };
-          newTasks.splice(i + 1, 0, newTask);
-          createTask(newTask);
-          updateTaskList({
-            ...taskList,
-            taskIds: newTasks.map((t) => t.id),
-          });
-          setTimeout(() => {
-            const t = document.querySelector<HTMLTextAreaElement>(
-              `[data-taskid="${newTask.id}"] textarea`
-            );
-            t.focus();
-            t.selectionStart = t.value.length;
-            t.selectionEnd = t.value.length;
-          }, 0);
-          break;
-        }
+    if (!task) {
+      /* task text event */
+      console.log("task text event");
+    } else {
+      console.log("task item event");
+      /* task item event */
+      if (key === "Escape" && !shift && !ctrl && !meta) {
+        el.taskItem.blur();
       }
-    }
-    if (key === "Enter" && shift && !ctrl && !meta) {
-      e.preventDefault();
-      for (let i = 0; i < taskEls.length; i++) {
-        if (taskEls[i] === el) {
-          const newTasks = [...tasks];
-          const newTask = {
-            id: uuid(),
-            text: taskText,
-            completed: false,
-            date: "",
-          };
-          newTasks.splice(i, 0, newTask);
-          createTask(newTask);
-          updateTaskList({
-            ...taskList,
-            taskIds: newTasks.map((t) => t.id),
-          });
-          setTimeout(() => {
-            const t = document.querySelector<HTMLTextAreaElement>(
-              `[data-taskid="${newTask.id}"] textarea`
-            );
-            t.focus();
-            t.selectionStart = t.value.length;
-            t.selectionEnd = t.value.length;
-          }, 0);
-          break;
-        }
-      }
-    }
-    if (key === "Enter" && !shift && (ctrl || meta)) {
-      e.preventDefault();
-      updateTask({
-        ...task,
-        completed: !task.completed,
-      });
-    }
-    if (
-      ((key === "Backspace" || key === "Delete") && !shift && (ctrl || meta)) ||
-      ((key === "Backspace" || key === "Delete") &&
-        !shift &&
-        !ctrl &&
-        !meta &&
-        task.text === "")
-    ) {
-      for (let i = 0; i < taskEls.length; i++) {
-        if (taskEls[i] === el) {
-          const t =
-            (taskEls[i - 1] || taskEls[i + 1])?.querySelector("textarea") ||
-            taskTextEl;
-          if (t) {
+      if (key === "Enter" && !shift && !ctrl && !meta) {
+        e.preventDefault();
+        for (let i = 0; i < el.taskItems.length; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            const newTasks = [...tasks];
+            const newTask = {
+              id: uuid(),
+              text: taskText,
+              completed: false,
+              date: "",
+            };
+            newTasks.splice(i + 1, 0, newTask);
+            createTask(newTask);
+            updateTaskList({
+              ...taskList,
+              taskIds: newTasks.map((t) => t.id),
+            });
             setTimeout(() => {
+              const t = document.querySelector<HTMLTextAreaElement>(
+                `[data-taskid="${newTask.id}"] textarea`
+              );
               t.focus();
               t.selectionStart = t.value.length;
               t.selectionEnd = t.value.length;
             }, 0);
+            break;
           }
-          break;
         }
       }
-      e.preventDefault();
-      const ts = [...tasks];
-      const newTaskList = {
-        ...taskList,
-        taskIds: ts.filter((t) => t.id !== task.id).map((t) => t.id),
-      };
-      updateTaskList(newTaskList);
-    }
-    if ((key === "Backspace" || key === "Delete") && shift && !ctrl && !meta) {
-      e.preventDefault();
-      if (task.completed) {
-        let flag = false;
-        const ts = [...tasks];
-        for (let i = 0; i < taskEls.length; i++) {
-          if (taskEls[i] === el) {
-            flag = true;
+      if (key === "Enter" && shift && !ctrl && !meta) {
+        e.preventDefault();
+        for (let i = 0; i < el.taskItems.length; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            const newTasks = [...tasks];
+            const newTask = {
+              id: uuid(),
+              text: taskText,
+              completed: false,
+              date: "",
+            };
+            newTasks.splice(i, 0, newTask);
+            createTask(newTask);
+            updateTaskList({
+              ...taskList,
+              taskIds: newTasks.map((t) => t.id),
+            });
+            setTimeout(() => {
+              const t = document.querySelector<HTMLTextAreaElement>(
+                `[data-taskid="${newTask.id}"] textarea`
+              );
+              t.focus();
+              t.selectionStart = t.value.length;
+              t.selectionEnd = t.value.length;
+            }, 0);
+            break;
           }
-          if (flag && !ts[i].completed) {
-            const t = taskEls[i]?.querySelector("textarea") || taskTextEl;
+        }
+      }
+      if (key === "Enter" && !shift && (ctrl || meta)) {
+        e.preventDefault();
+        updateTask({
+          ...task,
+          completed: !task.completed,
+        });
+      }
+      if (
+        ((key === "Backspace" || key === "Delete") &&
+          !shift &&
+          (ctrl || meta)) ||
+        ((key === "Backspace" || key === "Delete") &&
+          !shift &&
+          !ctrl &&
+          !meta &&
+          task.text === "")
+      ) {
+        for (let i = 0; i < el.taskItems.length; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            const t =
+              (el.taskItems[i - 1] || el.taskItems[i + 1])?.querySelector(
+                "textarea"
+              ) || el.taskText;
             if (t) {
               setTimeout(() => {
                 t.focus();
@@ -321,51 +313,87 @@ export function TaskList(props: {
             break;
           }
         }
+        e.preventDefault();
+        const ts = [...tasks];
+        const newTaskList = {
+          ...taskList,
+          taskIds: ts.filter((t) => t.id !== task.id).map((t) => t.id),
+        };
+        updateTaskList(newTaskList);
       }
-      clearCompletedTasks();
-    }
-    if (key === "ArrowDown" && !shift && !ctrl && !meta) {
-      for (let i = 0; i < taskEls.length - 1; i++) {
-        if (taskEls[i] === el) {
-          e.preventDefault();
-          const t = taskEls[i + 1]?.querySelector("textarea");
-          setTimeout(() => {
-            t.focus();
-            t.selectionStart = t.value.length;
-            t.selectionEnd = t.value.length;
-          }, 0);
-          break;
+      if (
+        (key === "Backspace" || key === "Delete") &&
+        shift &&
+        !ctrl &&
+        !meta
+      ) {
+        e.preventDefault();
+        if (task.completed) {
+          let flag = false;
+          const ts = [...tasks];
+          for (let i = 0; i < el.taskItems.length; i++) {
+            if (el.taskItems[i] === el.taskItem) {
+              flag = true;
+            }
+            if (flag && !ts[i].completed) {
+              const t =
+                el.taskItems[i]?.querySelector("textarea") || el.taskText;
+              if (t) {
+                setTimeout(() => {
+                  t.focus();
+                  t.selectionStart = t.value.length;
+                  t.selectionEnd = t.value.length;
+                }, 0);
+              }
+              break;
+            }
+          }
+        }
+        clearCompletedTasks();
+      }
+      if (key === "ArrowDown" && !shift && !ctrl && !meta) {
+        for (let i = 0; i < el.taskItems.length - 1; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            e.preventDefault();
+            const t = el.taskItems[i + 1]?.querySelector("textarea");
+            setTimeout(() => {
+              t.focus();
+              t.selectionStart = t.value.length;
+              t.selectionEnd = t.value.length;
+            }, 0);
+            break;
+          }
         }
       }
-    }
-    if (key === "ArrowUp" && !shift && !ctrl && !meta) {
-      for (let i = 1; i < taskEls.length; i++) {
-        if (taskEls[i] === el) {
-          e.preventDefault();
-          const t = taskEls[i - 1]?.querySelector("textarea");
-          setTimeout(() => {
-            t.focus();
-            t.selectionStart = t.value.length;
-            t.selectionEnd = t.value.length;
-          }, 0);
-          break;
+      if (key === "ArrowUp" && !shift && !ctrl && !meta) {
+        for (let i = 1; i < el.taskItems.length; i++) {
+          if (el.taskItems[i] === el.taskItem) {
+            e.preventDefault();
+            const t = el.taskItems[i - 1]?.querySelector("textarea");
+            setTimeout(() => {
+              t.focus();
+              t.selectionStart = t.value.length;
+              t.selectionEnd = t.value.length;
+            }, 0);
+            break;
+          }
         }
       }
-    }
-    if (key === "c" && !shift && (ctrl || meta)) {
-      const query = qs.parse(window.location.search);
-      query.sheet = "datepicker";
-      query.taskid = task.id;
-      router.push("/app", { query });
-    }
-    if (key === "o" && !shift && ctrl && !meta) {
-      sortTasks();
+      if (key === "c" && !shift && (ctrl || meta)) {
+        const query = qs.parse(window.location.search);
+        query.sheet = "datepicker";
+        query.taskid = task.id;
+        router.push("/app", { query });
+      }
+      if (key === "o" && !shift && ctrl && !meta) {
+        sortTasks();
+      }
     }
   };
 
   return (
     <>
-      <div className="h-full overflow-scroll">
+      <div className="h-full overflow-scroll" onKeyDown={handleTaskListKeyDown}>
         <header className="sticky w-full top-0 border-b z-20 bg-white">
           <section className={clsx("px-1")}>
             <div className="relative">
@@ -488,7 +516,6 @@ export function TaskList(props: {
                     task={task}
                     newTaskText={taskText}
                     handleInsertTaskButtonClick={handleInsertTaskButtonClick}
-                    handleTaskListItemKeyDown={handleTaskListItemKeyDown}
                   />
                 );
               })}

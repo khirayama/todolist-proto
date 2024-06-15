@@ -1,11 +1,10 @@
-import { FormEvent, KeyboardEvent } from "react";
+import { FormEvent } from "react";
 import { clsx } from "clsx";
 
 export function TaskTextArea(props: {
   task: Task;
   disabled?: boolean;
   onTaskTextChange: (event: FormEvent<HTMLTextAreaElement>) => void;
-  onTaskTextKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
 }) {
   const task = props.task;
 
@@ -28,7 +27,6 @@ export function TaskTextArea(props: {
         )}
         value={task.text}
         onChange={props.onTaskTextChange}
-        onKeyDown={props.onTaskTextKeyDown}
       />
     </div>
   );
