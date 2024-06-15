@@ -20,6 +20,7 @@ export const useTaskLists = (
     createTaskList: (newTaskList: TaskList) => void;
     updateTaskList: (newTaskList: TaskList) => void;
     deleteTaskList: (deletedTaskListId: string) => void;
+    refreshShareCode: (taskListId: string) => void;
   },
   {
     getTaskListsById: (taskListIds: string[]) => TaskList[];
@@ -113,12 +114,35 @@ export const useTaskLists = (
       });
   };
 
+  const refreshShareCode = (taskListId: string) => {
+    const shareCode = globalState.taskLists[taskListId].shareCode;
+    client()
+      .put(`/api/share-codes/${shareCode}`)
+      .then((res) => {
+        const snapshot = getGlobalStateSnapshot();
+        setGlobalState({
+          ...snapshot,
+          taskLists: {
+            ...snapshot.taskLists,
+            [taskListId]: {
+              ...snapshot.taskLists[taskListId],
+              shareCode: res.data.shareCode.code,
+            },
+          },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return [
     globalState.taskLists,
     {
       createTaskList,
       updateTaskList,
       deleteTaskList,
+      refreshShareCode,
     },
     {
       getTaskListsById: (taskListIds: string[]) => {
