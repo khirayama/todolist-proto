@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import qs from "query-string";
 
 import { useApp } from "hooks/useApp";
 import { useProfile } from "hooks/useProfile";
@@ -14,22 +14,51 @@ import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { createDebounce, isNarrowLayout } from "libs/common";
+import { ParamsLink } from "libs/components/ParamsLink";
 
 const scrollDebounce = createDebounce();
 
 function isDrawerOpened() {
-  const hash = location.href.split("#")[1];
-  return hash === "opened";
+  return qs.parse(window.location.search).drawer === "opened";
+}
+
+function isSettingsSheetOpened() {
+  return qs.parse(window.location.search).sheet === "settings";
+}
+
+function isUserSheetOpened() {
+  return qs.parse(window.location.search).sheet === "user";
 }
 
 export default function IndexPage() {
+  /* Page Stack Control and support fast refresh */
+  const isInitialRender = useRef(true);
+  useEffect(() => {
+    isInitialRender.current = false;
+    const isFastRefresh = !isInitialRender.current;
+    if (!isFastRefresh) {
+      const query = qs.parse(window.location.search);
+      if (Object.keys(query).length) {
+        const tmp = window.location.href;
+        window.history.replaceState({}, "", "/app");
+        window.history.pushState({}, "", tmp);
+      }
+    }
+  }, []);
+
   const router = useRouter();
+  const closeDrawer = () => {
+    const query = { ...router.query };
+    delete query.drawer;
+    delete query.sheet;
+    router.push("/app", { query });
+  };
 
   const { t } = useCustomTranslation("pages.index");
 
-  const [app, { updateApp }] = useApp();
-  const [profile, { updateProfile }] = useProfile();
-  const [preferences, { updatePreferences }] = usePreferences();
+  const [{ data: app }, { updateApp }] = useApp();
+  const [{ data: profile }, { updateProfile }] = useProfile();
+  const [{ data: preferences }] = usePreferences();
   const [, , { getTaskListsById }] = useTaskLists();
 
   const taskLists = getTaskListsById(app.taskListIds);
@@ -38,8 +67,6 @@ export default function IndexPage() {
   const [isDrawerDisabled, setIsDrawerDisabled] = useState(
     isNarrowLayout() && !isDrawerOpen
   );
-  const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
-  const [userSheetOpen, setUserSheetOpen] = useState(false);
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
   const [currentTaskListId, setCurrentTaskListId] = useState<string>(
     app?.taskListIds[0] || ""
@@ -83,61 +110,47 @@ export default function IndexPage() {
             }
           }
         }
-      }, 20);
+      }, 30);
     };
 
     handleScroll();
-    taskListContainerRef.current.addEventListener("scroll", handleScroll);
+    taskListContainerRef.current?.addEventListener("scroll", handleScroll);
     return () => {
-      taskListContainerRef.current.removeEventListener("scroll", handleScroll);
+      taskListContainerRef.current?.removeEventListener("scroll", handleScroll);
     };
-  }, [app]);
+  }, [app, currentTaskListId]);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      const drawer =
-        document.querySelector<HTMLElement>(`[data-sectiondrawer]`);
-      const main = document.querySelector<HTMLElement>(`[data-sectionmain]`);
-      const selector = [
-        "button",
-        "a[href]",
-        "input",
-        "textarea",
-        "select",
-        "[role=button]",
-        "[tabindex]",
-      ].join(",");
-      let el = null;
-      if (isDrawerOpened()) {
-        setIsDrawerOpen(true);
-        el = drawer.querySelector(selector);
-        el = drawer;
-      } else {
-        setIsDrawerOpen(false);
-        el = main.querySelector(selector);
-        el = main;
-      }
-      if (el) {
-        el.focus();
-        el.blur();
+    const handleRouteChange = () => {
+      const isOpened = isDrawerOpened();
+      setIsDrawerOpen(isOpened);
+      if (isOpened) {
+        document
+          .querySelector<HTMLAnchorElement>("[data-sectiondrawer] a")
+          ?.focus();
       }
     };
 
-    setIsDrawerOpen(isDrawerOpened());
-    router.events.on("hashChangeComplete", handleHashChange);
+    handleRouteChange();
+    router.events.on("routeChangeComplete", handleRouteChange);
     return () => {
-      router.events.off("hashChangeComplete", handleHashChange);
+      router.events.off("routeChangeComplete", handleRouteChange);
     };
-  }, []);
+  }, [router]);
 
   const handleTaskListLinkClick = (taskListId: string) => {
-    router.push("/app");
+    closeDrawer();
+
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
       `[data-tasklistid="${taskListId}"]`
     );
     if (parent && el) {
       parent.scrollLeft = el.offsetLeft;
+      setTimeout(() => {
+        const text = el.querySelector<HTMLInputElement>("[data-tasktext]");
+        text.focus();
+      }, 100);
     }
   };
 
@@ -150,8 +163,6 @@ export default function IndexPage() {
       email: "",
     });
   };
-  const onSettingsSheetOpenClick = () => setSettingsSheetOpen(true);
-  const onUserSheetOpenClick = () => setUserSheetOpen(true);
 
   return (
     <>
@@ -164,36 +175,42 @@ export default function IndexPage() {
           )}
         >
           <div className="flex md:hidden">
-            <Link
+            <ParamsLink
               tabIndex={isDrawerDisabled ? -1 : 0}
               href="/app"
+              params={{ drawer: undefined }}
+              mergeParams
               className="flex items-center justify-center px-4 pt-4 w-full"
             >
               <Icon text="close" />
               <div className="flex-1" />
-            </Link>
+            </ParamsLink>
           </div>
 
           <div className="py-2">
-            <button
-              disabled={isDrawerDisabled}
+            <ParamsLink
+              tabIndex={isDrawerDisabled ? -1 : 0}
               className="flex items-center justify-center px-4 py-2 w-full"
-              onClick={onUserSheetOpenClick}
+              href="/app"
+              params={{ sheet: "user" }}
+              mergeParams
             >
               <div className="flex-1 text-left">
                 {profile?.displayName || profile?.email || t("Log In")}
               </div>
               <Icon text="person" />
-            </button>
+            </ParamsLink>
 
-            <button
-              disabled={isDrawerDisabled}
+            <ParamsLink
+              tabIndex={isDrawerDisabled ? -1 : 0}
               className="flex items-center justify-center px-4 py-2 w-full"
-              onClick={onSettingsSheetOpenClick}
+              href="/app"
+              params={{ sheet: "settings" }}
+              mergeParams
             >
               <div className="flex-1 text-left">{t("Preferences")}</div>
               <Icon text="settings" />
-            </button>
+            </ParamsLink>
           </div>
           <div className="pt-2 border-t">
             <TaskListList
@@ -209,12 +226,14 @@ export default function IndexPage() {
           className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full border-x"
         >
           <header className="flex p-4 bg-white">
-            <Link
-              href="/app#opened"
+            <ParamsLink
               className="flex md:hidden items-center justify-center"
+              href="/app"
+              params={{ drawer: "opened" }}
+              mergeParams
             >
               <Icon text="list" />
-            </Link>
+            </ParamsLink>
 
             <div className="flex-1" />
           </header>
@@ -270,15 +289,12 @@ export default function IndexPage() {
 
       <PreferencesSheet
         preferences={preferences}
-        open={settingsSheetOpen}
-        onOpenChange={setSettingsSheetOpen}
-        handlePreferencesChange={updatePreferences}
+        open={isSettingsSheetOpened}
       />
 
       <UserSheet
-        open={userSheetOpen}
-        onOpenChange={setUserSheetOpen}
-        handleSignedIn={() => setUserSheetOpen(false)}
+        open={isUserSheetOpened}
+        handleSignedIn={closeDrawer}
         handleSignedOut={handleSignedOut}
       />
     </>
