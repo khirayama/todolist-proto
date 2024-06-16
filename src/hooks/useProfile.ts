@@ -1,12 +1,15 @@
-import { useGlobalState } from "libs/globalState";
-import { useEffect } from "react";
-import { type Profile as ProfileData } from "@prisma/client";
+import { useEffect, useState } from "react";
 
-import { client } from "hooks/common";
+import { useGlobalState } from "libs/globalState";
+import { type Profile as ProfileData } from "@prisma/client";
+import { client, debounceTime } from "hooks/common";
 import { useSupabase } from "libs/supabase";
+import { createDebounce } from "libs/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
+
+const fetchDebounce = createDebounce();
 
 const transform = (
   data: ProfileData & { email: string }
@@ -20,7 +23,7 @@ const transform = (
 };
 
 export const useProfile = (): [
-  Profile,
+  { data: Profile; isInitialized: boolean; isLoading: boolean },
   {
     updateProfile: (newProfile: Partial<Profile>) => void;
   },
@@ -28,23 +31,32 @@ export const useProfile = (): [
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchProfile = () => {
-    client()
-      .get("/api/profile")
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          profile: {
-            ...snapshot.profile,
-            ...transform(res.data.profile).profile,
-          },
+    fetchDebounce(() => {
+      setIsLoading(true);
+      client()
+        .get("/api/profile")
+        .then((res) => {
+          const snapshot = getGlobalStateSnapshot();
+          setGlobalState({
+            ...snapshot,
+            profile: {
+              ...snapshot.profile,
+              ...transform(res.data.profile).profile,
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setIsInitialized(true);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }, debounceTime.fetch);
   };
 
   useEffect(() => {
@@ -70,7 +82,7 @@ export const useProfile = (): [
   };
 
   return [
-    globalState.profile,
+    { data: globalState.profile, isInitialized, isLoading },
     {
       updateProfile,
     },

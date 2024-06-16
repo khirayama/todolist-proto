@@ -1,12 +1,15 @@
-import { useGlobalState } from "libs/globalState";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Preferences as PreferencesData } from "@prisma/client";
 
-import { client } from "hooks/common";
+import { useGlobalState } from "libs/globalState";
+import { client, debounceTime } from "hooks/common";
 import { useSupabase } from "libs/supabase";
+import { createDebounce } from "libs/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
+
+const fetchDebounce = createDebounce();
 
 const transform = (data: PreferencesData): { preferences: Preferences } => {
   return {
@@ -15,7 +18,7 @@ const transform = (data: PreferencesData): { preferences: Preferences } => {
 };
 
 export const usePreferences = (): [
-  Preferences,
+  { data: Preferences; isInitialized: boolean; isLoading: boolean },
   {
     updatePreferences: (newPreferences: Partial<Preferences>) => void;
   },
@@ -23,23 +26,32 @@ export const usePreferences = (): [
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchPreferences = () => {
-    client()
-      .get("/api/preferences")
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          preferences: {
-            ...snapshot.preferences,
-            ...transform(res.data.preferences).preferences,
-          },
+    fetchDebounce(() => {
+      setIsLoading(true);
+      client()
+        .get("/api/preferences")
+        .then((res) => {
+          const snapshot = getGlobalStateSnapshot();
+          setGlobalState({
+            ...snapshot,
+            preferences: {
+              ...snapshot.preferences,
+              ...transform(res.data.preferences).preferences,
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setIsInitialized(true);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }, debounceTime.fetch);
   };
 
   useEffect(() => {
@@ -65,7 +77,7 @@ export const usePreferences = (): [
   };
 
   return [
-    globalState.preferences,
+    { data: globalState.preferences, isInitialized, isLoading },
     {
       updatePreferences,
     },

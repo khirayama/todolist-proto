@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
-import { client } from "hooks/common";
+import { client, debounceTime, createPolling } from "hooks/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
 
+const polling = createPolling();
+const fetchDebounce = createDebounce();
 const updateDebounce = createDebounce();
 
 export const useTaskLists = (
@@ -15,7 +17,11 @@ export const useTaskLists = (
     shareCodes?: string[];
   } = {}
 ): [
-  { [id: string]: TaskList },
+  {
+    data: { [id: string]: TaskList };
+    isInitialized: boolean;
+    isLoading: boolean;
+  },
   {
     createTaskList: (newTaskList: TaskList) => void;
     updateTaskList: (newTaskList: TaskList) => void;
@@ -29,27 +35,36 @@ export const useTaskLists = (
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchTaskLists = () => {
-    client()
-      .get("/api/task-lists", {
-        params,
-        paramsSerializer: { indexes: null },
-      })
-      .then((res) => {
-        const taskLists: TaskList[] = res.data.taskLists;
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          taskLists: {
-            ...snapshot.taskLists,
-            ...taskLists.reduce((acc, tl) => ({ ...acc, [tl.id]: tl }), {}),
-          },
+    fetchDebounce(() => {
+      setIsLoading(true);
+      client()
+        .get("/api/task-lists", {
+          params,
+          paramsSerializer: { indexes: null },
+        })
+        .then((res) => {
+          const taskLists: TaskList[] = res.data.taskLists;
+          const snapshot = getGlobalStateSnapshot();
+          setGlobalState({
+            ...snapshot,
+            taskLists: {
+              ...snapshot.taskLists,
+              ...taskLists.reduce((acc, tl) => ({ ...acc, [tl.id]: tl }), {}),
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setIsInitialized(true);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }, debounceTime.fetch);
   };
 
   useEffect(() => {
@@ -57,6 +72,11 @@ export const useTaskLists = (
       fetchTaskLists();
     }
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    polling.start(fetchTaskLists, 1000 * 5);
+    return () => polling.stop();
+  }, []);
 
   const createTaskList = (newTaskList: TaskList) => {
     const snapshot = getGlobalStateSnapshot();
@@ -89,7 +109,7 @@ export const useTaskLists = (
         .catch((err) => {
           console.log(err);
         });
-    }, 400);
+    }, debounceTime.update);
   };
 
   const deleteTaskList = (deletedTaskListId: string) => {
@@ -137,7 +157,7 @@ export const useTaskLists = (
   };
 
   return [
-    globalState.taskLists,
+    { data: globalState.taskLists, isInitialized, isLoading },
     {
       createTaskList,
       updateTaskList,

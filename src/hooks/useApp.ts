@@ -1,36 +1,48 @@
 import { useGlobalState } from "libs/globalState";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { client } from "hooks/common";
+import { client, debounceTime } from "hooks/common";
 import { useSupabase } from "libs/supabase";
+import { createDebounce } from "libs/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
 
+const fetchDebounce = createDebounce();
+
 export const useApp = (): [
-  App,
+  { data: App; isInitialized: boolean; isLoading: boolean },
   { updateApp: (newApp: Partial<App>) => void },
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchApp = () => {
-    client()
-      .get("/api/app")
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...snapshot,
-          app: {
-            ...snapshot.app,
-            ...res.data.app,
-          },
+    fetchDebounce(() => {
+      setIsLoading(true);
+      client()
+        .get("/api/app")
+        .then((res) => {
+          const snapshot = getGlobalStateSnapshot();
+          setGlobalState({
+            ...snapshot,
+            app: {
+              ...snapshot.app,
+              ...res.data.app,
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setIsInitialized(true);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }, debounceTime.fetch);
   };
 
   useEffect(() => {
@@ -55,5 +67,5 @@ export const useApp = (): [
       });
   };
 
-  return [globalState.app, { updateApp }];
+  return [{ data: globalState.app, isInitialized, isLoading }, { updateApp }];
 };
