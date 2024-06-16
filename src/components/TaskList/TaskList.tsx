@@ -51,10 +51,9 @@ export function TaskList(props: {
 
   const [taskText, setTaskText] = useState<string>("");
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
-  const [, { createTask, updateTask, deleteTask }, { getTasksById }] = useTasks(
-    { taskListIds: [props.taskList.id] }
-  );
-  const [app, { updateApp }] = useApp();
+  const [, { createTask, updateTask, deleteTask }, { getTasksById }] =
+    useTasks();
+  const [{ data: app }, { updateApp }] = useApp();
   const [, { updateTaskList }] = useTaskLists();
 
   const sensors = useSensors(
@@ -206,6 +205,12 @@ export function TaskList(props: {
       }
     }
     const task = tasks.find((t) => t.id === taskId);
+    const isSorting = el.taskItem?.getAttribute("data-sorting") === "true";
+    if (isSorting) {
+      return;
+    }
+    const isTaskItemTextFocused =
+      el.taskItem?.querySelector("textarea") === e.target;
 
     /* Keymap
      * Escape: blur task text
@@ -276,64 +281,74 @@ export function TaskList(props: {
         updateTaskList(newTaskList);
       };
 
-      kmh("Enter", e.nativeEvent, () => {
-        e.preventDefault();
-        for (let i = 0; i < el.taskItems.length; i++) {
-          if (el.taskItems[i] === el.taskItem) {
-            const newTasks = [...tasks];
-            const newTask = {
-              id: uuid(),
-              text: "",
-              completed: false,
-              date: "",
-            };
-            newTasks.splice(i + 1, 0, newTask);
-            createTask(newTask);
-            updateTaskList({
-              ...taskList,
-              taskIds: newTasks.map((t) => t.id),
-            });
-            setTimeout(() => {
-              const t = document.querySelector<HTMLTextAreaElement>(
-                `[data-taskid="${newTask.id}"] textarea`
-              );
-              t.focus();
-              t.selectionStart = t.value.length;
-              t.selectionEnd = t.value.length;
-            }, 0);
-            break;
+      kmh(
+        "Enter",
+        e.nativeEvent,
+        () => {
+          e.preventDefault();
+          for (let i = 0; i < el.taskItems.length; i++) {
+            if (el.taskItems[i] === el.taskItem) {
+              const newTasks = [...tasks];
+              const newTask = {
+                id: uuid(),
+                text: "",
+                completed: false,
+                date: "",
+              };
+              newTasks.splice(i + 1, 0, newTask);
+              createTask(newTask);
+              updateTaskList({
+                ...taskList,
+                taskIds: newTasks.map((t) => t.id),
+              });
+              setTimeout(() => {
+                const t = document.querySelector<HTMLTextAreaElement>(
+                  `[data-taskid="${newTask.id}"] textarea`
+                );
+                t.focus();
+                t.selectionStart = t.value.length;
+                t.selectionEnd = t.value.length;
+              }, 0);
+              break;
+            }
           }
-        }
-      });
-      kmh("Shift-Enter", e.nativeEvent, () => {
-        e.preventDefault();
-        for (let i = 0; i < el.taskItems.length; i++) {
-          if (el.taskItems[i] === el.taskItem) {
-            const newTasks = [...tasks];
-            const newTask = {
-              id: uuid(),
-              text: "",
-              completed: false,
-              date: "",
-            };
-            newTasks.splice(i, 0, newTask);
-            createTask(newTask);
-            updateTaskList({
-              ...taskList,
-              taskIds: newTasks.map((t) => t.id),
-            });
-            setTimeout(() => {
-              const t = document.querySelector<HTMLTextAreaElement>(
-                `[data-taskid="${newTask.id}"] textarea`
-              );
-              t.focus();
-              t.selectionStart = t.value.length;
-              t.selectionEnd = t.value.length;
-            }, 0);
-            break;
+        },
+        () => isTaskItemTextFocused
+      );
+      kmh(
+        "Shift-Enter",
+        e.nativeEvent,
+        () => {
+          e.preventDefault();
+          for (let i = 0; i < el.taskItems.length; i++) {
+            if (el.taskItems[i] === el.taskItem) {
+              const newTasks = [...tasks];
+              const newTask = {
+                id: uuid(),
+                text: "",
+                completed: false,
+                date: "",
+              };
+              newTasks.splice(i, 0, newTask);
+              createTask(newTask);
+              updateTaskList({
+                ...taskList,
+                taskIds: newTasks.map((t) => t.id),
+              });
+              setTimeout(() => {
+                const t = document.querySelector<HTMLTextAreaElement>(
+                  `[data-taskid="${newTask.id}"] textarea`
+                );
+                t.focus();
+                t.selectionStart = t.value.length;
+                t.selectionEnd = t.value.length;
+              }, 0);
+              break;
+            }
           }
-        }
-      });
+        },
+        () => isTaskItemTextFocused
+      );
       kmh("Mod-Enter", e.nativeEvent, () => {
         e.preventDefault();
         updateTask({

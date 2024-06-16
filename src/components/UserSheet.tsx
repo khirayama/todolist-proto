@@ -17,8 +17,8 @@ export function UserSheet(props: {
 }) {
   const { t } = useCustomTranslation("components.UserSheet");
   const { supabase, isLoggedIn } = useSupabase();
-  const [app] = useApp();
-  const [profile, { updateProfile }] = useProfile();
+  const [{ data: app }] = useApp();
+  const [{ data: profile }, { updateProfile }] = useProfile();
   const [, { deleteTaskList }] = useTaskLists();
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [email, setEmail] = useState(profile.email);

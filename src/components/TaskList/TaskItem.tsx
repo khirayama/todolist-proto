@@ -54,6 +54,7 @@ export function TaskItem(props: {
     <>
       <div
         data-taskid={task.id}
+        data-sorting={isSorting}
         ref={setNodeRef}
         style={style}
         className={clsx(
