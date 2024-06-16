@@ -53,7 +53,7 @@ export function extractScheduleFromText(
     txt = text.replace(match[0], "");
     let idx: Day = 0;
     for (let i = 0; i < days.length; i += 1) {
-      if (days[i].includes(match[1])) {
+      if (days[i].includes(match[1].toLowerCase())) {
         idx = i as Day;
         break;
       }
