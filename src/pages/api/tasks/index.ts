@@ -20,7 +20,7 @@ export default async function handler(
       ? params.taskListIds
       : params.taskListIds
         ? [params.taskListIds]
-        : [];
+        : undefined;
     const taskLists = await prisma.taskList.findMany({
       where: {
         id: { in: taskListIds },
