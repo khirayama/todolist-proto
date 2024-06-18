@@ -21,6 +21,33 @@ const config = {
       },
       taskLists: {},
       tasks: {},
+      fetching: {
+        taskLists: {
+          isInitialized: false,
+          isLoading: false,
+          queued: false,
+        },
+        tasks: {
+          isInitialized: false,
+          isLoading: false,
+          queued: false,
+        },
+        app: {
+          isInitialized: false,
+          isLoading: false,
+          queued: false,
+        },
+        profile: {
+          isInitialized: false,
+          isLoading: false,
+          queued: false,
+        },
+        preferences: {
+          isInitialized: false,
+          isLoading: false,
+          queued: false,
+        },
+      },
     };
   },
 };

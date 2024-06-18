@@ -29,6 +29,20 @@ type Preferences = {
   theme: "SYSTEM" | "LIGHT" | "DARK";
 };
 
+type FetchingStatus = {
+  isInitialized: boolean;
+  isLoading: boolean;
+  queued: boolean;
+};
+
+type Fetching = {
+  app: FetchingStatus;
+  profile: FetchingStatus;
+  preferences: FetchingStatus;
+  taskLists: FetchingStatus;
+  tasks: FetchingStatus;
+};
+
 type State = {
   app: App;
   profile: Profile;
@@ -39,4 +53,5 @@ type State = {
   tasks: {
     [id: string]: Task;
   };
+  fetching: Fetching;
 };
