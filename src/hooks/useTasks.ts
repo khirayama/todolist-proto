@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
-import { client, debounceTime, createPolling } from "hooks/common";
+import { client, time } from "hooks/common";
 import { extractScheduleFromText } from "libs/extractScheduleFromText";
 import { format } from "date-fns";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
 
-const polling = createPolling();
 const fetchDebounce = createDebounce();
 const updateDebounce = createDebounce();
 
@@ -30,36 +29,71 @@ export const useTasks = (
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchTasks = () => {
     fetchDebounce(() => {
-      setIsLoading(true);
-      client()
-        .get("/api/tasks", {
-          params,
-          paramsSerializer: { indexes: null },
-        })
-        .then((res) => {
-          const tasks: Task[] = res.data.tasks;
-          const snapshot = getGlobalStateSnapshot();
-          setGlobalState({
-            ...snapshot,
+      const snapshot = getGlobalStateSnapshot();
+      if (snapshot.fetching.tasks.isLoading) {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
             tasks: {
-              ...snapshot.tasks,
-              ...tasks.reduce((acc, t) => ({ ...acc, [t.id]: t }), {}),
+              ...snapshot.fetching.tasks,
+              queued: true,
             },
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setIsInitialized(true);
+          },
         });
-    }, debounceTime.fetch);
+      } else {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
+            tasks: {
+              ...snapshot.fetching.tasks,
+              isLoading: true,
+            },
+          },
+        });
+        client()
+          .get("/api/tasks", {
+            params,
+            paramsSerializer: { indexes: null },
+          })
+          .then((res) => {
+            const tasks: Task[] = res.data.tasks;
+            const snapshot = getGlobalStateSnapshot();
+            setGlobalState({
+              ...snapshot,
+              tasks: {
+                ...snapshot.tasks,
+                ...tasks.reduce((acc, t) => ({ ...acc, [t.id]: t }), {}),
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            const snapshot = getGlobalStateSnapshot();
+            const queued = snapshot.fetching.tasks.queued;
+            setGlobalState({
+              ...snapshot,
+              fetching: {
+                ...snapshot.fetching,
+                tasks: {
+                  isInitialized: true,
+                  isLoading: false,
+                  queued: false,
+                },
+              },
+            });
+            if (queued) {
+              fetchTasks();
+            }
+          });
+      }
+    }, time.fetchDebounce);
   };
 
   useEffect(() => {
@@ -67,11 +101,6 @@ export const useTasks = (
       fetchTasks();
     }
   }, [isLoggedIn]);
-
-  useEffect(() => {
-    polling.start(fetchTasks, 1000 * 5);
-    return () => polling.stop();
-  }, []);
 
   const createTask = (newTask: Task) => {
     if (newTask.text) {
@@ -118,7 +147,7 @@ export const useTasks = (
         .catch((err) => {
           console.log(err);
         });
-    }, debounceTime.update);
+    }, time.updateDebounce);
   };
 
   const deleteTask = (deletedTaskId: string) => {
@@ -146,8 +175,8 @@ export const useTasks = (
   return [
     {
       data: globalState.tasks,
-      isInitialized,
-      isLoading,
+      isInitialized: globalState.fetching.tasks.isInitialized,
+      isLoading: globalState.fetching.tasks.isLoading,
     },
     {
       createTask,

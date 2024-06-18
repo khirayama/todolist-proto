@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Preferences as PreferencesData } from "@prisma/client";
 
 import { useGlobalState } from "libs/globalState";
-import { client, debounceTime } from "hooks/common";
+import { client, time } from "hooks/common";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
 
@@ -26,32 +26,67 @@ export const usePreferences = (): [
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchPreferences = () => {
     fetchDebounce(() => {
-      setIsLoading(true);
-      client()
-        .get("/api/preferences")
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          setGlobalState({
-            ...snapshot,
+      const snapshot = getGlobalStateSnapshot();
+      if (snapshot.fetching.preferences.isLoading) {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
             preferences: {
-              ...snapshot.preferences,
-              ...transform(res.data.preferences).preferences,
+              ...snapshot.fetching.preferences,
+              queued: true,
             },
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setIsInitialized(true);
+          },
         });
-    }, debounceTime.fetch);
+      } else {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
+            preferences: {
+              ...snapshot.fetching.preferences,
+              isLoading: true,
+            },
+          },
+        });
+        client()
+          .get("/api/preferences")
+          .then((res) => {
+            const snapshot = getGlobalStateSnapshot();
+            setGlobalState({
+              ...snapshot,
+              preferences: {
+                ...snapshot.preferences,
+                ...transform(res.data.preferences).preferences,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            const snapshot = getGlobalStateSnapshot();
+            const queued = snapshot.fetching.preferences.queued;
+            setGlobalState({
+              ...snapshot,
+              fetching: {
+                ...snapshot.fetching,
+                preferences: {
+                  isInitialized: true,
+                  isLoading: false,
+                  queued: false,
+                },
+              },
+            });
+            if (queued) {
+              fetchPreferences();
+            }
+          });
+      }
+    }, time.fetchDebounce);
   };
 
   useEffect(() => {
@@ -77,7 +112,11 @@ export const usePreferences = (): [
   };
 
   return [
-    { data: globalState.preferences, isInitialized, isLoading },
+    {
+      data: globalState.preferences,
+      isInitialized: globalState.fetching.preferences.isInitialized,
+      isLoading: globalState.fetching.preferences.isLoading,
+    },
     {
       updatePreferences,
     },

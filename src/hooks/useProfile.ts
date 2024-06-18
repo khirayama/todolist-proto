@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { useGlobalState } from "libs/globalState";
 import { type Profile as ProfileData } from "@prisma/client";
-import { client, debounceTime } from "hooks/common";
+import { client, time } from "hooks/common";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
 
@@ -31,32 +31,67 @@ export const useProfile = (): [
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchProfile = () => {
     fetchDebounce(() => {
-      setIsLoading(true);
-      client()
-        .get("/api/profile")
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          setGlobalState({
-            ...snapshot,
+      const snapshot = getGlobalStateSnapshot();
+      if (snapshot.fetching.profile.isLoading) {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
             profile: {
-              ...snapshot.profile,
-              ...transform(res.data.profile).profile,
+              ...snapshot.fetching.profile,
+              queued: true,
             },
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setIsInitialized(true);
+          },
         });
-    }, debounceTime.fetch);
+      } else {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
+            profile: {
+              ...snapshot.fetching.profile,
+              isLoading: true,
+            },
+          },
+        });
+        client()
+          .get("/api/profile")
+          .then((res) => {
+            const snapshot = getGlobalStateSnapshot();
+            setGlobalState({
+              ...snapshot,
+              profile: {
+                ...snapshot.profile,
+                ...transform(res.data.profile).profile,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            const snapshot = getGlobalStateSnapshot();
+            const queued = snapshot.fetching.profile.queued;
+            setGlobalState({
+              ...snapshot,
+              fetching: {
+                ...snapshot.fetching,
+                profile: {
+                  isInitialized: true,
+                  isLoading: false,
+                  queued: false,
+                },
+              },
+            });
+            if (queued) {
+              fetchProfile();
+            }
+          });
+      }
+    }, time.fetchDebounce);
   };
 
   useEffect(() => {
@@ -82,7 +117,11 @@ export const useProfile = (): [
   };
 
   return [
-    { data: globalState.profile, isInitialized, isLoading },
+    {
+      data: globalState.profile,
+      isInitialized: globalState.fetching.profile.isInitialized,
+      isLoading: globalState.fetching.profile.isLoading,
+    },
     {
       updateProfile,
     },

@@ -1,7 +1,7 @@
 import { useGlobalState } from "libs/globalState";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { client, debounceTime } from "hooks/common";
+import { client, time } from "hooks/common";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
 
@@ -17,32 +17,67 @@ export const useApp = (): [
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
   const { isLoggedIn } = useSupabase();
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchApp = () => {
     fetchDebounce(() => {
-      setIsLoading(true);
-      client()
-        .get("/api/app")
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          setGlobalState({
-            ...snapshot,
+      const snapshot = getGlobalStateSnapshot();
+      if (snapshot.fetching.app.isLoading) {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
             app: {
-              ...snapshot.app,
-              ...res.data.app,
+              ...snapshot.fetching.app,
+              queued: true,
             },
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setIsInitialized(true);
+          },
         });
-    }, debounceTime.fetch);
+      } else {
+        setGlobalState({
+          ...snapshot,
+          fetching: {
+            ...snapshot.fetching,
+            app: {
+              ...snapshot.fetching.app,
+              isLoading: true,
+            },
+          },
+        });
+        client()
+          .get("/api/app")
+          .then((res) => {
+            const snapshot = getGlobalStateSnapshot();
+            setGlobalState({
+              ...snapshot,
+              app: {
+                ...snapshot.app,
+                ...res.data.app,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            const snapshot = getGlobalStateSnapshot();
+            const queued = snapshot.fetching.app.queued;
+            setGlobalState({
+              ...snapshot,
+              fetching: {
+                ...snapshot.fetching,
+                app: {
+                  isInitialized: true,
+                  isLoading: false,
+                  queued: false,
+                },
+              },
+            });
+            if (queued) {
+              fetchApp();
+            }
+          });
+      }
+    }, time.fetchDebounce);
   };
 
   useEffect(() => {
@@ -67,5 +102,12 @@ export const useApp = (): [
       });
   };
 
-  return [{ data: globalState.app, isInitialized, isLoading }, { updateApp }];
+  return [
+    {
+      data: globalState.app,
+      isInitialized: globalState.fetching.app.isInitialized,
+      isLoading: globalState.fetching.app.isLoading,
+    },
+    { updateApp },
+  ];
 };
