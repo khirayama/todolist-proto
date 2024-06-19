@@ -30,7 +30,7 @@ function isUserSheetOpened() {
   return qs.parse(window.location.search).sheet === "user";
 }
 
-export default function IndexPage() {
+export default function AppPage() {
   /* Page Stack Control and support fast refresh */
   const isInitialRender = useRef(true);
   useEffect(() => {
