@@ -1,10 +1,20 @@
 import { useTranslation } from "react-i18next";
 import { createContext, useContext, ReactNode, useState } from "react";
+import { deepmerge } from "@fastify/deepmerge";
+
+function replaceByClonedSource<T = any>(options: { clone: (source: T) => T }) {
+  return (_: T, source: T) => options.clone(source);
+}
+
+const merge = deepmerge({ mergeArray: replaceByClonedSource });
 
 type GlobalState = State;
 
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
+
 const config = {
-  key: "__global_state",
   initialValue: (): GlobalState => {
     return {
       app: {
@@ -74,9 +84,10 @@ export const GlobalStateProvider = (props: { children: ReactNode }) => {
   snapshot = globalState;
   changeLanguage();
 
-  const setGlobalState = (newState: GlobalState) => {
+  const setGlobalState = (newState: DeepPartial<GlobalState>) => {
     changeLanguage();
-    snapshot = newState;
+    const mergedState = merge(snapshot, newState) as GlobalState;
+    snapshot = mergedState;
     nativeSetGlobalState(snapshot);
   };
 
@@ -93,7 +104,7 @@ export const GlobalStateProvider = (props: { children: ReactNode }) => {
 
 export const useGlobalState = (): [
   GlobalState,
-  (newState: GlobalState) => void,
+  (newState: DeepPartial<GlobalState>) => void,
   () => GlobalState,
 ] => {
   return useContext(GlobalStateContext);
