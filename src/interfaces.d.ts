@@ -35,14 +35,6 @@ type FetchingStatus = {
   queued: boolean;
 };
 
-type Fetching = {
-  app: FetchingStatus;
-  profile: FetchingStatus;
-  preferences: FetchingStatus;
-  taskLists: FetchingStatus;
-  tasks: FetchingStatus;
-};
-
 type State = {
   app: App;
   profile: Profile;
@@ -53,5 +45,7 @@ type State = {
   tasks: {
     [id: string]: Task;
   };
-  fetching: Fetching;
+  fetching: {
+    [key: string]: FetchingStatus;
+  };
 };
