@@ -9,8 +9,6 @@ import { createDebounce } from "libs/common";
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
 
-const fetchDebounce = createDebounce();
-
 const transform = (
   data: ProfileData & { email: string }
 ): { profile: Profile } => {
@@ -33,79 +31,66 @@ export const useProfile = (): [
   const { isLoggedIn } = useSupabase();
 
   const fetchProfile = () => {
-    fetchDebounce(() => {
-      const snapshot = getGlobalStateSnapshot();
-      if (snapshot.fetching.profile.isLoading) {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            profile: {
-              ...snapshot.fetching.profile,
-              queued: true,
-            },
+    if (getGlobalStateSnapshot().fetching.profile.isLoading) {
+      setGlobalState({
+        fetching: {
+          profile: {
+            queued: true,
           },
-        });
-      } else {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            profile: {
-              ...snapshot.fetching.profile,
-              isLoading: true,
-            },
+        },
+      });
+    } else {
+      setGlobalState({
+        fetching: {
+          profile: {
+            isLoading: true,
           },
-        });
-        client()
-          .get("/api/profile")
-          .then((res) => {
-            const snapshot = getGlobalStateSnapshot();
-            setGlobalState({
-              ...snapshot,
-              profile: {
-                ...snapshot.profile,
-                ...transform(res.data.profile).profile,
-              },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            const snapshot = getGlobalStateSnapshot();
-            const queued = snapshot.fetching.profile.queued;
-            setGlobalState({
-              ...snapshot,
-              fetching: {
-                ...snapshot.fetching,
-                profile: {
-                  isInitialized: true,
-                  isLoading: false,
-                  queued: false,
-                },
-              },
-            });
-            if (queued) {
-              fetchProfile();
-            }
+        },
+      });
+      client()
+        .get("/api/profile")
+        .then((res) => {
+          setGlobalState({
+            profile: {
+              ...transform(res.data.profile).profile,
+            },
           });
-      }
-    }, time.fetchDebounce);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          const queued = getGlobalStateSnapshot().fetching.profile.queued;
+          setGlobalState({
+            fetching: {
+              profile: {
+                isInitialized: true,
+                isLoading: false,
+                queued: false,
+              },
+            },
+          });
+          if (queued) {
+            fetchProfile();
+          }
+        });
+    }
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    const snapshot = getGlobalStateSnapshot();
+    if (
+      isLoggedIn &&
+      !snapshot.fetching.profile.isInitialized &&
+      !snapshot.fetching.profile.isLoading
+    ) {
       fetchProfile();
     }
   }, [isLoggedIn]);
 
   const updateProfile = (newProfile: Partial<Profile>) => {
-    const snapshot = getGlobalStateSnapshot();
     setGlobalState({
-      ...snapshot,
       profile: {
-        ...snapshot.profile,
         ...newProfile,
       },
     });

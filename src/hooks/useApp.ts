@@ -1,97 +1,80 @@
 import { useGlobalState } from "libs/globalState";
 import { useEffect } from "react";
 
-import { client, time } from "hooks/common";
+import { client } from "hooks/common";
 import { useSupabase } from "libs/supabase";
-import { createDebounce } from "libs/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
-
-const fetchDebounce = createDebounce();
 
 export const useApp = (): [
   { data: App; isInitialized: boolean; isLoading: boolean },
   { updateApp: (newApp: Partial<App>) => void },
 ] => {
-  const [globalState, setGlobalState, getGlobalStateSnapshot] =
-    useGlobalState();
+  const [, setGlobalState, getGlobalStateSnapshot] = useGlobalState();
   const { isLoggedIn } = useSupabase();
 
   const fetchApp = () => {
-    fetchDebounce(() => {
-      const snapshot = getGlobalStateSnapshot();
-      if (snapshot.fetching.app.isLoading) {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            app: {
-              ...snapshot.fetching.app,
-              queued: true,
-            },
+    if (getGlobalStateSnapshot().fetching.app.isLoading) {
+      setGlobalState({
+        fetching: {
+          app: {
+            queued: true,
           },
-        });
-      } else {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            app: {
-              ...snapshot.fetching.app,
-              isLoading: true,
-            },
+        },
+      });
+    } else {
+      setGlobalState({
+        fetching: {
+          app: {
+            isLoading: true,
           },
-        });
-        client()
-          .get("/api/app")
-          .then((res) => {
-            const snapshot = getGlobalStateSnapshot();
-            setGlobalState({
-              ...snapshot,
-              app: {
-                ...snapshot.app,
-                ...res.data.app,
-              },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            const snapshot = getGlobalStateSnapshot();
-            const queued = snapshot.fetching.app.queued;
-            setGlobalState({
-              ...snapshot,
-              fetching: {
-                ...snapshot.fetching,
-                app: {
-                  isInitialized: true,
-                  isLoading: false,
-                  queued: false,
-                },
-              },
-            });
-            if (queued) {
-              fetchApp();
-            }
+        },
+      });
+      client()
+        .get("/api/app")
+        .then((res) => {
+          setGlobalState({
+            app: {
+              ...res.data.app,
+            },
           });
-      }
-    }, time.fetchDebounce);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          const queued = getGlobalStateSnapshot().fetching.app.queued;
+          setGlobalState({
+            fetching: {
+              app: {
+                isInitialized: true,
+                isLoading: false,
+                queued: false,
+              },
+            },
+          });
+          if (queued) {
+            fetchApp();
+          }
+        });
+    }
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    const snapshot = getGlobalStateSnapshot();
+    if (
+      isLoggedIn &&
+      !snapshot.fetching.app.isInitialized &&
+      !snapshot.fetching.app.isLoading
+    ) {
       fetchApp();
     }
   }, [isLoggedIn]);
 
   const updateApp = (newApp: Partial<App>) => {
-    const snapshot = getGlobalStateSnapshot();
     setGlobalState({
-      ...snapshot,
       app: {
-        ...snapshot.app,
         ...newApp,
       },
     });
@@ -102,11 +85,12 @@ export const useApp = (): [
       });
   };
 
+  const snapshot = getGlobalStateSnapshot();
   return [
     {
-      data: globalState.app,
-      isInitialized: globalState.fetching.app.isInitialized,
-      isLoading: globalState.fetching.app.isLoading,
+      data: snapshot.app,
+      isInitialized: snapshot.fetching.app.isInitialized,
+      isLoading: snapshot.fetching.app.isLoading,
     },
     { updateApp },
   ];

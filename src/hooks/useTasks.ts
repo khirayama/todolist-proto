@@ -3,14 +3,15 @@ import { useEffect } from "react";
 import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
-import { client, time } from "hooks/common";
+import { client, time, createPolling } from "hooks/common";
 import { extractScheduleFromText } from "libs/extractScheduleFromText";
 import { format } from "date-fns";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
 
-const fetchDebounce = createDebounce();
+const polling = createPolling();
+
 const updateDebounce = createDebounce();
 
 export const useTasks = (
@@ -31,76 +32,71 @@ export const useTasks = (
   const { isLoggedIn } = useSupabase();
 
   const fetchTasks = () => {
-    fetchDebounce(() => {
-      const snapshot = getGlobalStateSnapshot();
-      if (snapshot.fetching.tasks.isLoading) {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            tasks: {
-              ...snapshot.fetching.tasks,
-              queued: true,
-            },
+    if (getGlobalStateSnapshot().fetching.tasks.isLoading) {
+      setGlobalState({
+        fetching: {
+          tasks: {
+            queued: true,
           },
-        });
-      } else {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            tasks: {
-              ...snapshot.fetching.tasks,
-              isLoading: true,
-            },
+        },
+      });
+    } else {
+      setGlobalState({
+        fetching: {
+          tasks: {
+            isLoading: true,
           },
-        });
-        client()
-          .get("/api/tasks", {
-            params,
-            paramsSerializer: { indexes: null },
-          })
-          .then((res) => {
-            const tasks: Task[] = res.data.tasks;
-            const snapshot = getGlobalStateSnapshot();
-            setGlobalState({
-              ...snapshot,
-              tasks: {
-                ...snapshot.tasks,
-                ...tasks.reduce((acc, t) => ({ ...acc, [t.id]: t }), {}),
-              },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            const snapshot = getGlobalStateSnapshot();
-            const queued = snapshot.fetching.tasks.queued;
-            setGlobalState({
-              ...snapshot,
-              fetching: {
-                ...snapshot.fetching,
-                tasks: {
-                  isInitialized: true,
-                  isLoading: false,
-                  queued: false,
-                },
-              },
-            });
-            if (queued) {
-              fetchTasks();
-            }
+        },
+      });
+      client()
+        .get("/api/tasks", {
+          params,
+          paramsSerializer: { indexes: null },
+        })
+        .then((res) => {
+          const tasks: Task[] = res.data.tasks;
+          setGlobalState({
+            tasks: {
+              ...tasks.reduce((acc, t) => ({ ...acc, [t.id]: t }), {}),
+            },
           });
-      }
-    }, time.fetchDebounce);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          const queued = getGlobalStateSnapshot().fetching.tasks.queued;
+          setGlobalState({
+            fetching: {
+              tasks: {
+                isInitialized: true,
+                isLoading: false,
+                queued: false,
+              },
+            },
+          });
+          if (queued) {
+            fetchTasks();
+          }
+        });
+    }
   };
 
   useEffect(() => {
-    if (isLoggedIn || params.taskListIds) {
+    const snapshot = getGlobalStateSnapshot();
+    if (
+      isLoggedIn &&
+      !snapshot.fetching.tasks.isInitialized &&
+      !snapshot.fetching.tasks.isLoading
+    ) {
       fetchTasks();
     }
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    polling.start(fetchTasks, time.polling);
+    return () => polling.stop();
+  }, []);
 
   const createTask = (newTask: Task) => {
     if (newTask.text) {
@@ -110,11 +106,8 @@ export const useTasks = (
         newTask.date = format(date, "yyyy-MM-dd") || "";
       }
     }
-    const snapshot = getGlobalStateSnapshot();
     setGlobalState({
-      ...snapshot,
       tasks: {
-        ...snapshot.tasks,
         [newTask.id]: newTask,
       },
     });
@@ -133,11 +126,8 @@ export const useTasks = (
         newTask.date = format(date, "yyyy-MM-dd") || "";
       }
     }
-    const snapshot = getGlobalStateSnapshot();
     setGlobalState({
-      ...snapshot,
       tasks: {
-        ...snapshot.tasks,
         [newTask.id]: newTask,
       },
     });
@@ -151,24 +141,15 @@ export const useTasks = (
   };
 
   const deleteTask = (deletedTaskId: string) => {
-    const snapshot = getGlobalStateSnapshot();
     setGlobalState({
-      ...snapshot,
       tasks: {
-        ...snapshot.tasks,
         [deletedTaskId]: undefined,
       },
     });
     client()
       .delete(`/api/tasks/${deletedTaskId}`)
-      .catch(() => {
-        const snapshot = getGlobalStateSnapshot();
-        setGlobalState({
-          ...globalState,
-          taskLists: {
-            ...snapshot.taskLists,
-          },
-        });
+      .catch((err) => {
+        console.log(err);
       });
   };
 

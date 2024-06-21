@@ -2,14 +2,11 @@ import { useEffect } from "react";
 import { Preferences as PreferencesData } from "@prisma/client";
 
 import { useGlobalState } from "libs/globalState";
-import { client, time } from "hooks/common";
+import { client } from "hooks/common";
 import { useSupabase } from "libs/supabase";
-import { createDebounce } from "libs/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
-
-const fetchDebounce = createDebounce();
 
 const transform = (data: PreferencesData): { preferences: Preferences } => {
   return {
@@ -28,79 +25,66 @@ export const usePreferences = (): [
   const { isLoggedIn } = useSupabase();
 
   const fetchPreferences = () => {
-    fetchDebounce(() => {
-      const snapshot = getGlobalStateSnapshot();
-      if (snapshot.fetching.preferences.isLoading) {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            preferences: {
-              ...snapshot.fetching.preferences,
-              queued: true,
-            },
+    if (getGlobalStateSnapshot().fetching.preferences.isLoading) {
+      setGlobalState({
+        fetching: {
+          preferences: {
+            queued: true,
           },
-        });
-      } else {
-        setGlobalState({
-          ...snapshot,
-          fetching: {
-            ...snapshot.fetching,
-            preferences: {
-              ...snapshot.fetching.preferences,
-              isLoading: true,
-            },
+        },
+      });
+    } else {
+      setGlobalState({
+        fetching: {
+          preferences: {
+            isLoading: true,
           },
-        });
-        client()
-          .get("/api/preferences")
-          .then((res) => {
-            const snapshot = getGlobalStateSnapshot();
-            setGlobalState({
-              ...snapshot,
-              preferences: {
-                ...snapshot.preferences,
-                ...transform(res.data.preferences).preferences,
-              },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            const snapshot = getGlobalStateSnapshot();
-            const queued = snapshot.fetching.preferences.queued;
-            setGlobalState({
-              ...snapshot,
-              fetching: {
-                ...snapshot.fetching,
-                preferences: {
-                  isInitialized: true,
-                  isLoading: false,
-                  queued: false,
-                },
-              },
-            });
-            if (queued) {
-              fetchPreferences();
-            }
+        },
+      });
+      client()
+        .get("/api/preferences")
+        .then((res) => {
+          setGlobalState({
+            preferences: {
+              ...transform(res.data.preferences).preferences,
+            },
           });
-      }
-    }, time.fetchDebounce);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          const queued = getGlobalStateSnapshot().fetching.preferences.queued;
+          setGlobalState({
+            fetching: {
+              preferences: {
+                isInitialized: true,
+                isLoading: false,
+                queued: false,
+              },
+            },
+          });
+          if (queued) {
+            fetchPreferences();
+          }
+        });
+    }
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    const snapshot = getGlobalStateSnapshot();
+    if (
+      isLoggedIn &&
+      !snapshot.fetching.preferences.isInitialized &&
+      !snapshot.fetching.preferences.isLoading
+    ) {
       fetchPreferences();
     }
   }, [isLoggedIn]);
 
   const updatePreferences = (newPreferences: Partial<Preferences>) => {
-    const snapshot = getGlobalStateSnapshot();
     setGlobalState({
-      ...snapshot,
       preferences: {
-        ...snapshot.preferences,
         ...newPreferences,
       },
     });
