@@ -2,8 +2,8 @@ import axios from "axios";
 import { getSession } from "libs/supabase";
 
 export const time = {
-  fetchDebounce: 30,
   updateDebounce: 400,
+  polling: 10000,
 };
 
 export const createPolling = () => {
