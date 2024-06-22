@@ -5,12 +5,16 @@ export const useCustomTranslation = (prefix: string) => {
   const tr = useTranslation();
   return {
     ...tr,
-    t: (key: string) => tr.t(`${prefix}.${key}`),
+    t: (key: string | string[], params?: any) =>
+      tr.t(`${prefix}.${key}`, params) as string,
   };
 };
 
 export function init() {
   i18n.use(initReactI18next).init({
+    interpolation: {
+      escapeValue: false,
+    },
     resources: {
       en: {
         translation: {
@@ -71,7 +75,13 @@ export function init() {
               "Delete account": "Delete account",
             },
             SharingSheet: {
-              Share: "Share",
+              "Share {{name}} list": "Share {{name}} list",
+              "Copied to clipboard": "Copied to clipboard",
+              "Need to run this under https or localhost":
+                "Need to run this under https or localhost",
+              "Please join {{name}} list!": "Please join {{name}} list!",
+              "Share with other apps": "Share with other apps",
+              "Refresh share code": "Refresh share code",
             },
             PreferencesSheet: {
               Preferences: "Preferences",
@@ -149,6 +159,14 @@ export function init() {
             },
             SharingSheet: {
               Share: "共有",
+              "Share {{name}} list": "{{name}}リストを共有",
+              "Copied to clipboard": "クリップボードにコピーしました",
+              "Need to run this under https or localhost":
+                "httpsまたはlocalhostで実行する必要があります",
+              "Please join {{name}} list!":
+                "{{name}}リストに参加してください！",
+              "Share with other apps": "他のアプリで共有",
+              "Refresh share code": "共有コードを更新",
             },
             PreferencesSheet: {
               Preferences: "設定",
