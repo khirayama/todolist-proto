@@ -71,3 +71,8 @@ textarea {
   outline: none;
   background: #eee;
 }
+
+form:focus {
+  outline: none;
+  background: transparent;
+}

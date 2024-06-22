@@ -47,7 +47,28 @@ export function init() {
               "Add task list to bottom": "Add task list to bottom",
             },
             UserSheet: {
+              Email: "Email",
+              Password: "Password",
               "Log In": "Log In",
+              "Sign Up": "Sign Up",
+              "Logging In": "Logging Ip",
+              "Signing Up": "Signing Up",
+              "Send reset password instructions":
+                "Send reset password instructions",
+              "Already have an account? Log in":
+                "Already have an account? Log in",
+              "Don't have an account? Sign up":
+                "Don't have an account? Sign up",
+              "Forgot your password?": "Forgot your password?",
+              "New display name": "New display name",
+              "Change display name": "Change display name",
+              "New email": "New email",
+              "Change email": "Change email",
+              "New password": "New password",
+              "Confirm new password": "Confirm new password",
+              "Update password": "Update password",
+              "Log out": "Log out",
+              "Delete account": "Delete account",
             },
             SharingSheet: {
               Share: "Share",
@@ -103,7 +124,28 @@ export function init() {
               "Add task list to bottom": "タスクリストを末尾に追加",
             },
             UserSheet: {
+              Email: "メールアドレス",
+              Password: "パスワード",
               "Log In": "ログイン",
+              "Sign Up": "新規登録",
+              "Logging In": "ログイン中",
+              "Signing Up": "新規登録中",
+              "Send reset password instructions":
+                "パスワードリセットメールを送信",
+              "Already have an account? Log in":
+                "アカウントをお持ちの方はこちら",
+              "Don't have an account? Sign up":
+                "アカウントをお持ちでない方はこちら",
+              "Forgot your password?": "パスワードを忘れた場合",
+              "New display name": "新しい表示名",
+              "Change display name": "表示名を変更",
+              "New email": "新しいメールアドレス",
+              "Change email": "メールアドレスを変更",
+              "New password": "新しいパスワード",
+              "Confirm new password": "新しいパスワードの確認",
+              "Update password": "パスワードを更新",
+              "Log out": "ログアウト",
+              "Delete account": "アカウントを削除",
             },
             SharingSheet: {
               Share: "共有",
