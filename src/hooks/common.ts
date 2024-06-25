@@ -2,22 +2,37 @@ import axios from "axios";
 import { getSession } from "libs/supabase";
 
 export const time = {
-  updateDebounce: 400,
+  updateDebounce: 600,
   polling: 10000,
 };
 
 export const createPolling = () => {
   let intervalId = null;
-  return {
+  let f: Function;
+  let i: number;
+  const polling = {
     start: (fn: Function, interval: number) => {
+      f = fn;
+      i = interval;
       if (intervalId) {
         return;
       }
-      fn();
-      intervalId = setInterval(fn, interval);
+      f();
+      polling.run();
     },
-    stop: () => clearInterval(intervalId),
+    stop: () => {
+      clearInterval(intervalId);
+      intervalId = null;
+    },
+    restart: () => {
+      polling.stop();
+      polling.run();
+    },
+    run: () => {
+      intervalId = setInterval(f, i);
+    },
   };
+  return polling;
 };
 
 export const client = () => {
