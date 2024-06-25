@@ -32,7 +32,6 @@ type Preferences = {
 type FetchingStatus = {
   isInitialized: boolean;
   isLoading: boolean;
-  queued: boolean;
 };
 
 type State = {
