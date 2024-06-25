@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { Preferences as PreferencesData } from "@prisma/client";
+import { diff, patch } from "jsondiffpatch";
 
 import { useGlobalState } from "libs/globalState";
-import { client } from "hooks/common";
+import { client, time, createPolling } from "hooks/common";
 import { useSupabase } from "libs/supabase";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
+
+const polling = createPolling();
 
 const transform = (data: PreferencesData): { preferences: Preferences } => {
   return {
@@ -41,13 +44,15 @@ export const usePreferences = (): [
           },
         },
       });
+      const cache = getGlobalStateSnapshot().preferences;
       client()
         .get("/api/preferences")
         .then((res) => {
+          const snapshot = getGlobalStateSnapshot();
+          const delta = diff(cache, snapshot.preferences);
+          const newPreferences = transform(res.data.preferences).preferences;
           setGlobalState({
-            preferences: {
-              ...transform(res.data.preferences).preferences,
-            },
+            preferences: patch(newPreferences, delta),
           });
         })
         .catch((err) => {
@@ -82,7 +87,17 @@ export const usePreferences = (): [
     }
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      polling.start(fetchPreferences, time.polling);
+    } else {
+      polling.stop();
+    }
+    return () => polling.stop();
+  }, [isLoggedIn]);
+
   const updatePreferences = (newPreferences: Partial<Preferences>) => {
+    polling.restart();
     setGlobalState({
       preferences: {
         ...newPreferences,

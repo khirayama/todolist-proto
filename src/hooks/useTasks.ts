@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { diff, patch } from "jsondiffpatch";
 
 import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
@@ -48,17 +49,21 @@ export const useTasks = (
           },
         },
       });
+      const cache = getGlobalStateSnapshot().tasks;
       client()
         .get("/api/tasks", {
           params,
           paramsSerializer: { indexes: null },
         })
         .then((res) => {
-          const tasks: Task[] = res.data.tasks;
+          const snapshot = getGlobalStateSnapshot();
+          const delta = diff(cache, snapshot.tasks);
+          const newTasks = res.data.tasks.reduce(
+            (acc: {}, t: Task) => ({ ...acc, [t.id]: t }),
+            {}
+          );
           setGlobalState({
-            tasks: {
-              ...tasks.reduce((acc, t) => ({ ...acc, [t.id]: t }), {}),
-            },
+            tasks: patch(newTasks, delta) as { [id: string]: Task },
           });
         })
         .catch((err) => {
@@ -94,11 +99,16 @@ export const useTasks = (
   }, [isLoggedIn]);
 
   useEffect(() => {
-    polling.start(fetchTasks, time.polling);
+    if (isLoggedIn) {
+      polling.start(fetchTasks, time.polling);
+    } else {
+      polling.stop();
+    }
     return () => polling.stop();
-  }, []);
+  }, [isLoggedIn]);
 
   const createTask = (newTask: Task) => {
+    polling.restart();
     if (newTask.text) {
       const { text, date } = extractScheduleFromText(newTask.text, new Date());
       newTask.text = text;
@@ -119,6 +129,7 @@ export const useTasks = (
   };
 
   const updateTask = (newTask: Task) => {
+    polling.restart();
     if (newTask.text) {
       const { text, date } = extractScheduleFromText(newTask.text, new Date());
       newTask.text = text;
@@ -141,6 +152,7 @@ export const useTasks = (
   };
 
   const deleteTask = (deletedTaskId: string) => {
+    polling.restart();
     setGlobalState({
       tasks: {
         [deletedTaskId]: undefined,

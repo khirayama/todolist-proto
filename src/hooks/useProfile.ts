@@ -1,13 +1,15 @@
 import { useEffect } from "react";
+import { diff, patch } from "jsondiffpatch";
 
 import { useGlobalState } from "libs/globalState";
 import { type Profile as ProfileData } from "@prisma/client";
-import { client, time } from "hooks/common";
+import { client, time, createPolling } from "hooks/common";
 import { useSupabase } from "libs/supabase";
-import { createDebounce } from "libs/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
+
+const polling = createPolling();
 
 const transform = (
   data: ProfileData & { email: string }
@@ -47,13 +49,15 @@ export const useProfile = (): [
           },
         },
       });
+      const cache = getGlobalStateSnapshot().profile;
       client()
         .get("/api/profile")
         .then((res) => {
+          const snapshot = getGlobalStateSnapshot();
+          const delta = diff(cache, snapshot.profile);
+          const newProfile = transform(res.data.profile).profile;
           setGlobalState({
-            profile: {
-              ...transform(res.data.profile).profile,
-            },
+            profile: patch(newProfile, delta),
           });
         })
         .catch((err) => {
@@ -88,7 +92,17 @@ export const useProfile = (): [
     }
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      polling.start(fetchProfile, time.polling);
+    } else {
+      polling.stop();
+    }
+    return () => polling.stop();
+  }, [isLoggedIn]);
+
   const updateProfile = (newProfile: Partial<Profile>) => {
+    polling.restart();
     setGlobalState({
       profile: {
         ...newProfile,

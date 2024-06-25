@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { diff, patch } from "jsondiffpatch";
 
 import { useGlobalState } from "libs/globalState";
 import { useSupabase } from "libs/supabase";
@@ -52,17 +53,21 @@ export const useTaskLists = (
           },
         },
       });
+      const cache = getGlobalStateSnapshot().taskLists;
       client()
         .get("/api/task-lists", {
           params,
           paramsSerializer: { indexes: null },
         })
         .then((res) => {
-          const taskLists: TaskList[] = res.data.taskLists;
+          const snapshot = getGlobalStateSnapshot();
+          const delta = diff(cache, snapshot.taskLists);
+          const newTaskLists = res.data.taskLists.reduce(
+            (acc: {}, tl: TaskList) => ({ ...acc, [tl.id]: tl }),
+            {}
+          );
           setGlobalState({
-            taskLists: {
-              ...taskLists.reduce((acc, tl) => ({ ...acc, [tl.id]: tl }), {}),
-            },
+            taskLists: patch(newTaskLists, delta) as { [id: string]: TaskList },
           });
         })
         .catch((err) => {
@@ -98,11 +103,16 @@ export const useTaskLists = (
   }, [isLoggedIn]);
 
   useEffect(() => {
-    polling.start(fetchTaskLists, time.polling);
+    if (isLoggedIn) {
+      polling.start(fetchTaskLists, time.polling);
+    } else {
+      polling.stop();
+    }
     return () => polling.stop();
-  }, []);
+  }, [isLoggedIn]);
 
   const createTaskList = (newTaskList: TaskList) => {
+    polling.restart();
     setGlobalState({
       taskLists: {
         [newTaskList.id]: newTaskList,
@@ -116,6 +126,7 @@ export const useTaskLists = (
   };
 
   const updateTaskList = (newTaskList: TaskList) => {
+    polling.restart();
     setGlobalState({
       taskLists: {
         [newTaskList.id]: newTaskList,
@@ -131,6 +142,7 @@ export const useTaskLists = (
   };
 
   const deleteTaskList = (deletedTaskListId: string) => {
+    polling.restart();
     setGlobalState({
       taskLists: {
         [deletedTaskListId]: undefined,
@@ -144,6 +156,7 @@ export const useTaskLists = (
   };
 
   const refreshShareCode = (taskListId: string) => {
+    polling.restart();
     const shareCode = getGlobalStateSnapshot().taskLists[taskListId].shareCode;
     client()
       .put(`/api/share-codes/${shareCode}`)

@@ -1,11 +1,14 @@
 import { useGlobalState } from "libs/globalState";
 import { useEffect } from "react";
+import { diff, patch } from "jsondiffpatch";
 
-import { client } from "hooks/common";
+import { client, time, createPolling } from "hooks/common";
 import { useSupabase } from "libs/supabase";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
+
+const polling = createPolling();
 
 export const useApp = (): [
   { data: App; isInitialized: boolean; isLoading: boolean },
@@ -31,13 +34,15 @@ export const useApp = (): [
           },
         },
       });
+      const cache = getGlobalStateSnapshot().app;
       client()
         .get("/api/app")
         .then((res) => {
+          const snapshot = getGlobalStateSnapshot();
+          const delta = diff(cache, snapshot.app);
+          const newApp = res.data.app;
           setGlobalState({
-            app: {
-              ...res.data.app,
-            },
+            app: patch(newApp, delta),
           });
         })
         .catch((err) => {
@@ -72,7 +77,17 @@ export const useApp = (): [
     }
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      polling.start(fetchApp, time.polling);
+    } else {
+      polling.stop();
+    }
+    return () => polling.stop();
+  }, [isLoggedIn]);
+
   const updateApp = (newApp: Partial<App>) => {
+    polling.restart();
     setGlobalState({
       app: {
         ...newApp,
