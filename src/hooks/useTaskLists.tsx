@@ -37,70 +37,44 @@ export const useTaskLists = (
   const { isLoggedIn } = useSupabase();
 
   const fetchTaskLists = () => {
-    if (getGlobalStateSnapshot().fetching.taskLists.isLoading) {
-      setGlobalState({
-        fetching: {
-          taskLists: {
-            queued: true,
-          },
+    setGlobalState({
+      fetching: {
+        taskLists: {
+          isLoading: true,
         },
-      });
-    } else {
-      setGlobalState({
-        fetching: {
-          taskLists: {
-            isLoading: true,
-          },
-        },
-      });
-      const cache = getGlobalStateSnapshot().taskLists;
-      client()
-        .get("/api/task-lists", {
-          params,
-          paramsSerializer: { indexes: null },
-        })
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          const delta = diff(cache, snapshot.taskLists);
-          const newTaskLists = res.data.taskLists.reduce(
-            (acc: {}, tl: TaskList) => ({ ...acc, [tl.id]: tl }),
-            {}
-          );
-          setGlobalState({
-            taskLists: patch(newTaskLists, delta) as { [id: string]: TaskList },
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          const queued = getGlobalStateSnapshot().fetching.taskLists.queued;
-          setGlobalState({
-            fetching: {
-              taskLists: {
-                isInitialized: true,
-                isLoading: false,
-                queued: false,
-              },
-            },
-          });
-          if (queued) {
-            fetchTaskLists();
-          }
+      },
+    });
+    const cache = getGlobalStateSnapshot().taskLists;
+    client()
+      .get("/api/task-lists", {
+        params,
+        paramsSerializer: { indexes: null },
+      })
+      .then((res) => {
+        const snapshot = getGlobalStateSnapshot();
+        const delta = diff(cache, snapshot.taskLists);
+        const newTaskLists = res.data.taskLists.reduce(
+          (acc: {}, tl: TaskList) => ({ ...acc, [tl.id]: tl }),
+          {}
+        );
+        setGlobalState({
+          taskLists: patch(newTaskLists, delta) as { [id: string]: TaskList },
         });
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setGlobalState({
+          fetching: {
+            taskLists: {
+              isInitialized: true,
+              isLoading: false,
+            },
+          },
+        });
+      });
   };
-
-  useEffect(() => {
-    const snapshot = getGlobalStateSnapshot();
-    if (
-      isLoggedIn &&
-      !snapshot.fetching.taskLists.isInitialized &&
-      !snapshot.fetching.taskLists.isLoading
-    ) {
-      fetchTaskLists();
-    }
-  }, [isLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn) {

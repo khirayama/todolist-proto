@@ -33,70 +33,44 @@ export const useTasks = (
   const { isLoggedIn } = useSupabase();
 
   const fetchTasks = () => {
-    if (getGlobalStateSnapshot().fetching.tasks.isLoading) {
-      setGlobalState({
-        fetching: {
-          tasks: {
-            queued: true,
-          },
+    setGlobalState({
+      fetching: {
+        tasks: {
+          isLoading: true,
         },
-      });
-    } else {
-      setGlobalState({
-        fetching: {
-          tasks: {
-            isLoading: true,
-          },
-        },
-      });
-      const cache = getGlobalStateSnapshot().tasks;
-      client()
-        .get("/api/tasks", {
-          params,
-          paramsSerializer: { indexes: null },
-        })
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          const delta = diff(cache, snapshot.tasks);
-          const newTasks = res.data.tasks.reduce(
-            (acc: {}, t: Task) => ({ ...acc, [t.id]: t }),
-            {}
-          );
-          setGlobalState({
-            tasks: patch(newTasks, delta) as { [id: string]: Task },
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          const queued = getGlobalStateSnapshot().fetching.tasks.queued;
-          setGlobalState({
-            fetching: {
-              tasks: {
-                isInitialized: true,
-                isLoading: false,
-                queued: false,
-              },
-            },
-          });
-          if (queued) {
-            fetchTasks();
-          }
+      },
+    });
+    const cache = getGlobalStateSnapshot().tasks;
+    client()
+      .get("/api/tasks", {
+        params,
+        paramsSerializer: { indexes: null },
+      })
+      .then((res) => {
+        const snapshot = getGlobalStateSnapshot();
+        const delta = diff(cache, snapshot.tasks);
+        const newTasks = res.data.tasks.reduce(
+          (acc: {}, t: Task) => ({ ...acc, [t.id]: t }),
+          {}
+        );
+        setGlobalState({
+          tasks: patch(newTasks, delta) as { [id: string]: Task },
         });
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setGlobalState({
+          fetching: {
+            tasks: {
+              isInitialized: true,
+              isLoading: false,
+            },
+          },
+        });
+      });
   };
-
-  useEffect(() => {
-    const snapshot = getGlobalStateSnapshot();
-    if (
-      isLoggedIn &&
-      !snapshot.fetching.tasks.isInitialized &&
-      !snapshot.fetching.tasks.isLoading
-    ) {
-      fetchTasks();
-    }
-  }, [isLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn) {

@@ -33,68 +33,42 @@ export const useProfile = (): [
   const { isLoggedIn } = useSupabase();
 
   const fetchProfile = () => {
-    if (getGlobalStateSnapshot().fetching.profile.isLoading) {
-      setGlobalState({
-        fetching: {
-          profile: {
-            queued: true,
-          },
+    setGlobalState({
+      fetching: {
+        profile: {
+          isLoading: true,
         },
-      });
-    } else {
-      setGlobalState({
-        fetching: {
-          profile: {
-            isLoading: true,
-          },
-        },
-      });
-      const cache = getGlobalStateSnapshot().profile;
-      client()
-        .get("/api/profile")
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          const delta = diff(cache, snapshot.profile);
-          const newProfile = transform(res.data.profile).profile;
-          setGlobalState({
-            profile: patch(newProfile, delta),
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          const queued = getGlobalStateSnapshot().fetching.profile.queued;
-          setGlobalState({
-            fetching: {
-              profile: {
-                isInitialized: true,
-                isLoading: false,
-                queued: false,
-              },
-            },
-          });
-          if (queued) {
-            fetchProfile();
-          }
+      },
+    });
+    const cache = getGlobalStateSnapshot().profile;
+    client()
+      .get("/api/profile")
+      .then((res) => {
+        const snapshot = getGlobalStateSnapshot();
+        const delta = diff(cache, snapshot.profile);
+        const newProfile = transform(res.data.profile).profile;
+        setGlobalState({
+          profile: patch(newProfile, delta),
         });
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setGlobalState({
+          fetching: {
+            profile: {
+              isInitialized: true,
+              isLoading: false,
+            },
+          },
+        });
+      });
   };
 
   useEffect(() => {
-    const snapshot = getGlobalStateSnapshot();
-    if (
-      isLoggedIn &&
-      !snapshot.fetching.profile.isInitialized &&
-      !snapshot.fetching.profile.isLoading
-    ) {
-      fetchProfile();
-    }
-  }, [isLoggedIn]);
-
-  useEffect(() => {
     if (isLoggedIn) {
-      polling.start(fetchProfile, time.polling);
+      polling.start(fetchProfile, time.pollingLong);
     } else {
       polling.stop();
     }

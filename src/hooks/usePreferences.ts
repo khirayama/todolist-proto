@@ -28,68 +28,42 @@ export const usePreferences = (): [
   const { isLoggedIn } = useSupabase();
 
   const fetchPreferences = () => {
-    if (getGlobalStateSnapshot().fetching.preferences.isLoading) {
-      setGlobalState({
-        fetching: {
-          preferences: {
-            queued: true,
-          },
+    setGlobalState({
+      fetching: {
+        preferences: {
+          isLoading: true,
         },
-      });
-    } else {
-      setGlobalState({
-        fetching: {
-          preferences: {
-            isLoading: true,
-          },
-        },
-      });
-      const cache = getGlobalStateSnapshot().preferences;
-      client()
-        .get("/api/preferences")
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          const delta = diff(cache, snapshot.preferences);
-          const newPreferences = transform(res.data.preferences).preferences;
-          setGlobalState({
-            preferences: patch(newPreferences, delta),
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          const queued = getGlobalStateSnapshot().fetching.preferences.queued;
-          setGlobalState({
-            fetching: {
-              preferences: {
-                isInitialized: true,
-                isLoading: false,
-                queued: false,
-              },
-            },
-          });
-          if (queued) {
-            fetchPreferences();
-          }
+      },
+    });
+    const cache = getGlobalStateSnapshot().preferences;
+    client()
+      .get("/api/preferences")
+      .then((res) => {
+        const snapshot = getGlobalStateSnapshot();
+        const delta = diff(cache, snapshot.preferences);
+        const newPreferences = transform(res.data.preferences).preferences;
+        setGlobalState({
+          preferences: patch(newPreferences, delta),
         });
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setGlobalState({
+          fetching: {
+            preferences: {
+              isInitialized: true,
+              isLoading: false,
+            },
+          },
+        });
+      });
   };
 
   useEffect(() => {
-    const snapshot = getGlobalStateSnapshot();
-    if (
-      isLoggedIn &&
-      !snapshot.fetching.preferences.isInitialized &&
-      !snapshot.fetching.preferences.isLoading
-    ) {
-      fetchPreferences();
-    }
-  }, [isLoggedIn]);
-
-  useEffect(() => {
     if (isLoggedIn) {
-      polling.start(fetchPreferences, time.polling);
+      polling.start(fetchPreferences, time.pollingLong);
     } else {
       polling.stop();
     }

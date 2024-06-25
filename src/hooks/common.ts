@@ -3,7 +3,8 @@ import { getSession } from "libs/supabase";
 
 export const time = {
   updateDebounce: 600,
-  polling: 10000,
+  polling: 5000,
+  pollingLong: 20000,
 };
 
 export const createPolling = () => {

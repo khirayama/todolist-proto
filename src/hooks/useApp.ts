@@ -18,64 +18,38 @@ export const useApp = (): [
   const { isLoggedIn } = useSupabase();
 
   const fetchApp = () => {
-    if (getGlobalStateSnapshot().fetching.app.isLoading) {
-      setGlobalState({
-        fetching: {
-          app: {
-            queued: true,
-          },
+    setGlobalState({
+      fetching: {
+        app: {
+          isLoading: true,
         },
-      });
-    } else {
-      setGlobalState({
-        fetching: {
-          app: {
-            isLoading: true,
-          },
-        },
-      });
-      const cache = getGlobalStateSnapshot().app;
-      client()
-        .get("/api/app")
-        .then((res) => {
-          const snapshot = getGlobalStateSnapshot();
-          const delta = diff(cache, snapshot.app);
-          const newApp = res.data.app;
-          setGlobalState({
-            app: patch(newApp, delta),
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          const queued = getGlobalStateSnapshot().fetching.app.queued;
-          setGlobalState({
-            fetching: {
-              app: {
-                isInitialized: true,
-                isLoading: false,
-                queued: false,
-              },
-            },
-          });
-          if (queued) {
-            fetchApp();
-          }
+      },
+    });
+    const cache = getGlobalStateSnapshot().app;
+    client()
+      .get("/api/app")
+      .then((res) => {
+        const snapshot = getGlobalStateSnapshot();
+        const delta = diff(cache, snapshot.app);
+        const newApp = res.data.app;
+        setGlobalState({
+          app: patch(newApp, delta),
         });
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setGlobalState({
+          fetching: {
+            app: {
+              isInitialized: true,
+              isLoading: false,
+            },
+          },
+        });
+      });
   };
-
-  useEffect(() => {
-    const snapshot = getGlobalStateSnapshot();
-    if (
-      isLoggedIn &&
-      !snapshot.fetching.app.isInitialized &&
-      !snapshot.fetching.app.isLoading
-    ) {
-      fetchApp();
-    }
-  }, [isLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn) {
