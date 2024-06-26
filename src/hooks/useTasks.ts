@@ -73,11 +73,7 @@ export const useTasks = (
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
-      polling.start(fetchTasks, time.polling);
-    } else {
-      polling.stop();
-    }
+    polling.start(fetchTasks, time.polling);
     return () => polling.stop();
   }, [isLoggedIn]);
 
