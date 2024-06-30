@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { prisma } from "libs/pages/api";
+import { prisma, auth } from "libs/pages/api";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const { errorMessage } = await auth(req);
+
   if (req.method === "POST") {
     const newTask = req.body;
     const task = await prisma.task.create({
@@ -20,7 +22,9 @@ export default async function handler(
       ? params.taskListIds
       : params.taskListIds
         ? [params.taskListIds]
-        : undefined;
+        : errorMessage
+          ? []
+          : undefined;
     const taskLists = await prisma.taskList.findMany({
       where: {
         id: { in: taskListIds },
