@@ -7,14 +7,22 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { errorMessage } = await auth(req);
-  if (errorMessage) {
-    return res.status(401).json({ error: errorMessage });
-  }
-
   const taskListId = req.query.id as string;
   const unsafeKeys: (keyof TaskListType)[] = ["id"];
+  const shareCode = req.body?.shareCode;
   delete req.body?.shareCode;
+
+  const { errorMessage } = await auth(req);
+  if (errorMessage) {
+    const sc = await prisma.shareCode.findFirst({
+      where: {
+        taskListId,
+      },
+    });
+    if (shareCode !== sc.code) {
+      return res.status(401).json({ error: errorMessage });
+    }
+  }
 
   if (req.method === "PATCH") {
     const taskList = await prisma.taskList.update({
