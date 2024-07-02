@@ -1,22 +1,18 @@
-import { useEffect } from "react";
 import { diff, patch } from "jsondiffpatch";
+import { format } from "date-fns";
 
 import { useGlobalState } from "libs/globalState";
-import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
-import { client, time, createPolling } from "hooks/common";
+import { useClient } from "hooks/common";
 import { extractScheduleFromText } from "libs/extractScheduleFromText";
-import { format } from "date-fns";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
 
-const polling = createPolling();
-
 const updateDebounce = createDebounce();
 
 export const useTasks = (
-  params: { taskListIds?: string[] } = {}
+  url: string
 ): [
   { data: { [id: string]: Task }; isInitialized: boolean; isLoading: boolean },
   {
@@ -30,55 +26,26 @@ export const useTasks = (
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
-  const { isLoggedIn } = useSupabase();
-
-  const fetchTasks = () => {
-    setGlobalState({
-      fetching: {
-        tasks: {
-          isLoading: true,
-        },
-      },
-    });
-    const cache = getGlobalStateSnapshot().tasks;
-    client()
-      .get("/api/tasks", {
-        params,
-        paramsSerializer: { indexes: null },
-      })
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        const delta = diff(cache, snapshot.tasks);
-        const newTasks = res.data.tasks.reduce(
-          (acc: {}, t: Task) => ({ ...acc, [t.id]: t }),
-          {}
-        );
-        setGlobalState({
-          tasks: patch(newTasks, delta) as { [id: string]: Task },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setGlobalState({
-          fetching: {
-            tasks: {
-              isInitialized: true,
-              isLoading: false,
-            },
-          },
-        });
+  const { sent, polling, isInitialized, isLoading } = useClient(url, {
+    before: () => {
+      return { cache: getGlobalStateSnapshot().tasks };
+    },
+    resolve: (res, { cache }) => {
+      const snapshot = getGlobalStateSnapshot();
+      const delta = diff(cache, snapshot.tasks);
+      const newTasks = res.data.tasks.reduce(
+        (acc: {}, t: Task) => ({ ...acc, [t.id]: t }),
+        {}
+      );
+      setGlobalState({
+        tasks: patch(newTasks, delta) as { [id: string]: Task },
       });
-  };
-
-  useEffect(() => {
-    polling.start(fetchTasks, time.polling);
-    return () => polling.stop();
-  }, [isLoggedIn]);
+    },
+  });
 
   const createTask = (newTask: Task) => {
     polling.restart();
+
     if (newTask.text) {
       const { text, date } = extractScheduleFromText(newTask.text, new Date());
       newTask.text = text;
@@ -91,15 +58,18 @@ export const useTasks = (
         [newTask.id]: newTask,
       },
     });
-    client()
-      .post("/api/tasks", newTask)
-      .catch((err) => {
-        console.log(err);
-      });
+    sent({
+      method: "POST",
+      url: "/api/tasks",
+      data: newTask,
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   const updateTask = (newTask: Task) => {
     polling.restart();
+
     if (newTask.text) {
       const { text, date } = extractScheduleFromText(newTask.text, new Date());
       newTask.text = text;
@@ -113,33 +83,37 @@ export const useTasks = (
       },
     });
     updateDebounce(() => {
-      client()
-        .patch(`/api/tasks/${newTask.id}`, newTask)
-        .catch((err) => {
-          console.log(err);
-        });
-    }, time.updateDebounce);
+      sent({
+        method: "PATCH",
+        url: `/api/tasks/${newTask.id}`,
+        data: newTask,
+      }).catch((err) => {
+        console.log(err);
+      });
+    }, 600);
   };
 
   const deleteTask = (deletedTaskId: string) => {
     polling.restart();
+
     setGlobalState({
       tasks: {
         [deletedTaskId]: undefined,
       },
     });
-    client()
-      .delete(`/api/tasks/${deletedTaskId}`)
-      .catch((err) => {
-        console.log(err);
-      });
+    sent({
+      method: "DELETE",
+      url: `/api/tasks/${deletedTaskId}`,
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   return [
     {
       data: globalState.tasks,
-      isInitialized: globalState.fetching.tasks.isInitialized,
-      isLoading: globalState.fetching.tasks.isLoading,
+      isInitialized,
+      isLoading,
     },
     {
       createTask,

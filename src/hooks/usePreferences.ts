@@ -1,15 +1,11 @@
-import { useEffect } from "react";
 import { Preferences as PreferencesData } from "@prisma/client";
 import { diff, patch } from "jsondiffpatch";
 
 import { useGlobalState } from "libs/globalState";
-import { client, time, createPolling } from "hooks/common";
-import { useSupabase } from "libs/supabase";
+import { useClient } from "hooks/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
-
-const polling = createPolling();
 
 const transform = (data: PreferencesData): { preferences: Preferences } => {
   return {
@@ -17,7 +13,9 @@ const transform = (data: PreferencesData): { preferences: Preferences } => {
   };
 };
 
-export const usePreferences = (): [
+export const usePreferences = (
+  url: string
+): [
   { data: Preferences; isInitialized: boolean; isLoading: boolean },
   {
     updatePreferences: (newPreferences: Partial<Preferences>) => void;
@@ -25,50 +23,20 @@ export const usePreferences = (): [
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
-  const { isLoggedIn } = useSupabase();
-
-  const fetchPreferences = () => {
-    setGlobalState({
-      fetching: {
-        preferences: {
-          isLoading: true,
-        },
-      },
-    });
-    const cache = getGlobalStateSnapshot().preferences;
-    client()
-      .get("/api/preferences")
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        const delta = diff(cache, snapshot.preferences);
-        const newPreferences = transform(res.data.preferences).preferences;
-        setGlobalState({
-          preferences: patch(newPreferences, delta),
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setGlobalState({
-          fetching: {
-            preferences: {
-              isInitialized: true,
-              isLoading: false,
-            },
-          },
-        });
+  const { sent, polling, isInitialized, isLoading } = useClient(url, {
+    interval: 10000,
+    before: () => {
+      return { cache: getGlobalStateSnapshot().preferences };
+    },
+    resolve: (res, { cache }) => {
+      const snapshot = getGlobalStateSnapshot();
+      const delta = diff(cache, snapshot.preferences);
+      const newPreferences = transform(res.data.preferences).preferences;
+      setGlobalState({
+        preferences: patch(newPreferences, delta),
       });
-  };
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      polling.start(fetchPreferences, time.pollingLong);
-    } else {
-      polling.stop();
-    }
-    return () => polling.stop();
-  }, [isLoggedIn]);
+    },
+  });
 
   const updatePreferences = (newPreferences: Partial<Preferences>) => {
     polling.restart();
@@ -77,18 +45,20 @@ export const usePreferences = (): [
         ...newPreferences,
       },
     });
-    client()
-      .patch("/api/preferences", newPreferences)
-      .catch((err) => {
-        console.log(err);
-      });
+    sent({
+      method: "PATCH",
+      url: "/api/preferences",
+      data: newPreferences,
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   return [
     {
       data: globalState.preferences,
-      isInitialized: globalState.fetching.preferences.isInitialized,
-      isLoading: globalState.fetching.preferences.isLoading,
+      isInitialized,
+      isLoading,
     },
     {
       updatePreferences,

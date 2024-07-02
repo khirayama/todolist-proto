@@ -1,22 +1,16 @@
-import { useEffect } from "react";
 import { diff, patch } from "jsondiffpatch";
 
 import { useGlobalState } from "libs/globalState";
-import { useSupabase } from "libs/supabase";
 import { createDebounce } from "libs/common";
-import { client, time, createPolling } from "hooks/common";
+import { useClient } from "hooks/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList, Task
 
-const polling = createPolling();
-
 const updateDebounce = createDebounce();
 
 export const useTaskLists = (
-  params: {
-    shareCodes?: string[];
-  } = {}
+  url: string
 ): [
   {
     data: { [id: string]: TaskList };
@@ -34,102 +28,83 @@ export const useTaskLists = (
   },
 ] => {
   const [, setGlobalState, getGlobalStateSnapshot] = useGlobalState();
-  const { isLoggedIn } = useSupabase();
-
-  const fetchTaskLists = () => {
-    setGlobalState({
-      fetching: {
-        taskLists: {
-          isLoading: true,
-        },
-      },
-    });
-    const cache = getGlobalStateSnapshot().taskLists;
-    client()
-      .get("/api/task-lists", {
-        params,
-        paramsSerializer: { indexes: null },
-      })
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        const delta = diff(cache, snapshot.taskLists);
-        const newTaskLists = res.data.taskLists.reduce(
-          (acc: {}, tl: TaskList) => ({ ...acc, [tl.id]: tl }),
-          {}
-        );
-        setGlobalState({
-          taskLists: patch(newTaskLists, delta) as { [id: string]: TaskList },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setGlobalState({
-          fetching: {
-            taskLists: {
-              isInitialized: true,
-              isLoading: false,
-            },
-          },
-        });
+  const { sent, polling, isInitialized, isLoading } = useClient(url, {
+    before: () => {
+      return { cache: getGlobalStateSnapshot().taskLists };
+    },
+    resolve: (res, { cache }) => {
+      const snapshot = getGlobalStateSnapshot();
+      const delta = diff(cache, snapshot.taskLists);
+      const newTaskLists = res.data.taskLists.reduce(
+        (acc: {}, tl: TaskList) => ({ ...acc, [tl.id]: tl }),
+        {}
+      );
+      setGlobalState({
+        taskLists: patch(newTaskLists, delta) as { [id: string]: TaskList },
       });
-  };
-
-  useEffect(() => {
-    polling.start(fetchTaskLists, time.polling);
-    return () => polling.stop();
-  }, [isLoggedIn]);
+    },
+  });
 
   const createTaskList = (newTaskList: TaskList) => {
     polling.restart();
+
     setGlobalState({
       taskLists: {
         [newTaskList.id]: newTaskList,
       },
     });
-    client()
-      .post("/api/task-lists", newTaskList)
-      .catch((err) => {
-        console.log(err);
-      });
+    sent({
+      method: "POST",
+      url: "/api/task-lists",
+      data: newTaskList,
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   const updateTaskList = (newTaskList: TaskList) => {
     polling.restart();
+
     setGlobalState({
       taskLists: {
         [newTaskList.id]: newTaskList,
       },
     });
     updateDebounce(() => {
-      client()
-        .patch(`/api/task-lists/${newTaskList.id}`, newTaskList)
-        .catch((err) => {
-          console.log(err);
-        });
-    }, time.updateDebounce);
+      sent({
+        method: "PATCH",
+        url: `/api/task-lists/${newTaskList.id}`,
+        data: newTaskList,
+      }).catch((err) => {
+        console.log(err);
+      });
+    }, 600);
   };
 
   const deleteTaskList = (deletedTaskListId: string) => {
     polling.restart();
+
     setGlobalState({
       taskLists: {
         [deletedTaskListId]: undefined,
       },
     });
-    client()
-      .delete(`/api/task-lists/${deletedTaskListId}`)
-      .catch((err) => {
-        console.log(err);
-      });
+    sent({
+      method: "DELETE",
+      url: `/api/task-lists/${deletedTaskListId}`,
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   const refreshShareCode = (taskListId: string) => {
     polling.restart();
+
     const shareCode = getGlobalStateSnapshot().taskLists[taskListId].shareCode;
-    client()
-      .put(`/api/share-codes/${shareCode}`)
+    sent({
+      method: "PUT",
+      url: `/api/share-codes/${shareCode}`,
+    })
       .then((res) => {
         setGlobalState({
           taskLists: {
@@ -148,8 +123,8 @@ export const useTaskLists = (
   return [
     {
       data: snapshot.taskLists,
-      isInitialized: snapshot.fetching.taskLists.isInitialized,
-      isLoading: snapshot.fetching.taskLists.isLoading,
+      isInitialized,
+      isLoading,
     },
     {
       createTaskList,

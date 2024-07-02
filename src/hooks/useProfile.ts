@@ -1,15 +1,11 @@
-import { useEffect } from "react";
 import { diff, patch } from "jsondiffpatch";
+import { type Profile as ProfileData } from "@prisma/client";
 
 import { useGlobalState } from "libs/globalState";
-import { type Profile as ProfileData } from "@prisma/client";
-import { client, time, createPolling } from "hooks/common";
-import { useSupabase } from "libs/supabase";
+import { useClient } from "hooks/common";
 
 // useResouce: () => [Resouce, { mutations }, { selectors }]
 // App, Profile, Preferences, TaskList-Task
-
-const polling = createPolling();
 
 const transform = (
   data: ProfileData & { email: string }
@@ -22,7 +18,9 @@ const transform = (
   };
 };
 
-export const useProfile = (): [
+export const useProfile = (
+  url: string
+): [
   { data: Profile; isInitialized: boolean; isLoading: boolean },
   {
     updateProfile: (newProfile: Partial<Profile>) => void;
@@ -30,50 +28,20 @@ export const useProfile = (): [
 ] => {
   const [globalState, setGlobalState, getGlobalStateSnapshot] =
     useGlobalState();
-  const { isLoggedIn } = useSupabase();
-
-  const fetchProfile = () => {
-    setGlobalState({
-      fetching: {
-        profile: {
-          isLoading: true,
-        },
-      },
-    });
-    const cache = getGlobalStateSnapshot().profile;
-    client()
-      .get("/api/profile")
-      .then((res) => {
-        const snapshot = getGlobalStateSnapshot();
-        const delta = diff(cache, snapshot.profile);
-        const newProfile = transform(res.data.profile).profile;
-        setGlobalState({
-          profile: patch(newProfile, delta),
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setGlobalState({
-          fetching: {
-            profile: {
-              isInitialized: true,
-              isLoading: false,
-            },
-          },
-        });
+  const { sent, polling, isInitialized, isLoading } = useClient(url, {
+    interval: 10000,
+    before: () => {
+      return { cache: getGlobalStateSnapshot().profile };
+    },
+    resolve: (res, { cache }) => {
+      const snapshot = getGlobalStateSnapshot();
+      const delta = diff(cache, snapshot.profile);
+      const newProfile = transform(res.data.profile).profile;
+      setGlobalState({
+        profile: patch(newProfile, delta),
       });
-  };
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      polling.start(fetchProfile, time.pollingLong);
-    } else {
-      polling.stop();
-    }
-    return () => polling.stop();
-  }, [isLoggedIn]);
+    },
+  });
 
   const updateProfile = (newProfile: Partial<Profile>) => {
     polling.restart();
@@ -82,18 +50,20 @@ export const useProfile = (): [
         ...newProfile,
       },
     });
-    client()
-      .patch("/api/profile", newProfile)
-      .catch((err) => {
-        console.log(err);
-      });
+    sent({
+      method: "PATCH",
+      url: "/api/profile",
+      data: newProfile,
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   return [
     {
       data: globalState.profile,
-      isInitialized: globalState.fetching.profile.isInitialized,
-      isLoading: globalState.fetching.profile.isLoading,
+      isInitialized,
+      isLoading,
     },
     {
       updateProfile,
