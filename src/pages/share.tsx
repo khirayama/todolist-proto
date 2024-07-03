@@ -22,16 +22,16 @@ export default function SharePage() {
     router.push("/app", { query });
   };
 
-  const [{ data: app }, { updateApp }] = useApp();
+  const [{ data: app }, { updateApp }] = useApp("/api/app");
 
   const shareCode = router.query.code as string;
-  const [{ data: taskLists }] = useTaskLists({
-    shareCodes: [shareCode],
-  });
+  const [{ data: taskLists }] = useTaskLists(
+    shareCode ? `/api/task-lists?shareCodes=${shareCode}` : ""
+  );
   const taskList = Object.values(taskLists).find(
     (taskList) => taskList.shareCode === shareCode
   );
-  useTasks({ taskListIds: [taskList?.id] });
+  useTasks(taskList ? `/api/tasks?taskListIds=${taskList.id}` : "");
   const { isLoggedIn } = useSupabase();
   const hasTaskList = app.taskListIds.includes(taskList?.id);
 
