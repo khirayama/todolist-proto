@@ -117,7 +117,7 @@ export const useClient = <T>(
     return () => {
       fetchStatus[url].polling.stop();
     };
-  }, [url]);
+  }, [url, r]);
 
   return {
     sent: r,
