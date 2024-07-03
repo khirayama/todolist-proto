@@ -56,10 +56,10 @@ export default function AppPage() {
 
   const { t } = useCustomTranslation("pages.index");
 
-  const [{ data: app }, { updateApp }] = useApp();
-  const [{ data: profile }, { updateProfile }] = useProfile();
-  const [{ data: preferences }] = usePreferences();
-  const [, , { getTaskListsById }] = useTaskLists();
+  const [{ data: app }, { updateApp }] = useApp("/api/app");
+  const [{ data: profile }, { updateProfile }] = useProfile("/api/profile");
+  const [{ data: preferences }] = usePreferences("/api/preferences");
+  const [, , { getTaskListsById }] = useTaskLists("/api/task-lists");
 
   const taskLists = getTaskListsById(app.taskListIds);
 
