@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import qs from "query-string";
 
 import { useApp } from "hooks/useApp";
@@ -166,6 +167,9 @@ export default function AppPage() {
 
   return (
     <>
+      <Head>
+        <link rel="manifest" href="/manifest.json" />
+      </Head>
       <div className="flex w-full h-full bg-gray-100 overflow-hidden">
         <section
           data-sectiondrawer
