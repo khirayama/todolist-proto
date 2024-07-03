@@ -30,7 +30,7 @@ export function TaskItem(props: {
   const router = useRouter();
   const task = props.task;
 
-  const [, { updateTask }] = useTasks();
+  const [, { updateTask }] = useTasks("/api/tasks");
   const {
     attributes,
     listeners,

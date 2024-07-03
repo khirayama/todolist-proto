@@ -9,7 +9,7 @@ export function PreferencesSheet(props: {
   preferences: Preferences;
   open: (q?: Query) => boolean;
 }) {
-  const [, { updatePreferences }] = usePreferences();
+  const [, { updatePreferences }] = usePreferences("/api/preferences");
 
   const { t, i18n } = useCustomTranslation("components.PreferencesSheet");
   const supportedLngs = Object.keys(i18n.options.resources).map((lang) =>

@@ -7,8 +7,8 @@ export function SharingSheet(props: {
   taskList: TaskList;
 }) {
   const { t } = useCustomTranslation("components.SharingSheet");
-  const url = `${window?.location?.origin}/share?code=${props.taskList?.shareCode}`;
-  const [, { refreshShareCode }] = useTaskLists();
+  const shareUrl = `${window?.location?.origin}/share?code=${props.taskList?.shareCode}`;
+  const [, { refreshShareCode }] = useTaskLists("/api/task-lists");
 
   return (
     <ParamsSheet
@@ -23,14 +23,14 @@ export function SharingSheet(props: {
           onClick={() => {
             /* FYI: Only work under https or localhost */
             try {
-              window.navigator.clipboard.writeText(url);
+              window.navigator.clipboard.writeText(shareUrl);
               window.alert(t("Copied to clipboard"));
             } catch (err) {
               window.alert(t("Need to run this under https or localhost"));
             }
           }}
         >
-          {url}
+          {shareUrl}
         </button>
         <div className="py-2">
           <button
@@ -45,7 +45,7 @@ export function SharingSheet(props: {
                   text: t("Please join {{name}} list!", {
                     name: props.taskList?.name,
                   }),
-                  url,
+                  url: shareUrl,
                 });
               } catch (err) {
                 window.alert(t("Need to run this under https or localhost"));

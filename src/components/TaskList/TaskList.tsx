@@ -52,9 +52,9 @@ export function TaskList(props: {
   const [taskText, setTaskText] = useState<string>("");
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
   const [, { createTask, updateTask, deleteTask }, { getTasksById }] =
-    useTasks();
-  const [{ data: app }, { updateApp }] = useApp();
-  const [, { updateTaskList }] = useTaskLists();
+    useTasks("/api/tasks");
+  const [{ data: app }, { updateApp }] = useApp("/api/app");
+  const [, { updateTaskList }] = useTaskLists("/api/task-lists");
 
   const sensors = useSensors(
     useSensor(PointerSensor),

@@ -31,8 +31,9 @@ export function TaskListList(props: {
   const { t } = useCustomTranslation("components.TaskListList");
 
   const [taskListName, setTaskListName] = useState<string>("");
-  const [, { updateApp }] = useApp();
-  const [, { createTaskList, deleteTaskList }] = useTaskLists();
+  const [, { updateApp }] = useApp("/api/app");
+  const [, { createTaskList, deleteTaskList }] =
+    useTaskLists("/api/task-lists");
 
   const sensors = useSensors(
     useSensor(PointerSensor),

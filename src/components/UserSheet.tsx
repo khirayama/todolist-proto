@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import qs from "query-string";
 
 import { ParamsSheet } from "libs/components/ParamsSheet";
@@ -17,9 +16,9 @@ export function UserSheet(props: {
 }) {
   const { t } = useCustomTranslation("components.UserSheet");
   const { supabase, isLoggedIn } = useSupabase();
-  const [{ data: app }] = useApp();
-  const [{ data: profile }, { updateProfile }] = useProfile();
-  const [, { deleteTaskList }] = useTaskLists();
+  const [{ data: app }] = useApp("/api/app");
+  const [{ data: profile }, { updateProfile }] = useProfile("/api/profile");
+  const [, { deleteTaskList }] = useTaskLists("/api/task-lists");
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [email, setEmail] = useState(profile.email);
   const [password, setPassword] = useState("");
