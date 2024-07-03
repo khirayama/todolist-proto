@@ -1,0 +1,54 @@
+{
+  "name": "TODO App",
+  "short_name": "TODO App",
+  "description": "TODO App",
+  "theme_color": "#666666",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/app",
+  "icons": [
+    {
+      "src": "https://placehold.jp/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://placehold.jp/1200x800.png",
+      "sizes": "1200x800",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://placehold.jp/1200x800.png",
+      "sizes": "1200x800",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://placehold.jp/1200x800.png",
+      "sizes": "1200x800",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://placehold.jp/320x640.png",
+      "sizes": "320x640",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "https://placehold.jp/320x640.png",
+      "sizes": "320x640",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "https://placehold.jp/320x640.png",
+      "sizes": "320x640",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
