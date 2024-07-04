@@ -72,15 +72,6 @@ export const useClient = <T>(
   polling: ReturnType<typeof createPolling>;
   sent: (options: AxiosRequestConfig) => Promise<AxiosResponse>;
 } => {
-  const session = getSession();
-  const r = axios.create({
-    withCredentials: true,
-    headers: {
-      "Cache-Control": "no-cache",
-      Authorization: `Bearer ${session?.access_token}`,
-    },
-  });
-
   if (!fetchStatus[url]) {
     fetchStatus[url] = {
       isLoading: false,
@@ -94,7 +85,15 @@ export const useClient = <T>(
       const f = async () => {
         fetchStatus[url].isLoading = true;
         const tmp = options.before?.();
-        return r({ method: "GET", url })
+        return axios({
+          method: "GET",
+          url,
+          withCredentials: true,
+          headers: {
+            "Cache-Control": "no-cache",
+            Authorization: `Bearer ${getSession()?.access_token}`,
+          },
+        })
           .then((res) => {
             fetchStatus[url].isInitialized = true;
             fetchStatus[url].isLoading = false;
@@ -117,10 +116,16 @@ export const useClient = <T>(
     return () => {
       fetchStatus[url].polling.stop();
     };
-  }, [url, r]);
+  }, [url]);
 
   return {
-    sent: r,
+    sent: axios.create({
+      withCredentials: true,
+      headers: {
+        "Cache-Control": "no-cache",
+        Authorization: `Bearer ${getSession()?.access_token}`,
+      },
+    }),
     isInitialized: fetchStatus[url]?.isInitialized || false,
     isLoading: fetchStatus[url]?.isLoading || false,
     polling: fetchStatus[url]?.polling || null,
