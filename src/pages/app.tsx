@@ -236,7 +236,7 @@ export default function AppPage() {
               params={{ drawer: "opened" }}
               mergeParams
             >
-              <Icon text="list" />
+              <Icon text="menu" />
             </ParamsLink>
 
             <div className="flex-1" />
@@ -256,7 +256,7 @@ export default function AppPage() {
                       "w-1 h-1 bg-gray-600 rounded-full mx-1",
                       currentTaskListId === taskList.id
                         ? "bg-gray-500"
-                        : "bg-gray-300"
+                        : "bg-gray-200"
                     )}
                   />
                 </button>

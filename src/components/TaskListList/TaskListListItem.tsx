@@ -59,7 +59,7 @@ export function TaskListListItem(props: {
         {...listeners}
         {...attributes}
         className={clsx(
-          "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400",
+          "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400 fill-gray-400",
           mustHaveClassNames
         )}
       >
@@ -87,7 +87,7 @@ export function TaskListListItem(props: {
             props.handleDeleteTaskListButtonClick(taskList.id);
           }
         }}
-        className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
+        className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer fill-gray-400"
       >
         <Icon text="delete" />
       </button>

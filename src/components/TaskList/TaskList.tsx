@@ -488,7 +488,7 @@ export function TaskList(props: {
               </form>
             </div>
           </section>
-          <section className="flex py-2 pl-4 pr-3 text-gray-400">
+          <section className="flex py-2 pl-4 pr-3 text-gray-400 fill-gray-400">
             <button
               disabled={props.disabled}
               className="flex"

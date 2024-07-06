@@ -62,7 +62,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           {...attributes}
           {...listeners}
           className={clsx(
-            "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400 touch-none"
+            "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400 touch-none fill-gray-400"
           )}
         >
           <Icon text="drag_indicator" />
@@ -98,7 +98,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         <ParamsLink
           data-taskdatepicker={task.id}
           tabIndex={props.disabled ? -1 : 0}
-          className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer"
+          className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer fill-gray-400"
           href="/app"
           params={{ sheet: "datepicker", taskid: task.id }}
           mergeParams
