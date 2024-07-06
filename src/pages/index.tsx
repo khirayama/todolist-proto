@@ -9,8 +9,15 @@ export default function IndexPage() {
   return (
     <div>
       <div>
-        <div className="text-center py-16">
+        <div className="text-center pt-24 pb-4">
+          <img
+            src="/logo.svg"
+            alt="Lightlist"
+            className="m-auto w-[80px] py-4"
+          />
           <h1 className="p-4 text-center">Lightlist</h1>
+        </div>
+        <div className="text-center p-4">
           <ParamsLink
             href="/app"
             params={params}
@@ -22,7 +29,7 @@ export default function IndexPage() {
         {!isLoggedIn && (
           <ParamsLink href="/demo">ログインせずにさわってみる</ParamsLink>
         )}
-        <div className="p-4 max-w-lg m-auto">
+        <div className="p-8 max-w-lg m-auto text-justify">
           <p className="my-4">
             Lightlistは、とてもシンプルなタスクリストサービスです。
           </p>
