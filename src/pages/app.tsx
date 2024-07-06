@@ -242,6 +242,28 @@ export default function AppPage() {
             <div className="flex-1" />
           </header>
 
+          <div className="flex items-center justify-center pb-2">
+            {taskLists.map((taskList, i) => {
+              return (
+                <button
+                  key={`${i}-${taskList.id}`}
+                  onClick={() => {
+                    handleTaskListLinkClick(taskList.id);
+                  }}
+                >
+                  <div
+                    className={clsx(
+                      "w-1 h-1 bg-gray-600 rounded-full mx-1",
+                      currentTaskListId === taskList.id
+                        ? "bg-gray-500"
+                        : "bg-gray-300"
+                    )}
+                  />
+                </button>
+              );
+            })}
+          </div>
+
           <section
             ref={taskListContainerRef}
             className={clsx(
