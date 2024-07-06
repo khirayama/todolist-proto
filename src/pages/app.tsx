@@ -253,7 +253,7 @@ export default function AppPage() {
                 >
                   <div
                     className={clsx(
-                      "w-1 h-1 bg-gray-600 rounded-full mx-1",
+                      "w-1 h-1 rounded-full mx-1",
                       currentTaskListId === taskList.id
                         ? "bg-gray-500"
                         : "bg-gray-200"
