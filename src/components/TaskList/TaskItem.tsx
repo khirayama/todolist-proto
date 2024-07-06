@@ -52,9 +52,9 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         ref={setNodeRef}
         style={style}
         className={clsx(
-          "relative flex border-b",
-          isDragging && "z-10 border-t",
-          task.completed ? "bg-gray-100" : "bg-white"
+          "relative flex",
+          isDragging && "z-10 shadow",
+          task.completed ? "opacity-55" : "bg-white"
         )}
       >
         <span

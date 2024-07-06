@@ -43,10 +43,7 @@ export function TaskListListItem(props: {
     <div
       ref={setNodeRef}
       style={style}
-      className={clsx(
-        "relative flex border-b bg-white",
-        isDragging && "z-10 border-t"
-      )}
+      className={clsx("relative flex bg-white", isDragging && "z-10")}
     >
       {props.newTaskListName && props.index === 0 && !isSorting ? (
         <button

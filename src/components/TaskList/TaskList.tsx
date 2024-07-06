@@ -426,7 +426,7 @@ export function TaskList(props: {
   return (
     <>
       <div className="h-full overflow-scroll" onKeyDown={handleTaskListKeyDown}>
-        <header className="sticky w-full top-0 border-b z-20 bg-white">
+        <header className="sticky w-full top-0 z-20 bg-white">
           <section className={clsx("px-1")}>
             <div className="relative">
               <h1 className="py-2 text-center font-bold">

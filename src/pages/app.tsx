@@ -170,7 +170,7 @@ export default function AppPage() {
       <Head>
         <link rel="manifest" href="/manifest.json" />
       </Head>
-      <div className="flex w-full h-full bg-gray-100 overflow-hidden">
+      <div className="flex w-full h-full overflow-hidden">
         <section
           data-sectiondrawer
           className={clsx(
@@ -199,10 +199,10 @@ export default function AppPage() {
               params={{ sheet: "user" }}
               mergeParams
             >
-              <div className="flex-1 text-left">
+              <Icon text="person" />
+              <div className="flex-1 text-left pl-2">
                 {profile?.displayName || profile?.email || t("Log In")}
               </div>
-              <Icon text="person" />
             </ParamsLink>
 
             <ParamsLink
@@ -212,8 +212,8 @@ export default function AppPage() {
               params={{ sheet: "settings" }}
               mergeParams
             >
-              <div className="flex-1 text-left">{t("Preferences")}</div>
               <Icon text="settings" />
+              <div className="flex-1 text-left pl-2">{t("Preferences")}</div>
             </ParamsLink>
           </div>
           <div className="pt-2 border-t">
@@ -227,7 +227,7 @@ export default function AppPage() {
 
         <section
           data-sectionmain
-          className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full border-x"
+          className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full"
         >
           <header className="flex p-4 bg-white">
             <ParamsLink
@@ -245,7 +245,7 @@ export default function AppPage() {
           <section
             ref={taskListContainerRef}
             className={clsx(
-              "flex-1 bg-gray-100 flex relative w-full snap-mandatory snap-x flex-row flex-nowrap",
+              "flex-1 flex relative w-full snap-mandatory snap-x flex-row flex-nowrap",
               /* FYI: Prevent x-scroll position when sorting after 2nd taskLists */
               sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}

@@ -82,7 +82,7 @@ export function TaskListList(props: {
 
   return (
     <div>
-      <header className="sticky w-full top-0 border-b z-20 bg-white">
+      <header className="sticky w-full top-0 z-20 bg-white">
         <section className="px-2">
           <form
             className="flex items-center py-2 bg-white"
