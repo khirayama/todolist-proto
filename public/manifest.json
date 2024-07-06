@@ -2,7 +2,7 @@
   "name": "Lightlist",
   "short_name": "Lightlist",
   "description": "Lightlist",
-  "theme_color": "#666666",
+  "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/app",
