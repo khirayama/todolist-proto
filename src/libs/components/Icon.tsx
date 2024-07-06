@@ -158,6 +158,30 @@ export function Icon({ text }: { text: string }) {
         </svg>
       );
     }
+    case "arrow_left": {
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+        >
+          <path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z" />
+        </svg>
+      );
+    }
+    case "arrow_right": {
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+        >
+          <path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
+        </svg>
+      );
+    }
   }
   console.warn(`Please migrate SVG Icon: ${text}`);
   return <span className="material-symbols-outlined">{text}</span>;
