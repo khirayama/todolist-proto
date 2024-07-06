@@ -39,6 +39,7 @@ const enTranslation = {
       Sort: "Sort",
       "Clear Completed": "Clear Completed",
       "Task list name": "Task list name",
+      "No tasks! Have a nice day! 🎉": "No tasks! Have a nice day! 🎉",
     },
     TaskListList: {
       "Add task list to bottom": "Add task list to bottom",
@@ -118,6 +119,7 @@ const jaTranslation = {
       Sort: "並び替え",
       "Clear Completed": "完了タスクを削除",
       "Task list name": "タスクリスト名",
+      "No tasks! Have a nice day! 🎉": "タスクはありません！良い一日を！🎉",
     },
     TaskListList: {
       "Add task list to bottom": "タスクリストを末尾に追加",

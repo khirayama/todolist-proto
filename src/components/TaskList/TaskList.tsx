@@ -509,51 +509,37 @@ export function TaskList(props: {
           </section>
         </header>
 
-        <section>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            modifiers={[restrictToVerticalAxis]}
-            onDragStart={props.handleDragStart}
-            onDragCancel={props.handleDragCancel}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={tasks}
-              strategy={verticalListSortingStrategy}
+        {tasks.length ? (
+          <section>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}
+              onDragStart={props.handleDragStart}
+              onDragCancel={props.handleDragCancel}
+              onDragEnd={handleDragEnd}
             >
-              {tasks.map((task, i) => {
-                const handleInsertTaskButtonClick = (idx: number) => {
-                  const newTasks = [...tasks];
-                  const newTask = {
-                    id: uuid(),
-                    text: taskText,
-                    completed: false,
-                    date: "",
-                  };
-                  newTasks.splice(idx, 0, newTask);
-                  createTask(newTask);
-                  updateTaskList({
-                    ...taskList,
-                    taskIds: newTasks.map((t) => t.id),
-                  });
-                  setTaskText("");
-                };
-
-                return (
-                  <TaskItem
-                    key={task.id}
-                    disabled={props.disabled}
-                    index={i}
-                    task={task}
-                    newTaskText={taskText}
-                    handleInsertTaskButtonClick={handleInsertTaskButtonClick}
-                  />
-                );
-              })}
-            </SortableContext>
-          </DndContext>
-        </section>
+              <SortableContext
+                items={tasks}
+                strategy={verticalListSortingStrategy}
+              >
+                {tasks.map((task) => {
+                  return (
+                    <TaskItem
+                      key={task.id}
+                      disabled={props.disabled}
+                      task={task}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
+          </section>
+        ) : (
+          <div className="w-full py-32 text-center font-bold text-gray-400">
+            {t("No tasks! Have a nice day! 🎉")}
+          </div>
+        )}
       </div>
 
       <SharingSheet

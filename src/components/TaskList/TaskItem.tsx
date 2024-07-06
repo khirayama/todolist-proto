@@ -20,13 +20,7 @@ function isDatePickerSheetOpened(taskId: string) {
   return query.sheet === "datepicker" && query.taskid === taskId;
 }
 
-export function TaskItem(props: {
-  disabled?: boolean;
-  index: number;
-  task: Task;
-  newTaskText: string;
-  handleInsertTaskButtonClick: (idx: number) => void;
-}) {
+export function TaskItem(props: { disabled?: boolean; task: Task }) {
   const router = useRouter();
   const task = props.task;
 
@@ -63,15 +57,6 @@ export function TaskItem(props: {
           task.completed ? "bg-gray-100" : "bg-white"
         )}
       >
-        {props.newTaskText && props.index === 0 && !isSorting ? (
-          <button
-            disabled={props.disabled}
-            className="flex items-center justify-center absolute z-10 top-0 right-12 translate-y-[-50%] bg-white rounded-full w-8 h-8 border text-gray-400"
-            onClick={() => props.handleInsertTaskButtonClick(0)}
-          >
-            <Icon text="add" />
-          </button>
-        ) : null}
         <span
           ref={setActivatorNodeRef}
           {...attributes}
@@ -120,15 +105,6 @@ export function TaskItem(props: {
         >
           {task.date || <Icon text="event" />}
         </ParamsLink>
-        {props.newTaskText && !isSorting ? (
-          <button
-            disabled={props.disabled}
-            className="flex items-center justify-center absolute z-10 bottom-0 right-12 translate-y-[50%] bg-white rounded-full w-8 h-8 border text-gray-400"
-            onClick={() => props.handleInsertTaskButtonClick(props.index + 1)}
-          >
-            <Icon text="add" />
-          </button>
-        ) : null}
       </div>
 
       <DatePickerSheet
