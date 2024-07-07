@@ -64,23 +64,11 @@ const GlobalStateContext = createContext<
 >([snapshot, () => {}, () => snapshot]);
 
 export const GlobalStateProvider = (props: { children: ReactNode }) => {
-  const changeLanguage = () => {
-    const lang = snapshot.preferences.lang.toLowerCase();
-    if (i18n.resolvedLanguage !== lang) {
-      window.requestAnimationFrame(() => {
-        i18n.changeLanguage(lang);
-      });
-    }
-  };
-
   const [globalState, nativeSetGlobalState] = useState(config.initialValue());
-  const { i18n } = useTranslation();
 
   snapshot = globalState;
-  changeLanguage();
 
   const setGlobalState = (newState: DeepPartial<GlobalState>) => {
-    changeLanguage();
     const mergedState = merge(snapshot, newState) as GlobalState;
     snapshot = mergedState;
     nativeSetGlobalState(snapshot);

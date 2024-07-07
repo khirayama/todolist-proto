@@ -55,7 +55,7 @@ export default function AppPage() {
     router.push("/app", { query });
   };
 
-  const { t } = useCustomTranslation("pages.index");
+  const { t, i18n } = useCustomTranslation("pages.app");
 
   const [{ data: app }, { updateApp }] = useApp("/api/app");
   const [{ data: profile }, { updateProfile }] = useProfile("/api/profile");
@@ -74,6 +74,10 @@ export default function AppPage() {
   );
 
   const taskListContainerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    i18n.changeLanguage(preferences.lang.toLowerCase());
+  }, [preferences.lang.toLowerCase()]);
 
   useEffect(() => {
     if (!currentTaskListId) {
