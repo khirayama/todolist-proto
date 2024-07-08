@@ -205,7 +205,7 @@ export default function AppPage() {
             >
               <Icon text="person" />
               <div className="flex-1 text-left pl-2">
-                {profile?.displayName || profile?.email || t("Log In")}
+                {profile?.displayName || profile?.email || t("Log in")}
               </div>
             </ParamsLink>
 

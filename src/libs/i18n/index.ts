@@ -28,7 +28,15 @@ const enTranslation = {
   },
   pages: {
     index: {
-      "Log In": "Log In",
+      "Get started": "Get started",
+      "Try without logging in": "Try without logging in",
+      "Lightlist is a simple task list service.":
+        "Lightlist is a simple task list service.",
+      "It can be used as a ToDo list for task management or a shopping list. You can share lists with people who are not registered.":
+        "It can be used as a ToDo list for task management or a shopping list. You can share lists with people who are not registered.",
+    },
+    app: {
+      "Log in": "Log in",
       Preferences: "Preferences",
     },
   },
@@ -108,7 +116,15 @@ const jaTranslation = {
   },
   pages: {
     index: {
-      "Log In": "ログイン",
+      "Get started": "はじめる",
+      "Try without logging in": "ログインせずにさわってみる",
+      "Lightlist is a simple task list service.":
+        "Lightlistは、とてもシンプルなタスクリストサービスです。",
+      "It can be used as a ToDo list for task management or a shopping list. You can share lists with people who are not registered.":
+        "タスク管理としてのToDoリストや、買い物リストとしても利用できます。登録していない人ともリストを共有することができます。",
+    },
+    app: {
+      "Log in": "ログイン",
       Preferences: "設定",
     },
   },
@@ -181,8 +197,8 @@ export function init() {
         translation: jaTranslation,
       },
     },
-    lng: "en",
-    fallbackLng: "en",
+    lng: "ja",
+    fallbackLng: "ja",
     interpolation: {
       escapeValue: false,
     },
