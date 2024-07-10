@@ -49,10 +49,7 @@ export default function AppPage() {
 
   const router = useRouter();
   const closeDrawer = () => {
-    const query = { ...router.query };
-    delete query.drawer;
-    delete query.sheet;
-    router.push("/app", { query });
+    router.back();
   };
 
   const { t, i18n } = useCustomTranslation("pages.app");
@@ -130,9 +127,11 @@ export default function AppPage() {
       const isOpened = isDrawerOpened();
       setIsDrawerOpen(isOpened);
       if (isOpened) {
-        document
-          .querySelector<HTMLAnchorElement>("[data-sectiondrawer] a")
-          ?.focus();
+        setTimeout(() => {
+          const p = document.querySelector<HTMLElement>("[data-sectiondrawer]");
+          const el = p?.querySelector<HTMLButtonElement>("button");
+          el?.focus();
+        }, 1);
       }
     };
 
@@ -183,16 +182,16 @@ export default function AppPage() {
           )}
         >
           <div className="flex md:hidden">
-            <ParamsLink
-              tabIndex={isDrawerDisabled ? -1 : 0}
-              href="/app"
-              params={{ drawer: undefined }}
-              mergeParams
-              className="flex items-center justify-center px-4 pt-4 w-full"
-            >
-              <Icon text="close" />
-              <div className="flex-1" />
-            </ParamsLink>
+            <div className="p-2">
+              <button
+                disabled={isDrawerDisabled}
+                className="p-2 rounded"
+                onClick={closeDrawer}
+              >
+                <Icon text="close" />
+              </button>
+            </div>
+            <div className="flex-1" />
           </div>
 
           <div className="py-2">
