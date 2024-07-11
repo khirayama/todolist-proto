@@ -11,6 +11,7 @@ import { createClient } from "@supabase/supabase-js";
 type SupabaseContextType = {
   supabase: SupabaseClient;
   isLoggedIn: boolean;
+  isInitialized: boolean;
 };
 
 let ss: Session = null;
@@ -23,6 +24,7 @@ const supabase = createClient(
 const SupabaseContext = createContext<SupabaseContextType>({
   supabase,
   isLoggedIn: false,
+  isInitialized: false,
 });
 
 export const SupabaseProvider = (props: { children: ReactNode }) => {
@@ -53,17 +55,16 @@ export const SupabaseProvider = (props: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  return initialized ? (
+  return (
     <SupabaseContext.Provider
       value={{
         supabase,
         isLoggedIn: !!user,
+        isInitialized: initialized,
       }}
     >
       {props.children}
     </SupabaseContext.Provider>
-  ) : (
-    <h1>Loading...</h1>
   );
 };
 
