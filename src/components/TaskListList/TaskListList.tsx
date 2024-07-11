@@ -118,20 +118,7 @@ export function TaskListList(props: {
             items={taskLists}
             strategy={verticalListSortingStrategy}
           >
-            {taskLists.map((taskList, i) => {
-              const handleInsertTaskListButtonClick = (idx: number) => {
-                const newTaskLists = [...taskLists];
-                const newTaskList = {
-                  id: uuid(),
-                  name: taskListName,
-                  taskIds: [],
-                  shareCode: "",
-                };
-                newTaskLists.splice(idx, 0, newTaskList);
-                createTaskList(newTaskList);
-                updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
-                setTaskListName("");
-              };
+            {taskLists.map((taskList) => {
               const handleDeleteTaskListButtonClick = (taskListId: string) => {
                 const newTaskLists = taskLists.filter(
                   (tl) => tl.id !== taskListId
@@ -144,12 +131,7 @@ export function TaskListList(props: {
                 <TaskListListItem
                   key={taskList.id}
                   disabled={props.disabled}
-                  index={i}
                   taskList={taskList}
-                  newTaskListName={taskListName}
-                  handleInsertTaskListButtonClick={
-                    handleInsertTaskListButtonClick
-                  }
                   handleDeleteTaskListButtonClick={
                     handleDeleteTaskListButtonClick
                   }

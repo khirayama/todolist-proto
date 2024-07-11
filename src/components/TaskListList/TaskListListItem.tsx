@@ -6,10 +6,7 @@ import { Icon } from "libs/components/Icon";
 
 export function TaskListListItem(props: {
   disabled?: boolean;
-  index: number;
   taskList: TaskList;
-  newTaskListName: string;
-  handleInsertTaskListButtonClick: (idx: number) => void;
   handleDeleteTaskListButtonClick: (taskListId: string) => void;
   handleTaskListLinkClick: (taskListId: string) => void;
 }) {
@@ -22,7 +19,6 @@ export function TaskListListItem(props: {
     transform,
     transition,
     isDragging,
-    isSorting,
   } = useSortable({ id: taskList.id });
 
   if (props.disabled) {
@@ -45,15 +41,6 @@ export function TaskListListItem(props: {
       style={style}
       className={clsx("relative flex bg-white", isDragging && "z-10")}
     >
-      {props.newTaskListName && props.index === 0 && !isSorting ? (
-        <button
-          disabled={props.disabled}
-          className="flex items-center justify-center absolute z-10 top-0 right-12 translate-y-[-50%] bg-white rounded-full w-8 h-8 border text-gray-400"
-          onClick={() => props.handleInsertTaskListButtonClick(0)}
-        >
-          <Icon text="add" />
-        </button>
-      ) : null}
       <span
         ref={setActivatorNodeRef}
         {...listeners}
@@ -91,15 +78,6 @@ export function TaskListListItem(props: {
       >
         <Icon text="delete" />
       </button>
-      {props.newTaskListName && !isSorting ? (
-        <button
-          disabled={props.disabled}
-          className="flex items-center justify-center absolute z-10 bottom-0 right-12 translate-y-[50%] bg-white rounded-full w-8 h-8 border text-gray-400"
-          onClick={() => props.handleInsertTaskListButtonClick(props.index + 1)}
-        >
-          <Icon text="add" />
-        </button>
-      ) : null}
     </div>
   );
 }
