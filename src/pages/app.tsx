@@ -48,18 +48,12 @@ export default function AppPage() {
   }, []);
 
   const router = useRouter();
-  const closeDrawer = () => {
-    router.back();
-  };
-
   const { t, i18n } = useCustomTranslation("pages.app");
 
   const [{ data: app }, { updateApp }] = useApp("/api/app");
   const [{ data: profile }, { updateProfile }] = useProfile("/api/profile");
   const [{ data: preferences }] = usePreferences("/api/preferences");
   const [, , { getTaskListsById }] = useTaskLists("/api/task-lists");
-
-  const taskLists = getTaskListsById(app.taskListIds);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [isDrawerDisabled, setIsDrawerDisabled] = useState(
@@ -71,6 +65,8 @@ export default function AppPage() {
   );
 
   const taskListContainerRef = useRef<HTMLElement>(null);
+  const taskLists = getTaskListsById(app.taskListIds);
+  const closeDrawer = () => router.back();
 
   useEffect(() => {
     i18n.changeLanguage(preferences.lang.toLowerCase());
@@ -142,9 +138,7 @@ export default function AppPage() {
     };
   }, [router]);
 
-  const handleTaskListLinkClick = (taskListId: string) => {
-    closeDrawer();
-
+  const scrollToTaskList = (taskListId: string) => {
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
       `[data-tasklistid="${taskListId}"]`
@@ -156,6 +150,13 @@ export default function AppPage() {
         text.focus();
       }, 100);
     }
+  };
+
+  const handleTaskListLinkClick = (taskListId: string) => {
+    if (isNarrowLayout()) {
+      closeDrawer();
+    }
+    scrollToTaskList(taskListId);
   };
 
   const handleSignedOut = () => {
@@ -250,19 +251,18 @@ export default function AppPage() {
               return (
                 <button
                   key={`${i}-${taskList.id}`}
-                  onClick={() => {
-                    handleTaskListLinkClick(taskList.id);
+                  disabled={isDrawerDisabled}
+                  className={clsx(
+                    "w-1 h-1 rounded-full mx-1",
+                    currentTaskListId === taskList.id
+                      ? "bg-gray-500"
+                      : "bg-gray-200"
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToTaskList(taskList.id);
                   }}
-                >
-                  <div
-                    className={clsx(
-                      "w-1 h-1 rounded-full mx-1",
-                      currentTaskListId === taskList.id
-                        ? "bg-gray-500"
-                        : "bg-gray-200"
-                    )}
-                  />
-                </button>
+                />
               );
             })}
           </div>
