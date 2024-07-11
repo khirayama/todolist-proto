@@ -54,6 +54,20 @@ const fetchStatus: {
   };
 } = {};
 
+export const resetFetchStatus = (url?: string) => {
+  if (url) {
+    fetchStatus[url].polling.stop();
+    fetchStatus[url].isInitialized = false;
+    fetchStatus[url].isLoading = false;
+  } else {
+    for (const key in fetchStatus) {
+      fetchStatus[key].polling.stop();
+      fetchStatus[key].isInitialized = false;
+      fetchStatus[key].isLoading = false;
+    }
+  }
+};
+
 export const useClient = <T>(
   url: string,
   options: {
@@ -97,12 +111,13 @@ export const useClient = <T>(
           .then((res) => {
             fetchStatus[url].isInitialized = true;
             fetchStatus[url].isLoading = false;
-            options.resolve?.(res, tmp);
             fetchStatus[url].polling.start(f, options.interval || time.polling);
+            options.resolve?.(res, tmp);
           })
           .catch((res) => {
             fetchStatus[url].isInitialized = true;
             fetchStatus[url].isLoading = false;
+            fetchStatus[url].polling.stop();
             options.reject?.(res, tmp);
           })
           .finally(() => {
