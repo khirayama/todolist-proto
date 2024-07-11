@@ -65,8 +65,8 @@ export function ParamsSheet(props: {
         >
           <header className="flex w-full p-4 items-center justify-center sticky top-0 bg-white">
             <div className="flex-1 font-bold text-center">{props.title}</div>
-            <div className="absolute right-0 top-0 p-4">
-              <RadixDialog.Close>
+            <div className="absolute right-0 top-0 p-2">
+              <RadixDialog.Close className="p-2 rounded">
                 <Icon text="close" />
               </RadixDialog.Close>
             </div>
