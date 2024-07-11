@@ -74,7 +74,7 @@ export default function SharePage() {
         </div>
       </section>
 
-      <UserSheet open={isUserSheetOpened} handleSignedIn={closeDrawer} />
+      <UserSheet open={isUserSheetOpened} />
     </>
   );
 }

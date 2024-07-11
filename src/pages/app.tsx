@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import qs from "query-string";
 
+import { resetFetchStatus } from "hooks/common";
 import { useApp } from "hooks/useApp";
 import { useProfile } from "hooks/useProfile";
 import { usePreferences } from "hooks/usePreferences";
@@ -31,22 +32,7 @@ function isUserSheetOpened() {
   return qs.parse(window.location.search).sheet === "user";
 }
 
-export default function AppPage() {
-  /* Page Stack Control and support fast refresh */
-  const isInitialRender = useRef(true);
-  useEffect(() => {
-    isInitialRender.current = false;
-    const isFastRefresh = !isInitialRender.current;
-    if (!isFastRefresh) {
-      const query = qs.parse(window.location.search);
-      if (Object.keys(query).length) {
-        const tmp = window.location.href;
-        window.history.replaceState({}, "", "/app");
-        window.history.pushState({}, "", tmp);
-      }
-    }
-  }, []);
-
+const AppPageContent = () => {
   const router = useRouter();
   const { t, i18n } = useCustomTranslation("pages.app");
 
@@ -160,6 +146,9 @@ export default function AppPage() {
   };
 
   const handleSignedOut = () => {
+    router.push("/login");
+    resetFetchStatus();
+
     updateApp({
       taskListIds: [],
     });
@@ -174,6 +163,7 @@ export default function AppPage() {
       <Head>
         <link rel="manifest" href="/manifest.json" />
       </Head>
+
       <div className="flex w-full h-full overflow-hidden">
         <section
           data-sectiondrawer
