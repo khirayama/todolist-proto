@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import { createContext, useContext, ReactNode, useState } from "react";
 import { deepmerge } from "@fastify/deepmerge";
 
