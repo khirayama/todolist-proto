@@ -30,7 +30,7 @@ export function PreferencesSheet(props: {
             });
           }}
         >
-          <Select.Trigger className="p-2 border rounded inline-flex items-center">
+          <Select.Trigger className="p-2 border rounded inline-flex items-center focus:bg-gray-200">
             <Select.Value aria-label={t(props.preferences.theme)}>
               {t(props.preferences.theme)}
             </Select.Value>
@@ -45,7 +45,7 @@ export function PreferencesSheet(props: {
                   <Select.Item
                     key={theme}
                     value={theme}
-                    className="p-2 flex items-center"
+                    className="p-2 flex items-center focus:bg-gray-200"
                   >
                     <Select.ItemText>{t(theme)}</Select.ItemText>
                     <Select.ItemIndicator>
@@ -69,7 +69,7 @@ export function PreferencesSheet(props: {
             });
           }}
         >
-          <Select.Trigger className="p-2 border rounded inline-flex items-center">
+          <Select.Trigger className="p-2 border rounded inline-flex items-center focus:bg-gray-200">
             <Select.Value aria-label={t(props.preferences.lang)}>
               {t(props.preferences.lang)}
             </Select.Value>
@@ -84,7 +84,7 @@ export function PreferencesSheet(props: {
                   <Select.Item
                     key={ln}
                     value={ln}
-                    className="p-2 flex items-center"
+                    className="p-2 flex items-center focus:bg-gray-200"
                   >
                     <Select.ItemText>{t(ln)}</Select.ItemText>
                     <Select.ItemIndicator>

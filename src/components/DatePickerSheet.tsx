@@ -13,7 +13,7 @@ export function DatePickerSheet(props: {
 
   return (
     <ParamsSheet open={props.open} title={t("Date Picker")}>
-      <div className="px-12">
+      <div className="px-4">
         <DatePicker
           autoFocus
           value={props.value}

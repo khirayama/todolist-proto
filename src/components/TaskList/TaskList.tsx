@@ -229,7 +229,6 @@ export function TaskList(props: {
      * Shift-Delete: delete completed tasks
      * ArrowDown: focus next task text
      * ArrowUp: focus previous task text
-     * Mod-c: open datepicker
      */
 
     /* task text and task item event */
@@ -414,12 +413,6 @@ export function TaskList(props: {
           }
         }
       });
-      kmh("Mod-c", e.nativeEvent, () => {
-        const query = qs.parse(window.location.search);
-        query.sheet = "datepicker";
-        query.taskid = task.id;
-        router.push("/app", { query });
-      });
     }
   };
 
@@ -428,11 +421,11 @@ export function TaskList(props: {
       <div className="h-full overflow-scroll" onKeyDown={handleTaskListKeyDown}>
         <header className="sticky w-full top-0 z-20 bg-white">
           <section className={clsx("px-1")}>
-            <div className="relative">
-              <h1 className="py-2 text-center font-bold">
+            <div className="flex pl-8">
+              <h1 className="flex-1 text-center font-bold">
                 <input
                   disabled={props.disabled}
-                  className="inline-block text-center w-full"
+                  className="inline-block text-center w-full py-2 rounded focus:bg-gray-200"
                   type="text"
                   placeholder={t("Task list name")}
                   value={taskList.name}
@@ -440,19 +433,25 @@ export function TaskList(props: {
                 />
               </h1>
               <ParamsLink
+                data-trigger={`sharing-${taskList.id}`}
                 tabIndex={props.disabled ? -1 : 0}
-                className="absolute top-0 right-0 py-2 px-2"
+                className="p-2 rounded focus:bg-gray-200"
                 href="/app"
-                params={{ sheet: "sharing", tasklistid: taskList.id }}
+                params={{
+                  sheet: "sharing",
+                  tasklistid: taskList.id,
+                  trigger: `sharing-${taskList.id}`,
+                }}
                 mergeParams
               >
                 <Icon text="share" />
               </ParamsLink>
             </div>
+
             <div className="flex items-center py-2 bg-white">
               <button
                 disabled={props.disabled}
-                className="p-2 flex"
+                className="p-2 flex rounded focus:bg-gray-200"
                 onClick={onInsertPositionIconClick}
               >
                 {isInsertTop ? (
@@ -461,6 +460,7 @@ export function TaskList(props: {
                   <Icon text="vertical_align_bottom" />
                 )}
               </button>
+
               <form
                 className="flex flex-1 items-center py-2 bg-white"
                 onSubmit={onTaskFormSubmit}
@@ -468,7 +468,7 @@ export function TaskList(props: {
                 <input
                   data-tasktext
                   disabled={props.disabled}
-                  className="flex-1 rounded-full py-2 px-4 border"
+                  className="flex-1 rounded-full py-2 px-4 border focus:bg-gray-200"
                   value={taskText}
                   placeholder={
                     isInsertTop ? t("Add task to top") : t("Add task to bottom")
@@ -480,7 +480,7 @@ export function TaskList(props: {
                 />
                 <button
                   disabled={props.disabled}
-                  className="p-2 flex"
+                  className="p-2 flex rounded focus:bg-gray-200"
                   type="submit"
                 >
                   <Icon text="send" />
@@ -488,19 +488,21 @@ export function TaskList(props: {
               </form>
             </div>
           </section>
-          <section className="flex py-2 pl-4 pr-3 text-gray-400 fill-gray-400">
+          <section className="flex p-1 pl-2 text-gray-400 fill-gray-400">
             <button
               disabled={props.disabled}
-              className="flex"
+              className="flex p-1 rounded focus:bg-gray-200"
               onClick={onSortTasksButtonClick}
             >
               <Icon text="sort" />
               <span className="pl-1">{t("Sort")}</span>
             </button>
+
             <div className="inline-block flex-1"></div>
+
             <button
               disabled={props.disabled}
-              className="flex"
+              className="flex p-1 rounded focus:bg-gray-200"
               onClick={onClearCompletedTasksButtonClick}
             >
               <span className="pr-1">{t("Clear Completed")}</span>

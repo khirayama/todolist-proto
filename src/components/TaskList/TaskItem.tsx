@@ -57,20 +57,21 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           task.completed ? "opacity-55" : "bg-white"
         )}
       >
-        <span
+        <button
           ref={setActivatorNodeRef}
           {...attributes}
           {...listeners}
           className={clsx(
-            "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400 touch-none fill-gray-400"
+            "flex items-center justify-center p-2 px-1 text-gray-400 touch-none fill-gray-400 rounded focus:bg-gray-200"
           )}
         >
           <Icon text="drag_indicator" />
-        </span>
-        <span className="flex items-center pr-4 py-2">
+        </button>
+
+        <span className="flex items-center p-1 pr-2">
           <Checkbox
             disabled={props.disabled}
-            className="border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden"
+            className="group border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden focus:bg-gray-200"
             checked={task.completed}
             onCheckedChange={(v: boolean) => {
               updateTask({
@@ -79,11 +80,12 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
               });
             }}
           >
-            <CheckboxIndicator className="bg-gray-100 text-gray-400 w-full h-full justify-center items-center flex">
+            <CheckboxIndicator className="bg-gray-100 text-gray-400 w-full h-full justify-center items-center flex group-focus:bg-gray-200">
               <CheckIcon />
             </CheckboxIndicator>
           </Checkbox>
         </span>
+
         <TaskTextArea
           disabled={props.disabled}
           task={task}
@@ -95,12 +97,18 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
             });
           }}
         />
+
         <ParamsLink
           data-taskdatepicker={task.id}
+          data-trigger={`datepicker-${task.id}`}
           tabIndex={props.disabled ? -1 : 0}
-          className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer fill-gray-400"
+          className="flex items-center justify-center p-2 text-gray-400 cursor-pointer fill-gray-400 rounded focus:bg-gray-200"
           href="/app"
-          params={{ sheet: "datepicker", taskid: task.id }}
+          params={{
+            sheet: "datepicker",
+            taskid: task.id,
+            trigger: `datepicker-${task.id}`,
+          }}
           mergeParams
         >
           {task.date || <Icon text="event" />}

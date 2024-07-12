@@ -115,6 +115,12 @@ const AppPageContent = () => {
           const el = p?.querySelector<HTMLButtonElement>("button");
           el?.focus();
         }, 1);
+      } else {
+        setTimeout(() => {
+          const p = document.querySelector<HTMLElement>("[data-sectionmain]");
+          const el = p?.querySelector<HTMLAnchorElement>("a");
+          el?.focus();
+        }, 1);
       }
     };
 
@@ -174,10 +180,10 @@ const AppPageContent = () => {
           )}
         >
           <div className="flex md:hidden">
-            <div className="p-2">
+            <div className="p-1">
               <button
                 disabled={isDrawerDisabled}
-                className="p-2 rounded"
+                className="p-2 rounded focus:bg-gray-200"
                 onClick={closeDrawer}
               >
                 <Icon text="close" />
@@ -186,12 +192,13 @@ const AppPageContent = () => {
             <div className="flex-1" />
           </div>
 
-          <div className="py-2">
+          <div className="p-2">
             <ParamsLink
+              data-trigger="user"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex items-center justify-center px-4 py-2 w-full"
+              className="flex items-center justify-center p-2 w-full rounded focus:bg-gray-200"
               href="/app"
-              params={{ sheet: "user" }}
+              params={{ sheet: "user", trigger: "user" }}
               mergeParams
             >
               <Icon text="person" />
@@ -201,10 +208,11 @@ const AppPageContent = () => {
             </ParamsLink>
 
             <ParamsLink
+              data-trigger="settings"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex items-center justify-center px-4 py-2 w-full"
+              className="flex items-center justify-center p-2 w-full rounded focus:bg-gray-200"
               href="/app"
-              params={{ sheet: "settings" }}
+              params={{ sheet: "settings", trigger: "settings" }}
               mergeParams
             >
               <Icon text="settings" />
@@ -224,9 +232,10 @@ const AppPageContent = () => {
           data-sectionmain
           className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full"
         >
-          <header className="flex p-4 bg-white">
+          <header className="flex p-1 bg-white">
             <ParamsLink
-              className="flex md:hidden items-center justify-center"
+              tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
+              className="flex md:hidden items-center justify-center p-2 rounded focus:bg-gray-200"
               href="/app"
               params={{ drawer: "opened" }}
               mergeParams
@@ -241,10 +250,10 @@ const AppPageContent = () => {
             {taskLists.map((taskList, i) => {
               return (
                 <button
+                  tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
                   key={`${i}-${taskList.id}`}
-                  disabled={isDrawerDisabled}
                   className={clsx(
-                    "w-1 h-1 rounded-full mx-1",
+                    "w-1 h-1 rounded-full mx-1 focus:bg-gray-800",
                     currentTaskListId === taskList.id
                       ? "bg-gray-500"
                       : "bg-gray-200"
@@ -289,7 +298,10 @@ const AppPageContent = () => {
                   <div className="absolute w-full h-full overflow-scroll">
                     <TaskList
                       key={taskList.id}
-                      disabled={currentTaskListId !== taskList.id}
+                      disabled={
+                        currentTaskListId !== taskList.id ||
+                        (!isDrawerDisabled && isDrawerOpen)
+                      }
                       taskList={taskList}
                       handleDragStart={handleDragStart}
                       handleDragCancel={handleDragEnd}

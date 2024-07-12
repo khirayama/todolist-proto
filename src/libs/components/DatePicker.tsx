@@ -23,7 +23,9 @@ export function DatePicker(props: {
   const { t } = useCustomTranslation("libs.components.DatePicker");
 
   const ref = useRef<HTMLTableSectionElement>(null);
-  const [val, setVal] = useState<string>(props.value);
+  const [val, setVal] = useState<string>(
+    props.value || format(new Date(), "yyyy-MM-dd")
+  );
   const [refDate, setRefDate] = useState<Date>(
     props.value ? new Date(props.value) : new Date()
   );
@@ -64,10 +66,10 @@ export function DatePicker(props: {
           <thead className="sticky top-0 bg-white">
             <tr>
               <th colSpan={7} className="p-2">
-                <div className="flex">
-                  <span className="flex-1 text-left">{val}</span>
+                <div className="flex px-2">
+                  <span className="flex-1 py-1 text-left">{val}</span>
                   <button
-                    className="px-4"
+                    className="px-2 py-1 rounded focus:bg-gray-200"
                     onClick={() => {
                       setVal("");
                       props.handleChange("");
@@ -76,7 +78,7 @@ export function DatePicker(props: {
                     {t("Reset")}
                   </button>
                   <button
-                    className="pl-4 pr-3"
+                    className="px-2 py-1 rounded focus:bg-gray-200"
                     onClick={() => {
                       setVal(props.value);
                       props.handleCancel();
@@ -91,6 +93,7 @@ export function DatePicker(props: {
               <td colSpan={7}>
                 <div className="flex px-4 pt-8 pb-2 font-bold text-center">
                   <button
+                    className="p-1 rounded focus:bg-gray-200"
                     onClick={(e) => {
                       e.preventDefault();
                       setRefDate(addMonths(refDate, -1));
@@ -100,6 +103,7 @@ export function DatePicker(props: {
                   </button>
                   <div className="flex-1">{format(refDate, "yyyy/MM")}</div>
                   <button
+                    className="p-1 rounded focus:bg-gray-200"
                     onClick={(e) => {
                       e.preventDefault();
                       setRefDate(addMonths(refDate, 1));
@@ -120,11 +124,14 @@ export function DatePicker(props: {
               <th className="p-2 pb-4">{t("Saturday")}</th>
             </tr>
           </thead>
+
           <tbody
             ref={ref}
             tabIndex={0}
-            className="w-full max-w-[420px] mx-auto relative"
+            className="w-full max-w-[420px] mx-auto relative focus:bg-gray-200"
             onKeyDown={(e) => {
+              e.stopPropagation();
+
               const key = e.key;
               if (key === "ArrowDown") {
                 e.preventDefault();

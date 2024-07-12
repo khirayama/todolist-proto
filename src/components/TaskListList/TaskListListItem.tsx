@@ -33,34 +33,36 @@ export function TaskListListItem(props: {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-  const mustHaveClassNames = ["touch-none"];
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={clsx("relative flex bg-white", isDragging && "z-10")}
+      className={clsx("relative flex bg-white px-1", isDragging && "z-10")}
     >
-      <span
+      <button
         ref={setActivatorNodeRef}
         {...listeners}
         {...attributes}
         className={clsx(
-          "flex items-center justify-center py-2 pl-3 pr-2 text-gray-400 fill-gray-400",
-          mustHaveClassNames
+          "touch-none flex items-center justify-center p-1 text-gray-400 fill-gray-400 rounded focus:bg-gray-200"
         )}
       >
         <Icon text="drag_indicator" />
-      </span>
+      </button>
+
       <button
         disabled={props.disabled}
-        className={clsx("flex-1 py-4 cursor-pointer text-left")}
+        className={clsx(
+          "flex-1 px-1 py-3 cursor-pointer text-left rounded focus:bg-gray-200"
+        )}
         onClick={() => {
           props.handleTaskListLinkClick(taskList.id);
         }}
       >
         {taskList.name}
       </button>
+
       <button
         disabled={props.disabled}
         onClick={() => {
@@ -74,7 +76,7 @@ export function TaskListListItem(props: {
             props.handleDeleteTaskListButtonClick(taskList.id);
           }
         }}
-        className="flex items-center justify-center pl-2 pr-4 py-2 text-gray-400 cursor-pointer fill-gray-400"
+        className="flex items-center justify-center p-1 text-gray-400 cursor-pointer fill-gray-400 rounded focus:bg-gray-200"
       >
         <Icon text="delete" />
       </button>

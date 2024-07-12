@@ -43,7 +43,7 @@ textarea {
 
 *:focus {
   outline: none;
-  background: #eee;
+  background: red;
 }
 
 form:focus {

@@ -16,13 +16,13 @@ export function TaskTextArea(props: {
         task.completed ? "line-through text-gray-400" : ""
       )}
     >
-      <div className="whitespace-break-spaces invisible">
+      <div className="whitespace-break-spaces invisible px-2">
         {task.text + "\u200b"}
       </div>
       <textarea
         disabled={props.disabled}
         className={clsx(
-          "absolute inline-block top-0 left-0 w-full h-full flex-1 py-4 whitespace-break-spaces",
+          "absolute inline-block top-0 left-0 w-full h-full flex-1 px-2 py-4 whitespace-break-spaces rounded focus:bg-gray-200",
           task.completed ? "line-through text-gray-400" : ""
         )}
         value={task.text}

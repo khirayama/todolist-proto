@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import qs from "query-string";
-
 import Link from "next/link";
 
 export function ParamsLink(props: {
@@ -11,13 +10,13 @@ export function ParamsLink(props: {
   tabIndex?: number;
   children: ReactNode;
 }) {
+  const p = { ...props };
   const q = props.mergeParams
     ? { ...qs.parse(window.location.search), ...props.params }
     : props.params;
   const href = `${props.href}?${qs.stringify(q)}`;
-  return (
-    <Link href={href} className={props.className} tabIndex={props.tabIndex}>
-      {props.children}
-    </Link>
-  );
+  p.href = href;
+  delete p.mergeParams;
+  delete p.params;
+  return <Link {...p}>{props.children}</Link>;
 }
