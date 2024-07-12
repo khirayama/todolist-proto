@@ -17,6 +17,7 @@ import { PreferencesSheet } from "components/PreferencesSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { createDebounce, isNarrowLayout } from "libs/common";
 import { ParamsLink } from "libs/components/ParamsLink";
+import { useSupabase } from "libs/supabase";
 
 const scrollDebounce = createDebounce();
 
@@ -311,11 +312,31 @@ const AppPageContent = () => {
         open={isSettingsSheetOpened}
       />
 
-      <UserSheet
-        open={isUserSheetOpened}
-        handleSignedIn={closeDrawer}
-        handleSignedOut={handleSignedOut}
-      />
+      <UserSheet open={isUserSheetOpened} handleSignedOut={handleSignedOut} />
     </>
   );
+};
+
+export default function AppPage() {
+  /* Page Stack Control and support fast refresh */
+  const isInitialRender = useRef(true);
+  useEffect(() => {
+    isInitialRender.current = false;
+    const isFastRefresh = !isInitialRender.current;
+    if (!isFastRefresh) {
+      const query = qs.parse(window.location.search);
+      if (Object.keys(query).length) {
+        const tmp = window.location.href;
+        window.history.replaceState({}, "", "/app");
+        window.history.pushState({}, "", tmp);
+      }
+    }
+  }, []);
+
+  const router = useRouter();
+  const { isLoggedIn, isInitialized } = useSupabase();
+  if (isInitialized && !isLoggedIn) {
+    router.push("/login");
+  }
+  return isInitialized && isLoggedIn ? <AppPageContent /> : null;
 }

@@ -48,14 +48,11 @@ export default function IndexPage() {
           <ParamsLink
             href="/app"
             params={params}
-            className="border py-2 px-4 rounded-full"
+            className="border py-2 px-4 rounded-full focus:bg-gray-200"
           >
             {t("Get started")}
           </ParamsLink>
         </div>
-        {!isLoggedIn && (
-          <ParamsLink href="/demo">{t("Try without logging in")}</ParamsLink>
-        )}
         <div className="p-8 max-w-lg m-auto text-justify">
           <p className="my-4">
             {t("Lightlist is a simple task list service.")}
