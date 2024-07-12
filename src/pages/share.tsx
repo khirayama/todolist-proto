@@ -11,16 +11,11 @@ import { UserSheet } from "components/UserSheet";
 import { ParamsLink } from "libs/components/ParamsLink";
 
 function isUserSheetOpened() {
-  return qs.parse(window.location.search).sheet === "user";
+  return qs.parse(window?.location.search).sheet === "user";
 }
 
-export default function SharePage() {
+const SharePageContent = () => {
   const router = useRouter();
-  const closeDrawer = () => {
-    const query = { ...router.query };
-    delete query.drawer;
-    router.push("/app", { query });
-  };
 
   const [{ data: app }, { updateApp }] = useApp("/api/app");
 
@@ -77,4 +72,9 @@ export default function SharePage() {
       <UserSheet open={isUserSheetOpened} />
     </>
   );
+};
+
+export default function SharePage() {
+  const { isInitialized } = useSupabase();
+  return isInitialized ? <SharePageContent /> : null;
 }
