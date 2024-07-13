@@ -6,22 +6,13 @@ import {
 } from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
-import { useRouter } from "next/router";
-import qs from "query-string";
 
 import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
-import { DatePickerSheet } from "components/DatePickerSheet";
 import { TaskTextArea } from "components/TaskList";
 import { ParamsLink } from "libs/components/ParamsLink";
 
-function isDatePickerSheetOpened(taskId: string) {
-  const query = qs.parse(window.location.search);
-  return query.sheet === "datepicker" && query.taskid === taskId;
-}
-
 export function TaskItem(props: { disabled?: boolean; task: Task }) {
-  const router = useRouter();
   const task = props.task;
 
   const [, { updateTask }] = useTasks("/api/tasks");
@@ -99,7 +90,6 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         />
 
         <ParamsLink
-          data-taskdatepicker={task.id}
           data-trigger={`datepicker-${task.id}`}
           tabIndex={props.disabled ? -1 : 0}
           className="flex items-center justify-center p-2 text-gray-400 cursor-pointer fill-gray-400 rounded focus:bg-gray-200"
@@ -114,21 +104,6 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           {task.date || <Icon text="event" />}
         </ParamsLink>
       </div>
-
-      <DatePickerSheet
-        value={task.date}
-        open={() => isDatePickerSheetOpened(task.id)}
-        handleChange={(v) => {
-          updateTask({
-            ...task,
-            date: v,
-          });
-          router.back();
-        }}
-        handleCancel={() => {
-          router.back();
-        }}
-      />
     </>
   );
 }

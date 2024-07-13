@@ -5,25 +5,23 @@ import { ParamsSheet } from "libs/components/ParamsSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { usePreferences } from "hooks/usePreferences";
 
-export function PreferencesSheet(props: {
-  preferences: Preferences;
-  open: (q?: Query) => boolean;
-}) {
-  const [, { updatePreferences }] = usePreferences("/api/preferences");
+export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
+  const [{ data: preferences }, { updatePreferences }] =
+    usePreferences("/api/preferences");
 
   const { t, i18n } = useCustomTranslation("components.PreferencesSheet");
   const supportedLngs = Object.keys(i18n.options.resources).map((lang) =>
     lang.toUpperCase()
   );
   const themes = ["SYSTEM", "LIGHT", "DARK"];
-  const lang = props.preferences.lang.toLowerCase();
+  const lang = preferences.lang.toLowerCase();
 
   return (
     <ParamsSheet open={props.open} title={t("Preferences")}>
       <div className="flex p-4">
         <div className="flex-1">{t("Appearance")}</div>
         <Select.Root
-          value={props.preferences.theme}
+          value={preferences.theme}
           onValueChange={(v: Preferences["theme"]) => {
             updatePreferences({
               theme: v,
@@ -31,8 +29,8 @@ export function PreferencesSheet(props: {
           }}
         >
           <Select.Trigger className="p-2 border rounded inline-flex items-center focus:bg-gray-200">
-            <Select.Value aria-label={t(props.preferences.theme)}>
-              {t(props.preferences.theme)}
+            <Select.Value aria-label={t(preferences.theme)}>
+              {t(preferences.theme)}
             </Select.Value>
             <Select.Icon className="pl-2">
               <ChevronDownIcon />
@@ -70,8 +68,8 @@ export function PreferencesSheet(props: {
           }}
         >
           <Select.Trigger className="p-2 border rounded inline-flex items-center focus:bg-gray-200">
-            <Select.Value aria-label={t(props.preferences.lang)}>
-              {t(props.preferences.lang)}
+            <Select.Value aria-label={t(preferences.lang)}>
+              {t(preferences.lang)}
             </Select.Value>
             <Select.Icon className="pl-2">
               <ChevronDownIcon />

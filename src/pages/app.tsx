@@ -14,6 +14,7 @@ import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
 import { PreferencesSheet } from "components/PreferencesSheet";
+import { DatePickerSheet } from "components/DatePickerSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { createDebounce, isNarrowLayout } from "libs/common";
 import { ParamsLink } from "libs/components/ParamsLink";
@@ -33,12 +34,16 @@ function isUserSheetOpened() {
   return qs.parse(window.location.search).sheet === "user";
 }
 
+function isDatePickerSheetOpened() {
+  return qs.parse(window.location.search).sheet === "datepicker";
+}
+
 const AppPageContent = () => {
   const router = useRouter();
   const { t, i18n } = useCustomTranslation("pages.app");
 
-  const [{ data: app }, { updateApp }] = useApp("/api/app");
-  const [{ data: profile }, { updateProfile }] = useProfile("/api/profile");
+  const [{ data: app }] = useApp("/api/app");
+  const [{ data: profile }] = useProfile("/api/profile");
   const [{ data: preferences }] = usePreferences("/api/preferences");
   const [, , { getTaskListsById }] = useTaskLists("/api/task-lists");
 
@@ -155,14 +160,6 @@ const AppPageContent = () => {
   const handleSignedOut = () => {
     router.push("/login");
     resetFetchStatus();
-
-    updateApp({
-      taskListIds: [],
-    });
-    updateProfile({
-      displayName: "",
-      email: "",
-    });
   };
 
   return (
@@ -319,12 +316,19 @@ const AppPageContent = () => {
         />
       </div>
 
-      <PreferencesSheet
-        preferences={preferences}
-        open={isSettingsSheetOpened}
-      />
+      <PreferencesSheet open={isSettingsSheetOpened} />
 
       <UserSheet open={isUserSheetOpened} handleSignedOut={handleSignedOut} />
+
+      <DatePickerSheet
+        open={isDatePickerSheetOpened}
+        handleChange={() => {
+          router.back();
+        }}
+        handleCancel={() => {
+          router.back();
+        }}
+      />
     </>
   );
 };
