@@ -58,10 +58,23 @@ const AppPageContent = () => {
   const [currentTaskListId, setCurrentTaskListId] = useState<string>(
     app?.taskListIds[0] || ""
   );
+  const [isInstalledPWA, setIsInstalledPWA] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   const taskListContainerRef = useRef<HTMLElement>(null);
   const taskLists = getTaskListsById(app.taskListIds);
   const closeDrawer = () => router.back();
+
+  useEffect(() => {
+    setIsInstalledPWA(
+      window.matchMedia("(display-mode: window-controls-overlay)").matches ||
+        window.matchMedia("(display-mode: standalone)").matches
+    );
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      setDeferredPrompt(e);
+    });
+  }, []);
 
   useEffect(() => {
     if (isAppInitialized && !app.taskListIds.length) {
@@ -225,6 +238,19 @@ const AppPageContent = () => {
               <Icon text="settings" />
               <div className="flex-1 text-left pl-2">{t("Preferences")}</div>
             </ParamsLink>
+
+            {!isInstalledPWA && deferredPrompt ? (
+              <div className="p-2">
+                <button
+                  className="border px-2 py-1 w-full rounded focus:bg-gray-200"
+                  onClick={() => {
+                    deferredPrompt.prompt();
+                  }}
+                >
+                  {t("Install app")}
+                </button>
+              </div>
+            ) : null}
           </div>
           <div className="pt-2 border-t">
             <TaskListList

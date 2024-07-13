@@ -45,6 +45,8 @@ const enTranslation = {
     app: {
       "Log in": "Log in",
       Preferences: "Preferences",
+      PERSONAL: "PERSONAL",
+      "Install app": "Install app",
     },
     login: {
       Email: "Email",
@@ -162,6 +164,8 @@ const jaTranslation = {
     app: {
       "Log in": "ログイン",
       Preferences: "設定",
+      PERSONAL: "個人",
+      "Install app": "アプリをインストール",
     },
     login: {
       Email: "メールアドレス",
