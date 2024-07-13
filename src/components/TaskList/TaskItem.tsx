@@ -95,7 +95,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         <ParamsLink
           data-trigger={`datepicker-${task.id}`}
           tabIndex={props.disabled ? -1 : 0}
-          className="flex items-center justify-center p-2 text-gray-400 cursor-pointer fill-gray-400 rounded focus:bg-gray-200"
+          className="flex items-center justify-center text-gray-400 cursor-pointer fill-gray-400 rounded focus:bg-gray-200 px-1"
           href="/app"
           params={{
             sheet: "datepicker",
@@ -105,19 +105,21 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           mergeParams
         >
           {task.date ? (
-            <div className="inline text-right relative">
-              <div className="text-xs leading-none w-full absolute bottom-[calc(100%+2px)]">
+            <div className="inline text-right px-2">
+              <div className="text-xs leading-none w-full">
                 {format(task.date, "yyyy")}
               </div>
               <div className="font-bold leading-none w-full">
                 {format(task.date, "MM/dd")}
               </div>
-              <div className="text-xs leading-none w-full absolute top-[calc(100%+2px)]">
+              <div className="text-xs leading-none w-full">
                 {t(format(task.date, "EEE"))}
               </div>
             </div>
           ) : (
-            <Icon text="event" />
+            <span className="p-2">
+              <Icon text="event" />
+            </span>
           )}
         </ParamsLink>
       </div>
