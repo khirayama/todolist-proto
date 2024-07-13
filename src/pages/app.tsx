@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
 import { useRouter } from "next/router";
@@ -42,10 +43,12 @@ const AppPageContent = () => {
   const router = useRouter();
   const { t, i18n } = useCustomTranslation("pages.app");
 
-  const [{ data: app }] = useApp("/api/app");
+  const [{ data: app, isInitialized: isAppInitialized }, { updateApp }] =
+    useApp("/api/app");
   const [{ data: profile }] = useProfile("/api/profile");
   const [{ data: preferences }] = usePreferences("/api/preferences");
-  const [, , { getTaskListsById }] = useTaskLists("/api/task-lists");
+  const [, { createTaskList }, { getTaskListsById }] =
+    useTaskLists("/api/task-lists");
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [isDrawerDisabled, setIsDrawerDisabled] = useState(
@@ -59,6 +62,20 @@ const AppPageContent = () => {
   const taskListContainerRef = useRef<HTMLElement>(null);
   const taskLists = getTaskListsById(app.taskListIds);
   const closeDrawer = () => router.back();
+
+  useEffect(() => {
+    if (isAppInitialized && !app.taskListIds.length) {
+      const newTaskList: TaskList = {
+        id: uuid(),
+        name: "📋 " + t("PERSONAL"),
+        taskIds: [],
+        shareCode: "",
+      };
+      const newTaskLists = [...taskLists, newTaskList];
+      createTaskList(newTaskList);
+      updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
+    }
+  }, [isAppInitialized, app]);
 
   useEffect(() => {
     i18n.changeLanguage(preferences.lang.toLowerCase());
