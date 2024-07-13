@@ -114,19 +114,12 @@ const AppPageContent = () => {
     const handleRouteChange = () => {
       const isOpened = isDrawerOpened();
       setIsDrawerOpen(isOpened);
-      if (isOpened) {
-        setTimeout(() => {
-          const p = document.querySelector<HTMLElement>("[data-sectiondrawer]");
-          const el = p?.querySelector<HTMLButtonElement>("button");
-          el?.focus();
-        }, 1);
-      } else {
-        setTimeout(() => {
-          const p = document.querySelector<HTMLElement>("[data-sectionmain]");
-          const el = p?.querySelector<HTMLAnchorElement>("a");
-          el?.focus();
-        }, 1);
-      }
+      setTimeout(() => {
+        const p = isOpened
+          ? document.querySelector<HTMLElement>("[data-sectiondrawer]")
+          : document.querySelector<HTMLElement>("[data-sectionmain]");
+        p?.focus();
+      }, 1);
     };
 
     handleRouteChange();
