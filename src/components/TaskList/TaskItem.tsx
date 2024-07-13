@@ -6,15 +6,18 @@ import {
 } from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
+import { format } from "date-fns";
 
 import { useTasks } from "hooks/useTasks";
 import { Icon } from "libs/components/Icon";
 import { TaskTextArea } from "components/TaskList";
 import { ParamsLink } from "libs/components/ParamsLink";
+import { useCustomTranslation } from "libs/i18n";
 
 export function TaskItem(props: { disabled?: boolean; task: Task }) {
   const task = props.task;
 
+  const { t } = useCustomTranslation("components.TaskItem");
   const [, { updateTask }] = useTasks("/api/tasks");
   const {
     attributes,
@@ -101,7 +104,21 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           }}
           mergeParams
         >
-          {task.date || <Icon text="event" />}
+          {task.date ? (
+            <div className="inline text-right relative">
+              <div className="text-xs leading-none w-full absolute bottom-[calc(100%+2px)]">
+                {format(task.date, "yyyy")}
+              </div>
+              <div className="font-bold leading-none w-full">
+                {format(task.date, "MM/dd")}
+              </div>
+              <div className="text-xs leading-none w-full absolute top-[calc(100%+2px)]">
+                {t(format(task.date, "EEE"))}
+              </div>
+            </div>
+          ) : (
+            <Icon text="event" />
+          )}
         </ParamsLink>
       </div>
     </>

@@ -67,7 +67,11 @@ export function DatePicker(props: {
             <tr>
               <th colSpan={7} className="p-2">
                 <div className="flex px-2">
-                  <span className="flex-1 py-1 text-left">{val}</span>
+                  {val ? (
+                    <span className="flex-1 py-1 text-left">
+                      {format(val, "yyyy/MM/dd")}({t(format(val, "EEE"))})
+                    </span>
+                  ) : null}
                   <button
                     className="px-2 py-1 rounded focus:bg-gray-200"
                     onClick={() => {
