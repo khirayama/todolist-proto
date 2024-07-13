@@ -106,9 +106,6 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         >
           {task.date ? (
             <div className="inline text-right px-2">
-              <div className="text-xs leading-none w-full">
-                {format(task.date, "yyyy")}
-              </div>
               <div className="font-bold leading-none w-full">
                 {format(task.date, "MM/dd")}
               </div>
