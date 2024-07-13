@@ -10,3 +10,6 @@
 /tsconfig.tsbuildinfo
 
 /design/**/*~lock~
+
+# Sentry Config File
+.env.sentry-build-plugin
