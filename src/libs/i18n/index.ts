@@ -58,6 +58,16 @@ const enTranslation = {
       "Don't have an account? Sign up": "Don't have an account? Sign up",
       "Forgot your password?": "Forgot your password?",
     },
+    share: {
+      "Already added": "Already added",
+      "Add my task list": "Add my task list",
+      "Log in to add this task list": "Log in to add this task list",
+      "No share code": "No share code",
+      Loading: "Loading",
+      "No matched task list with the share code":
+        "No matched task list with the share code",
+      "Please join {{name}} list!": "Please join {{name}} list!",
+    },
   },
   components: {
     TaskList: {
@@ -164,6 +174,17 @@ const jaTranslation = {
       "Already have an account? Log in": "アカウントをお持ちの方はこちら",
       "Don't have an account? Sign up": "アカウントをお持ちでない方はこちら",
       "Forgot your password?": "パスワードを忘れた場合",
+    },
+    share: {
+      "Already added": "すでに追加されています。",
+      "Add my task list": "自分のタスクリストを追加",
+      "Log in to add this task list":
+        "このタスクリストを追加するためにログインする",
+      "No share code": "共有コードがありません",
+      Loading: "読み込み中",
+      "No matched task list with the share code":
+        "共有コードに一致するタスクリストがありません",
+      "Please join {{name}} list!": "{{name}}リストに参加してください！",
     },
   },
   components: {

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Auth } from "@supabase/auth-ui-react";
+import qs from "query-string";
 
 import { useSupabase } from "libs/supabase";
 import { useCustomTranslation } from "libs/i18n";
@@ -14,7 +15,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      router.replace("/app");
+      const url =
+        (qs.parse(window?.location.search).redirect as string) || "/app";
+      router.replace(url);
     }
   }, [isLoggedIn]);
 
