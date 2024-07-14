@@ -45,7 +45,7 @@ const SharePageContent = () => {
             />
           </ParamsLink>
           <div className="flex-1" />
-          <ParamsLink href={distURL}>
+          <ParamsLink href={distURL} className="p-2 rounded focus:bg-gray-200">
             <Icon text="close" />
           </ParamsLink>
         </header>

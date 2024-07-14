@@ -37,7 +37,7 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] bg-white p-2 rounded border shadow">
+            <Select.Content className="z-[500] bg-white p-2 rounded border shadow focus:bg-white">
               <Select.Viewport>
                 {themes.map((theme) => (
                   <Select.Item
@@ -76,7 +76,7 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] bg-white p-2 rounded border shadow">
+            <Select.Content className="z-[500] bg-white p-2 rounded border shadow focus:bg-white">
               <Select.Viewport>
                 {supportedLngs.map((ln) => (
                   <Select.Item
