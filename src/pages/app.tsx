@@ -279,7 +279,7 @@ const AppPageContent = () => {
             <div className="flex-1" />
           </header>
 
-          <div className="flex items-center justify-center pb-2">
+          <div className="flex items-center justify-center py-2">
             {taskLists.map((taskList, i) => {
               return (
                 <button

@@ -12,17 +12,17 @@ export function TaskTextArea(props: {
   return (
     <div
       className={clsx(
-        "relative flex-1 py-4",
+        "relative flex-1 py-3",
         task.completed ? "line-through text-gray-400" : ""
       )}
     >
-      <div className="whitespace-break-spaces invisible px-2">
+      <div className="whitespace-break-spaces invisible px-1">
         {task.text + "\u200b"}
       </div>
       <textarea
         disabled={props.disabled}
         className={clsx(
-          "absolute inline-block top-0 left-0 w-full h-full flex-1 px-2 py-4 whitespace-break-spaces rounded focus:bg-gray-200",
+          "absolute inline-block top-0 left-0 w-full h-full flex-1 px-1 py-3 whitespace-break-spaces rounded focus:bg-gray-200",
           task.completed ? "line-through text-gray-400" : ""
         )}
         value={task.text}

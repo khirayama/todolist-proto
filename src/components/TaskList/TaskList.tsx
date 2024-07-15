@@ -420,12 +420,12 @@ export function TaskList(props: {
     <>
       <div className="h-full overflow-scroll" onKeyDown={handleTaskListKeyDown}>
         <header className="sticky w-full top-0 z-20 bg-white">
-          <section className={clsx("px-1")}>
+          <section className="px-1">
             <div className="flex pl-8">
               <h1 className="flex-1 text-center font-bold">
                 <input
                   disabled={props.disabled}
-                  className="inline-block text-center w-full py-2 rounded focus:bg-gray-200"
+                  className="inline-block text-center w-full py-1 rounded focus:bg-gray-200"
                   type="text"
                   placeholder={t("Task list name")}
                   value={taskList.name}
@@ -435,7 +435,7 @@ export function TaskList(props: {
               <ParamsLink
                 data-trigger={`sharing-${taskList.id}`}
                 tabIndex={props.disabled ? -1 : 0}
-                className="p-2 rounded focus:bg-gray-200"
+                className="p-1 rounded focus:bg-gray-200"
                 href="/app"
                 params={{
                   sheet: "sharing",

@@ -62,7 +62,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           <Icon text="drag_indicator" />
         </button>
 
-        <span className="flex items-center p-1 pr-2">
+        <span className="flex items-center p-1">
           <Checkbox
             disabled={props.disabled}
             className="group border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden focus:bg-gray-200"
@@ -105,7 +105,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           mergeParams
         >
           {task.date ? (
-            <div className="inline text-right px-2">
+            <div className="inline text-right px-1">
               <div className="font-bold leading-none w-full">
                 {format(task.date, "MM/dd")}
               </div>
@@ -114,7 +114,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
               </div>
             </div>
           ) : (
-            <span className="p-2">
+            <span className="p-1">
               <Icon text="event" />
             </span>
           )}
