@@ -2,6 +2,7 @@
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import Head from "next/head";
+import { Analytics } from "@vercel/analytics/react";
 
 import { GlobalStateProvider } from "libs/globalState";
 import { SupabaseProvider } from "libs/supabase";
@@ -30,6 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <SupabaseProvider>
         <GlobalStateProvider>
+          <Analytics />
           <Component {...pageProps} />
         </GlobalStateProvider>
       </SupabaseProvider>
