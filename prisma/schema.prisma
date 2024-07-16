@@ -26,8 +26,8 @@ enum TaskInsertPosition {
 }
 
 enum Lang {
-  EN
   JA
+  EN
 }
 
 model ShareCode {
@@ -64,6 +64,6 @@ model Profile {
 model Preferences {
   id     Int    @id @default(autoincrement())
   userId String @unique @db.Uuid
-  lang   Lang   @default(EN)
+  lang   Lang   @default(JA)
   theme  Theme  @default(SYSTEM)
 }
