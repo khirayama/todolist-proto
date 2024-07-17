@@ -19,7 +19,7 @@ export function SharingSheet(props: {
     >
       <div className="p-4">
         <button
-          className="w-full border rounded p-2 bg-gray-100 focus-visible:bg-gray-200"
+          className="w-full rounded border bg-gray-100 p-2 focus-visible:bg-gray-200"
           onClick={() => {
             /* FYI: Only work under https or localhost */
             try {
@@ -35,7 +35,7 @@ export function SharingSheet(props: {
 
         <div className="py-2">
           <button
-            className="w-full border rounded p-2 bg-gray-100 focus-visible:bg-gray-200 disabled:opacity-30"
+            className="w-full rounded border bg-gray-100 p-2 focus-visible:bg-gray-200 disabled:opacity-30"
             disabled={!window?.navigator?.share}
             onClick={async () => {
               try {
@@ -59,7 +59,7 @@ export function SharingSheet(props: {
 
         <div className="py-2">
           <button
-            className="w-full border rounded p-2 bg-gray-100 focus-visible:bg-gray-200"
+            className="w-full rounded border bg-gray-100 p-2 focus-visible:bg-gray-200"
             onClick={(e) => {
               e.preventDefault();
               refreshShareCode(props.taskList.id);

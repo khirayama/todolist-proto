@@ -16,7 +16,7 @@ export function ParamsSheet(props: {
   const [isOpen, setIsOpen] = useState<boolean>(props.open(query));
   const [isClosing, setIsClosing] = useState<boolean>(false);
   const [trigger, setTrigger] = useState<string>(
-    (query.trigger as string) || ""
+    (query.trigger as string) || "",
   );
 
   useEffect(() => {
@@ -62,31 +62,31 @@ export function ParamsSheet(props: {
       <RadixDialog.Portal>
         <RadixDialog.Overlay
           className={clsx(
-            "fixed w-full h-full top-0 left-0 z-[100] bg-gray-900/50",
+            "fixed left-0 top-0 z-[100] h-full w-full bg-gray-900/50",
             props.open(query) &&
               `animate-[overlayshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open(query) &&
-              `animate-[overlayhide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
+              `animate-[overlayhide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
           )}
         />
         <RadixDialog.Content
           className={clsx(
-            "flex flex-col fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-2xl mx-auto min-h-[80%] max-h-[95%] rounded-t-lg shadow-lg z-[400] bg-white overflow-hidden focus-visible:bg-white",
+            "fixed bottom-0 left-1/2 z-[400] mx-auto flex max-h-[95%] min-h-[80%] w-full max-w-2xl translate-x-[-50%] flex-col overflow-hidden rounded-t-lg bg-white shadow-lg focus-visible:bg-white",
             props.open(query) &&
               `animate-[contentshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open(query) &&
-              `animate-[contenthide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`
+              `animate-[contenthide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
           )}
         >
-          <header className="flex w-full p-4 items-center justify-center sticky top-0 bg-white">
-            <div className="flex-1 font-bold text-center">{props.title}</div>
+          <header className="sticky top-0 flex w-full items-center justify-center bg-white p-4">
+            <div className="flex-1 text-center font-bold">{props.title}</div>
             <div className="absolute right-0 top-0 p-2">
-              <RadixDialog.Close className="p-2 rounded focus-visible:bg-gray-200">
+              <RadixDialog.Close className="rounded p-2 focus-visible:bg-gray-200">
                 <Icon text="close" />
               </RadixDialog.Close>
             </div>
           </header>
-          <div className="flex-1 h-full w-full overflow-scroll">
+          <div className="h-full w-full flex-1 overflow-scroll">
             {props.children}
           </div>
         </RadixDialog.Content>

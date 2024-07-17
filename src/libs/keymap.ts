@@ -11,7 +11,7 @@ type KeymapHandlersOptions = {
 
 function getKeymapPatternFromEvent(
   event: KeyboardEvent,
-  options: KeymapHandlersOptions
+  options: KeymapHandlersOptions,
 ) {
   const platform = options.platformDetection();
 
@@ -48,7 +48,7 @@ function getKeymapHander(options: KeymapHandlersOptions) {
     keymap: string,
     event: KeyboardEvent,
     handler: Function,
-    additionalCondition: Function = () => true
+    additionalCondition: Function = () => true,
   ) => {
     const keymapPattern = getKeymapPatternFromEvent(event, options);
     const isComposing = event.isComposing;

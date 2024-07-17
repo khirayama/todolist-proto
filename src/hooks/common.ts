@@ -76,10 +76,10 @@ export const useClient = <T>(
     resolve?: (res: AxiosResponse, options: T) => void | Promise<void>;
     reject?: (
       res: AxiosResponse,
-      options: AxiosRequestConfig
+      options: AxiosRequestConfig,
     ) => void | Promise<void>;
     finally?: () => void | Promise<void>;
-  } = {}
+  } = {},
 ): {
   isInitialized: boolean;
   isLoading: boolean;

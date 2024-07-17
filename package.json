@@ -50,6 +50,7 @@
     "dotenv-cli": "7.4.2",
     "postcss": "8.4.35",
     "prettier": "3.2.5",
+    "prettier-plugin-tailwindcss": "0.6.5",
     "prisma": "5.13.0",
     "shadcn-ui": "0.8.0",
     "supabase": "1.178.2",

@@ -19,7 +19,7 @@ const days = [
 
 export function extractScheduleFromText(
   text: string,
-  referenceDate: Date
+  referenceDate: Date,
 ): {
   raw: string;
   text: string;
@@ -43,7 +43,7 @@ export function extractScheduleFromText(
     txt = text.replace(match[0], "");
     const tmp = match[1].split(/(\/|\.|\-)/);
     date = new Date(
-      Date.parse(`${referenceDate.getFullYear()}-${Number(tmp[0])}-${tmp[2]}`)
+      Date.parse(`${referenceDate.getFullYear()}-${Number(tmp[0])}-${tmp[2]}`),
     );
     if (isBefore(date, referenceDate)) {
       date = add(date, { years: 1 });

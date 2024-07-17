@@ -14,7 +14,7 @@ const transform = (data: PreferencesData): { preferences: Preferences } => {
 };
 
 export const usePreferences = (
-  url: string
+  url: string,
 ): [
   { data: Preferences; isInitialized: boolean; isLoading: boolean },
   {

@@ -8,7 +8,7 @@ import { useClient } from "hooks/common";
 // App, Profile, Preferences, TaskList-Task
 
 const transform = (
-  data: ProfileData & { email: string }
+  data: ProfileData & { email: string },
 ): { profile: Profile } => {
   return {
     profile: {
@@ -19,7 +19,7 @@ const transform = (
 };
 
 export const useProfile = (
-  url: string
+  url: string,
 ): [
   { data: Profile; isInitialized: boolean; isLoading: boolean },
   {

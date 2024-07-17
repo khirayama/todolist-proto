@@ -12,7 +12,7 @@ import { extractScheduleFromText } from "libs/extractScheduleFromText";
 const updateDebounce = createDebounce();
 
 export const useTasks = (
-  url: string
+  url: string,
 ): [
   { data: { [id: string]: Task }; isInitialized: boolean; isLoading: boolean },
   {
@@ -35,7 +35,7 @@ export const useTasks = (
       const delta = diff(cache, snapshot.tasks);
       const newTasks = res.data.tasks.reduce(
         (acc: {}, t: Task) => ({ ...acc, [t.id]: t }),
-        {}
+        {},
       );
       setGlobalState({
         tasks: patch(newTasks, delta) as { [id: string]: Task },

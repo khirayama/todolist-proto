@@ -4,18 +4,18 @@ import { PrismaClient } from "@prisma/client";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
 export const prisma = new PrismaClient();
 
 export function exclude<T, Key extends keyof T>(
   obj: T,
-  keys: Key[]
+  keys: Key[],
 ): Omit<T, Key> {
   return obj
     ? (Object.fromEntries(
-        Object.entries(obj).filter(([key]: any) => !keys.includes(key))
+        Object.entries(obj).filter(([key]: any) => !keys.includes(key)),
       ) as Omit<T, Key>)
     : obj;
 }

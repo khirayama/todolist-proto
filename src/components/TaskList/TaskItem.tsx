@@ -48,7 +48,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         className={clsx(
           "relative flex",
           isDragging && "z-10 shadow",
-          task.completed ? "opacity-55" : "bg-white"
+          task.completed ? "opacity-55" : "bg-white",
         )}
       >
         <button
@@ -56,7 +56,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           {...attributes}
           {...listeners}
           className={clsx(
-            "flex items-center justify-center p-2 px-1 text-gray-400 touch-none fill-gray-400 rounded focus-visible:bg-gray-200"
+            "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200",
           )}
         >
           <Icon text="drag_indicator" />
@@ -65,7 +65,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         <span className="flex items-center p-1">
           <Checkbox
             disabled={props.disabled}
-            className="group border flex w-6 h-6 justify-center items-center rounded-full overflow-hidden focus-visible:bg-gray-200"
+            className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200"
             checked={task.completed}
             onCheckedChange={(v: boolean) => {
               updateTask({
@@ -74,7 +74,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
               });
             }}
           >
-            <CheckboxIndicator className="bg-gray-100 text-gray-400 w-full h-full justify-center items-center flex group-focus-visible:bg-gray-200">
+            <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200">
               <CheckIcon />
             </CheckboxIndicator>
           </Checkbox>
@@ -95,7 +95,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         <ParamsLink
           data-trigger={`datepicker-${task.id}`}
           tabIndex={props.disabled ? -1 : 0}
-          className="flex items-center justify-center text-gray-400 cursor-pointer fill-gray-400 rounded focus-visible:bg-gray-200 px-1"
+          className="flex cursor-pointer items-center justify-center rounded fill-gray-400 px-1 text-gray-400 focus-visible:bg-gray-200"
           href="/app"
           params={{
             sheet: "datepicker",
@@ -105,11 +105,11 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           mergeParams
         >
           {task.date ? (
-            <div className="inline text-right px-1">
-              <div className="font-bold leading-none w-full">
+            <div className="inline px-1 text-right">
+              <div className="w-full font-bold leading-none">
                 {format(task.date, "MM/dd")}
               </div>
-              <div className="text-xs leading-none w-full">
+              <div className="w-full text-xs leading-none">
                 {t(format(task.date, "EEE"))}
               </div>
             </div>

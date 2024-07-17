@@ -10,7 +10,7 @@ import { useClient } from "hooks/common";
 const updateDebounce = createDebounce();
 
 export const useTaskLists = (
-  url: string
+  url: string,
 ): [
   {
     data: { [id: string]: TaskList };
@@ -37,7 +37,7 @@ export const useTaskLists = (
       const delta = diff(cache, snapshot.taskLists);
       const newTaskLists = res.data.taskLists.reduce(
         (acc: {}, tl: TaskList) => ({ ...acc, [tl.id]: tl }),
-        {}
+        {},
       );
       setGlobalState({
         taskLists: patch(newTaskLists, delta) as { [id: string]: TaskList },

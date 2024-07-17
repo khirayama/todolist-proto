@@ -4,7 +4,7 @@ import { prisma, auth } from "libs/pages/api";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { user, errorMessage } = await auth(req);
 
@@ -81,7 +81,7 @@ export default async function handler(
       taskLists: taskLists.map((taskList) => ({
         ...taskList,
         shareCode: shareCodes.find(
-          (shareCode) => shareCode.taskListId === taskList.id
+          (shareCode) => shareCode.taskListId === taskList.id,
         )?.code,
       })),
     });

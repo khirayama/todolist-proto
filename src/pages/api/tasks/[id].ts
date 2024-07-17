@@ -5,7 +5,7 @@ import { prisma, exclude } from "libs/pages/api";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const unsafeKeys: (keyof TaskType)[] = ["id"];
 

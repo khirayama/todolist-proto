@@ -52,11 +52,11 @@ const AppPageContent = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [isDrawerDisabled, setIsDrawerDisabled] = useState(
-    isNarrowLayout() && !isDrawerOpen
+    isNarrowLayout() && !isDrawerOpen,
   );
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
   const [currentTaskListId, setCurrentTaskListId] = useState<string>(
-    app?.taskListIds[0] || ""
+    app?.taskListIds[0] || "",
   );
   const [isInstalledPWA, setIsInstalledPWA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -68,7 +68,7 @@ const AppPageContent = () => {
   useEffect(() => {
     setIsInstalledPWA(
       window.matchMedia("(display-mode: window-controls-overlay)").matches ||
-        window.matchMedia("(display-mode: standalone)").matches
+        window.matchMedia("(display-mode: standalone)").matches,
     );
 
     window.addEventListener("beforeinstallprompt", (e) => {
@@ -162,7 +162,7 @@ const AppPageContent = () => {
   const scrollToTaskList = (taskListId: string) => {
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
-      `[data-tasklistid="${taskListId}"]`
+      `[data-tasklistid="${taskListId}"]`,
     );
     if (parent && el) {
       parent.scrollLeft = el.offsetLeft;
@@ -191,19 +191,19 @@ const AppPageContent = () => {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <div className="flex w-full h-full overflow-hidden">
+      <div className="flex h-full w-full overflow-hidden">
         <section
           data-sectiondrawer
           className={clsx(
-            "h-full bg-white z-30 border-r md:max-w-sm min-w-[320px] w-full md:w-[auto] absolute md:relative md:block -translate-x-full md:translate-x-0 transition-transform duration-[320ms]",
-            isDrawerOpen && "translate-x-0"
+            "absolute z-30 h-full w-full min-w-[320px] -translate-x-full border-r bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0",
+            isDrawerOpen && "translate-x-0",
           )}
         >
           <div className="flex md:hidden">
             <div className="p-1">
               <button
                 disabled={isDrawerDisabled}
-                className="p-2 rounded focus-visible:bg-gray-200"
+                className="rounded p-2 focus-visible:bg-gray-200"
                 onClick={closeDrawer}
               >
                 <Icon text="close" />
@@ -216,13 +216,13 @@ const AppPageContent = () => {
             <ParamsLink
               data-trigger="user"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex items-center justify-center p-2 w-full rounded focus-visible:bg-gray-200"
+              className="flex w-full items-center justify-center rounded p-2 focus-visible:bg-gray-200"
               href="/app"
               params={{ sheet: "user", trigger: "user" }}
               mergeParams
             >
               <Icon text="person" />
-              <div className="flex-1 text-left pl-2">
+              <div className="flex-1 pl-2 text-left">
                 {profile?.displayName || profile?.email || t("Log in")}
               </div>
             </ParamsLink>
@@ -230,19 +230,19 @@ const AppPageContent = () => {
             <ParamsLink
               data-trigger="settings"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex items-center justify-center p-2 w-full rounded focus-visible:bg-gray-200"
+              className="flex w-full items-center justify-center rounded p-2 focus-visible:bg-gray-200"
               href="/app"
               params={{ sheet: "settings", trigger: "settings" }}
               mergeParams
             >
               <Icon text="settings" />
-              <div className="flex-1 text-left pl-2">{t("Preferences")}</div>
+              <div className="flex-1 pl-2 text-left">{t("Preferences")}</div>
             </ParamsLink>
 
             {!isInstalledPWA && deferredPrompt ? (
               <div className="p-2">
                 <button
-                  className="border px-2 py-1 w-full rounded bg-gray-100 focus-visible:bg-gray-200"
+                  className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200"
                   onClick={() => {
                     deferredPrompt.prompt();
                   }}
@@ -252,7 +252,7 @@ const AppPageContent = () => {
               </div>
             ) : null}
           </div>
-          <div className="pt-2 border-t">
+          <div className="border-t pt-2">
             <TaskListList
               disabled={isDrawerDisabled}
               taskLists={taskLists}
@@ -263,12 +263,12 @@ const AppPageContent = () => {
 
         <section
           data-sectionmain
-          className="flex flex-col h-full md:max-w-lg min-w-[375px] mx-auto w-full"
+          className="mx-auto flex h-full w-full min-w-[375px] flex-col md:max-w-lg"
         >
-          <header className="flex p-1 bg-white">
+          <header className="flex bg-white p-1">
             <ParamsLink
               tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
-              className="flex md:hidden items-center justify-center p-2 rounded focus-visible:bg-gray-200"
+              className="flex items-center justify-center rounded p-2 focus-visible:bg-gray-200 md:hidden"
               href="/app"
               params={{ drawer: "opened" }}
               mergeParams
@@ -286,10 +286,10 @@ const AppPageContent = () => {
                   tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
                   key={`${i}-${taskList.id}`}
                   className={clsx(
-                    "w-1 h-1 rounded-full mx-1 focus-visible:bg-gray-800",
+                    "mx-1 h-1 w-1 rounded-full focus-visible:bg-gray-800",
                     currentTaskListId === taskList.id
                       ? "bg-gray-500"
-                      : "bg-gray-200"
+                      : "bg-gray-200",
                   )}
                   onClick={(e) => {
                     e.preventDefault();
@@ -303,9 +303,9 @@ const AppPageContent = () => {
           <section
             ref={taskListContainerRef}
             className={clsx(
-              "flex-1 flex relative w-full snap-mandatory snap-x flex-row flex-nowrap",
+              "relative flex w-full flex-1 snap-x snap-mandatory flex-row flex-nowrap",
               /* FYI: Prevent x-scroll position when sorting after 2nd taskLists */
-              sortingTaskListId ? "overflow-visible" : "overflow-scroll"
+              sortingTaskListId ? "overflow-visible" : "overflow-scroll",
             )}
           >
             {taskLists.map((taskList: TaskList) => {
@@ -321,14 +321,14 @@ const AppPageContent = () => {
                   data-tasklistid={taskList.id}
                   key={taskList.id}
                   className={clsx(
-                    "flex-none w-full snap-start snap-always relative",
+                    "relative w-full flex-none snap-start snap-always",
                     {
                       hidden:
                         sortingTaskListId && sortingTaskListId !== taskList.id,
-                    }
+                    },
                   )}
                 >
-                  <div className="absolute w-full h-full overflow-scroll">
+                  <div className="absolute h-full w-full overflow-scroll">
                     <TaskList
                       key={taskList.id}
                       disabled={
@@ -348,7 +348,7 @@ const AppPageContent = () => {
         </section>
 
         <section
-          className="lg:w-[15%] w-[0px]" /* FYI: Spacer to adjust list centering*/
+          className="w-[0px] lg:w-[15%]" /* FYI: Spacer to adjust list centering*/
         />
       </div>
 

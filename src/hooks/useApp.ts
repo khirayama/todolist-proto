@@ -7,7 +7,7 @@ import { useClient } from "hooks/common";
 // App, Profile, Preferences, TaskList-Task
 
 export const useApp = (
-  url: string
+  url: string,
 ): [
   { data: App; isInitialized: boolean; isLoading: boolean },
   { updateApp: (newApp: Partial<App>) => void },

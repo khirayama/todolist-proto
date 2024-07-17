@@ -22,10 +22,10 @@ const SharePageContent = () => {
 
   const [{ data: app }, { updateApp }] = useApp("/api/app");
   const [{ data: taskLists, isInitialized }] = useTaskLists(
-    shareCode ? `/api/task-lists?shareCodes=${shareCode}` : ""
+    shareCode ? `/api/task-lists?shareCodes=${shareCode}` : "",
   );
   const taskList = Object.values(taskLists).find(
-    (taskList) => taskList.shareCode === shareCode
+    (taskList) => taskList.shareCode === shareCode,
   );
   useTasks(taskList ? `/api/tasks?taskListIds=${taskList.id}` : "");
   const { isLoggedIn } = useSupabase();
@@ -36,8 +36,11 @@ const SharePageContent = () => {
   return (
     <>
       <section>
-        <header className="max-w-xl mx-auto flex justify-center items-center p-2">
-          <ParamsLink href={distURL} className="p-2 rounded focus-visible:bg-gray-200">
+        <header className="mx-auto flex max-w-xl items-center justify-center p-2">
+          <ParamsLink
+            href={distURL}
+            className="rounded p-2 focus-visible:bg-gray-200"
+          >
             <img
               src="/logo.svg"
               alt="Lightlist"
@@ -45,17 +48,20 @@ const SharePageContent = () => {
             />
           </ParamsLink>
           <div className="flex-1" />
-          <ParamsLink href={distURL} className="p-2 rounded focus-visible:bg-gray-200">
+          <ParamsLink
+            href={distURL}
+            className="rounded p-2 focus-visible:bg-gray-200"
+          >
             <Icon text="close" />
           </ParamsLink>
         </header>
 
-        <section className="max-w-xl mx-auto p-2">
+        <section className="mx-auto max-w-xl p-2">
           {!hasTaskList ? (
             <div className="">
               {isLoggedIn ? (
                 <button
-                  className="border px-2 py-1 w-full rounded bg-gray-100 focus-visible:bg-gray-200"
+                  className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200"
                   disabled={hasTaskList}
                   onClick={() => {
                     updateApp({
@@ -71,7 +77,7 @@ const SharePageContent = () => {
                   <ParamsLink
                     href="/login"
                     params={{ redirect: location.href }}
-                    className="inline-block border px-2 py-1 w-full rounded bg-gray-100 focus-visible:bg-gray-200"
+                    className="inline-block w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200"
                   >
                     {t("Log in to add this task list")}
                   </ParamsLink>
@@ -94,7 +100,7 @@ const SharePageContent = () => {
         )}
         <div className="border-t pb-8" />
 
-        <div className="max-w-xl mx-auto">
+        <div className="mx-auto max-w-xl">
           {!shareCode ? (
             <div className="py-12 text-center">{t("No share code")}</div>
           ) : !isInitialized ? (

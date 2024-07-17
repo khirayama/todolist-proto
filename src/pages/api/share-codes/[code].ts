@@ -5,7 +5,7 @@ import { prisma, auth } from "libs/pages/api";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { errorMessage } = await auth(req);
   if (errorMessage) {

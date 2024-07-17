@@ -39,7 +39,7 @@ export function TaskListList(props: {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const taskLists = props.taskLists;
@@ -82,16 +82,16 @@ export function TaskListList(props: {
 
   return (
     <div>
-      <header className="sticky w-full top-0 z-20 bg-white">
+      <header className="sticky top-0 z-20 w-full bg-white">
         <section className="px-1">
           <form
-            className="flex items-center py-2 bg-white"
+            className="flex items-center bg-white py-2"
             onSubmit={onTaskListFormSubmit}
           >
             <div className="flex-1 pl-2">
               <input
                 disabled={props.disabled}
-                className="w-full rounded-full py-2 px-4 border focus-visible:bg-gray-200"
+                className="w-full rounded-full border px-4 py-2 focus-visible:bg-gray-200"
                 type="text"
                 value={taskListName}
                 placeholder={t("Add task list to bottom")}
@@ -100,7 +100,7 @@ export function TaskListList(props: {
             </div>
             <button
               disabled={props.disabled}
-              className="flex rounded p-2 rounded focus-visible:bg-gray-200"
+              className="flex rounded p-2 focus-visible:bg-gray-200"
               type="submit"
             >
               <Icon text="send" />
@@ -123,7 +123,7 @@ export function TaskListList(props: {
             {taskLists.map((taskList) => {
               const handleDeleteTaskListButtonClick = (taskListId: string) => {
                 const newTaskLists = taskLists.filter(
-                  (tl) => tl.id !== taskListId
+                  (tl) => tl.id !== taskListId,
                 );
                 deleteTaskList(taskListId);
                 updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });

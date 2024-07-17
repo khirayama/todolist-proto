@@ -5,7 +5,7 @@ import { prisma, exclude, auth } from "libs/pages/api";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const taskListId = req.query.id as string;
   const unsafeKeys: (keyof TaskListType)[] = ["id"];

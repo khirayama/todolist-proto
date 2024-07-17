@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   return (
     <div className="h-full">
-      <header className="text-center absolute top-0 left-0 w-full">
+      <header className="absolute left-0 top-0 w-full text-center">
         <h1 className="py-8">
           <Link href="/">
             <img src="/logo.svg" alt="Lightlist" className="inline h-[2rem]" />
@@ -31,7 +31,7 @@ export default function LoginPage() {
         </h1>
       </header>
 
-      <div className="py-12 max-w-sm mx-auto flex justify-center items-center h-full">
+      <div className="mx-auto flex h-full max-w-sm items-center justify-center py-12">
         <div className="pb-16">
           <Auth
             supabaseClient={supabase}
