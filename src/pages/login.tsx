@@ -40,13 +40,14 @@ export default function LoginPage() {
               extend: false,
               className: {
                 anchor:
-                  "block text-gray-400 px-2 py-1 rounded focus:bg-gray-200",
+                  "block text-gray-400 px-2 py-1 rounded focus-visible:bg-gray-200",
                 button:
-                  "w-full py-2 px-4 border rounded my-4 focus:bg-gray-200",
+                  "w-full py-2 px-4 border rounded my-4 focus-visible:bg-gray-200",
                 container: "classname-container",
                 divider: "classname-divider",
                 label: "block text-gray-400",
-                input: "border rounded w-full py-2 px-4 mb-4 focus:bg-gray-200",
+                input:
+                  "border rounded w-full py-2 px-4 mb-4 focus-visible:bg-gray-200",
                 loader: "classname-loader",
                 message: "classname-message",
               },

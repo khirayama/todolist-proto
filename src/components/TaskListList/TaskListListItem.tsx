@@ -45,7 +45,7 @@ export function TaskListListItem(props: {
         {...listeners}
         {...attributes}
         className={clsx(
-          "touch-none flex items-center justify-center p-1 text-gray-400 fill-gray-400 rounded focus:bg-gray-200"
+          "touch-none flex items-center justify-center p-1 text-gray-400 fill-gray-400 rounded focus-visible:bg-gray-200"
         )}
       >
         <Icon text="drag_indicator" />
@@ -54,7 +54,7 @@ export function TaskListListItem(props: {
       <button
         disabled={props.disabled}
         className={clsx(
-          "flex-1 px-1 py-3 cursor-pointer text-left rounded focus:bg-gray-200"
+          "flex-1 px-1 py-3 cursor-pointer text-left rounded focus-visible:bg-gray-200"
         )}
         onClick={() => {
           props.handleTaskListLinkClick(taskList.id);
@@ -76,7 +76,7 @@ export function TaskListListItem(props: {
             props.handleDeleteTaskListButtonClick(taskList.id);
           }
         }}
-        className="flex items-center justify-center p-1 text-gray-400 cursor-pointer fill-gray-400 rounded focus:bg-gray-200"
+        className="flex items-center justify-center p-1 text-gray-400 cursor-pointer fill-gray-400 rounded focus-visible:bg-gray-200"
       >
         <Icon text="delete" />
       </button>

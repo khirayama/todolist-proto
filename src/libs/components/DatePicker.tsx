@@ -73,7 +73,7 @@ export function DatePicker(props: {
                     </span>
                   ) : null}
                   <button
-                    className="px-2 py-1 rounded focus:bg-gray-200"
+                    className="px-2 py-1 rounded focus-visible:bg-gray-200"
                     onClick={() => {
                       setVal("");
                       props.handleChange("");
@@ -82,7 +82,7 @@ export function DatePicker(props: {
                     {t("Reset")}
                   </button>
                   <button
-                    className="px-2 py-1 rounded focus:bg-gray-200"
+                    className="px-2 py-1 rounded focus-visible:bg-gray-200"
                     onClick={() => {
                       setVal(props.value);
                       props.handleCancel();
@@ -97,7 +97,7 @@ export function DatePicker(props: {
               <td colSpan={7}>
                 <div className="flex px-4 pt-8 pb-2 font-bold text-center">
                   <button
-                    className="p-1 rounded focus:bg-gray-200"
+                    className="p-1 rounded focus-visible:bg-gray-200"
                     onClick={(e) => {
                       e.preventDefault();
                       setRefDate(addMonths(refDate, -1));
@@ -107,7 +107,7 @@ export function DatePicker(props: {
                   </button>
                   <div className="flex-1">{format(refDate, "yyyy/MM")}</div>
                   <button
-                    className="p-1 rounded focus:bg-gray-200"
+                    className="p-1 rounded focus-visible:bg-gray-200"
                     onClick={(e) => {
                       e.preventDefault();
                       setRefDate(addMonths(refDate, 1));
@@ -132,7 +132,7 @@ export function DatePicker(props: {
           <tbody
             ref={ref}
             tabIndex={0}
-            className="w-full max-w-[420px] mx-auto relative focus:bg-gray-200"
+            className="w-full max-w-[420px] mx-auto relative focus-visible:bg-gray-200"
             onKeyDown={(e) => {
               e.stopPropagation();
 

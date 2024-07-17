@@ -71,7 +71,7 @@ export function ParamsSheet(props: {
         />
         <RadixDialog.Content
           className={clsx(
-            "flex flex-col fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-2xl mx-auto min-h-[80%] max-h-[95%] rounded-t-lg shadow-lg z-[400] bg-white overflow-hidden focus:bg-white",
+            "flex flex-col fixed bottom-0 left-1/2 translate-x-[-50%] w-full max-w-2xl mx-auto min-h-[80%] max-h-[95%] rounded-t-lg shadow-lg z-[400] bg-white overflow-hidden focus-visible:bg-white",
             props.open(query) &&
               `animate-[contentshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open(query) &&
@@ -81,7 +81,7 @@ export function ParamsSheet(props: {
           <header className="flex w-full p-4 items-center justify-center sticky top-0 bg-white">
             <div className="flex-1 font-bold text-center">{props.title}</div>
             <div className="absolute right-0 top-0 p-2">
-              <RadixDialog.Close className="p-2 rounded focus:bg-gray-200">
+              <RadixDialog.Close className="p-2 rounded focus-visible:bg-gray-200">
                 <Icon text="close" />
               </RadixDialog.Close>
             </div>

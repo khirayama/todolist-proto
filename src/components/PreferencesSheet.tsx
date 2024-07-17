@@ -28,7 +28,7 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             });
           }}
         >
-          <Select.Trigger className="p-2 border rounded inline-flex items-center focus:bg-gray-200">
+          <Select.Trigger className="p-2 border rounded inline-flex items-center focus-visible:bg-gray-200">
             <Select.Value aria-label={t(preferences.theme)}>
               {t(preferences.theme)}
             </Select.Value>
@@ -37,13 +37,13 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] bg-white p-2 rounded border shadow focus:bg-white">
+            <Select.Content className="z-[500] bg-white p-2 rounded border shadow focus-visible:bg-white">
               <Select.Viewport>
                 {themes.map((theme) => (
                   <Select.Item
                     key={theme}
                     value={theme}
-                    className="p-2 flex items-center focus:bg-gray-200"
+                    className="p-2 flex items-center focus-visible:bg-gray-200"
                   >
                     <Select.ItemText>{t(theme)}</Select.ItemText>
                     <Select.ItemIndicator>
@@ -67,7 +67,7 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             });
           }}
         >
-          <Select.Trigger className="p-2 border rounded inline-flex items-center focus:bg-gray-200">
+          <Select.Trigger className="p-2 border rounded inline-flex items-center focus-visible:bg-gray-200">
             <Select.Value aria-label={t(preferences.lang)}>
               {t(preferences.lang)}
             </Select.Value>
@@ -76,13 +76,13 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] bg-white p-2 rounded border shadow focus:bg-white">
+            <Select.Content className="z-[500] bg-white p-2 rounded border shadow focus-visible:bg-white">
               <Select.Viewport>
                 {supportedLngs.map((ln) => (
                   <Select.Item
                     key={ln}
                     value={ln}
-                    className="p-2 flex items-center focus:bg-gray-200"
+                    className="p-2 flex items-center focus-visible:bg-gray-200"
                   >
                     <Select.ItemText>{t(ln)}</Select.ItemText>
                     <Select.ItemIndicator>

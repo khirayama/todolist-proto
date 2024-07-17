@@ -19,7 +19,7 @@ export default function IndexPage() {
     <div>
       <header className="max-w-2xl mx-auto text-right py-4">
         <button
-          className="px-4 py-2 rounded focus:bg-gray-200"
+          className="px-4 py-2 rounded focus-visible:bg-gray-200"
           onClick={() => {
             setLang("en");
           }}
@@ -27,7 +27,7 @@ export default function IndexPage() {
           English
         </button>
         <button
-          className="px-4 py-2 rounded focus:bg-gray-200"
+          className="px-4 py-2 rounded focus-visible:bg-gray-200"
           onClick={() => {
             setLang("ja");
           }}
@@ -48,7 +48,7 @@ export default function IndexPage() {
           <ParamsLink
             href="/app"
             params={params}
-            className="border py-2 px-4 rounded-full focus:bg-gray-200"
+            className="border py-2 px-4 rounded-full focus-visible:bg-gray-200"
           >
             {t("Get started")}
           </ParamsLink>
@@ -83,7 +83,7 @@ export default function IndexPage() {
           <ParamsLink
             href="/app"
             params={params}
-            className="border py-2 px-4 rounded-full focus:bg-gray-200"
+            className="border py-2 px-4 rounded-full focus-visible:bg-gray-200"
           >
             {t("Get started")}
           </ParamsLink>

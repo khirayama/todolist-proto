@@ -203,7 +203,7 @@ const AppPageContent = () => {
             <div className="p-1">
               <button
                 disabled={isDrawerDisabled}
-                className="p-2 rounded focus:bg-gray-200"
+                className="p-2 rounded focus-visible:bg-gray-200"
                 onClick={closeDrawer}
               >
                 <Icon text="close" />
@@ -216,7 +216,7 @@ const AppPageContent = () => {
             <ParamsLink
               data-trigger="user"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex items-center justify-center p-2 w-full rounded focus:bg-gray-200"
+              className="flex items-center justify-center p-2 w-full rounded focus-visible:bg-gray-200"
               href="/app"
               params={{ sheet: "user", trigger: "user" }}
               mergeParams
@@ -230,7 +230,7 @@ const AppPageContent = () => {
             <ParamsLink
               data-trigger="settings"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex items-center justify-center p-2 w-full rounded focus:bg-gray-200"
+              className="flex items-center justify-center p-2 w-full rounded focus-visible:bg-gray-200"
               href="/app"
               params={{ sheet: "settings", trigger: "settings" }}
               mergeParams
@@ -242,7 +242,7 @@ const AppPageContent = () => {
             {!isInstalledPWA && deferredPrompt ? (
               <div className="p-2">
                 <button
-                  className="border px-2 py-1 w-full rounded focus:bg-gray-200"
+                  className="border px-2 py-1 w-full rounded bg-gray-100 focus-visible:bg-gray-200"
                   onClick={() => {
                     deferredPrompt.prompt();
                   }}
@@ -268,7 +268,7 @@ const AppPageContent = () => {
           <header className="flex p-1 bg-white">
             <ParamsLink
               tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
-              className="flex md:hidden items-center justify-center p-2 rounded focus:bg-gray-200"
+              className="flex md:hidden items-center justify-center p-2 rounded focus-visible:bg-gray-200"
               href="/app"
               params={{ drawer: "opened" }}
               mergeParams
@@ -286,7 +286,7 @@ const AppPageContent = () => {
                   tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
                   key={`${i}-${taskList.id}`}
                   className={clsx(
-                    "w-1 h-1 rounded-full mx-1 focus:bg-gray-800",
+                    "w-1 h-1 rounded-full mx-1 focus-visible:bg-gray-800",
                     currentTaskListId === taskList.id
                       ? "bg-gray-500"
                       : "bg-gray-200"
