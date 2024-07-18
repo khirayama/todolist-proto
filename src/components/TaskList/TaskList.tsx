@@ -18,8 +18,6 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { clsx } from "clsx";
-import { useRouter } from "next/router";
 import qs from "query-string";
 
 import { useApp } from "hooks/useApp";
@@ -46,7 +44,6 @@ export function TaskList(props: {
 }) {
   const taskList = props.taskList;
 
-  const router = useRouter();
   const { t } = useCustomTranslation("components.TaskList");
 
   const [taskText, setTaskText] = useState<string>("");
