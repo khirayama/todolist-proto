@@ -102,6 +102,16 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
             trigger: `datepicker-${task.id}`,
           }}
           mergeParams
+          onKeyDown={(e) => {
+            const key = e.key;
+            if (key === "Backspace" || key === "Delete") {
+              e.preventDefault();
+              updateTask({
+                ...task,
+                date: undefined,
+              });
+            }
+          }}
         >
           {task.date ? (
             <div className="inline px-1 text-right">
