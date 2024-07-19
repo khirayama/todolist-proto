@@ -48,7 +48,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         className={clsx(
           "relative flex",
           isDragging && "z-10 shadow",
-          task.completed ? "opacity-55" : "bg-white",
+          task.completed ? "opacity-55" : "bg-white"
         )}
       >
         <button
@@ -56,7 +56,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
           {...attributes}
           {...listeners}
           className={clsx(
-            "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200",
+            "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200"
           )}
         >
           <Icon text="drag_indicator" />

@@ -190,7 +190,7 @@ export function DatePicker(props: {
                         className={clsx(
                           "flex h-8 w-8 items-center justify-center rounded-full p-4",
                           val === format(day, "yyyy-MM-dd") &&
-                            "bg-gray-600 text-white",
+                            "bg-gray-600 text-white"
                         )}
                       >
                         <span>{day.getDate()}</span>

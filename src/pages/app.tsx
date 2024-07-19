@@ -52,11 +52,11 @@ const AppPageContent = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [isDrawerDisabled, setIsDrawerDisabled] = useState(
-    isNarrowLayout() && !isDrawerOpen,
+    isNarrowLayout() && !isDrawerOpen
   );
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
   const [currentTaskListId, setCurrentTaskListId] = useState<string>(
-    app?.taskListIds[0] || "",
+    app?.taskListIds[0] || ""
   );
   const [isInstalledPWA, setIsInstalledPWA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -162,7 +162,7 @@ const AppPageContent = () => {
   const scrollToTaskList = (taskListId: string) => {
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
-      `[data-tasklistid="${taskListId}"]`,
+      `[data-tasklistid="${taskListId}"]`
     );
     if (parent && el) {
       parent.scrollLeft = el.offsetLeft;
@@ -196,7 +196,7 @@ const AppPageContent = () => {
           data-sectiondrawer
           className={clsx(
             "absolute z-30 h-full w-full min-w-[320px] -translate-x-full border-r bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0",
-            isDrawerOpen && "translate-x-0",
+            isDrawerOpen && "translate-x-0"
           )}
         >
           <div className="flex md:hidden">
@@ -263,7 +263,7 @@ const AppPageContent = () => {
 
         <section
           data-sectionmain
-          className="mx-auto flex h-full w-full min-w-[375px] flex-col md:max-w-lg"
+          className="mx-auto flex h-full w-full min-w-[375px] flex-col md:max-w-xl"
         >
           <header className="flex bg-white p-1">
             <ParamsLink
@@ -289,7 +289,7 @@ const AppPageContent = () => {
                     "mx-1 h-1 w-1 rounded-full focus-visible:bg-gray-800",
                     currentTaskListId === taskList.id
                       ? "bg-gray-500"
-                      : "bg-gray-200",
+                      : "bg-gray-200"
                   )}
                   onClick={(e) => {
                     e.preventDefault();
@@ -305,7 +305,7 @@ const AppPageContent = () => {
             className={clsx(
               "relative flex w-full flex-1 snap-x snap-mandatory flex-row flex-nowrap",
               /* FYI: Prevent x-scroll position when sorting after 2nd taskLists */
-              sortingTaskListId ? "overflow-visible" : "overflow-scroll",
+              sortingTaskListId ? "overflow-visible" : "overflow-scroll"
             )}
           >
             {taskLists.map((taskList: TaskList) => {
@@ -325,7 +325,7 @@ const AppPageContent = () => {
                     {
                       hidden:
                         sortingTaskListId && sortingTaskListId !== taskList.id,
-                    },
+                    }
                   )}
                 >
                   <div className="absolute h-full w-full overflow-scroll">
@@ -358,12 +358,8 @@ const AppPageContent = () => {
 
       <DatePickerSheet
         open={isDatePickerSheetOpened}
-        handleChange={() => {
-          router.back();
-        }}
-        handleCancel={() => {
-          router.back();
-        }}
+        handleChange={() => router.back()}
+        handleCancel={() => router.back()}
       />
     </>
   );

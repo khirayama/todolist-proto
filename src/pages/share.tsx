@@ -22,10 +22,10 @@ const SharePageContent = () => {
 
   const [{ data: app }, { updateApp }] = useApp("/api/app");
   const [{ data: taskLists, isInitialized }] = useTaskLists(
-    shareCode ? `/api/task-lists?shareCodes=${shareCode}` : "",
+    shareCode ? `/api/task-lists?shareCodes=${shareCode}` : ""
   );
   const taskList = Object.values(taskLists).find(
-    (taskList) => taskList.shareCode === shareCode,
+    (taskList) => taskList.shareCode === shareCode
   );
   useTasks(taskList ? `/api/tasks?taskListIds=${taskList.id}` : "");
   const { isLoggedIn } = useSupabase();
@@ -58,7 +58,7 @@ const SharePageContent = () => {
 
         <section className="mx-auto max-w-xl p-2">
           {!hasTaskList ? (
-            <div className="">
+            <div>
               {isLoggedIn ? (
                 <button
                   className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200"
