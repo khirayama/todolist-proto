@@ -83,7 +83,6 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         <TaskTextArea
           disabled={props.disabled}
           task={task}
-          // onFocus, onBlurで、focus状態か保存して、DatePickerから戻ってきた時に維持するか考える
           onTaskTextChange={(e) => {
             updateTask({
               ...task,
