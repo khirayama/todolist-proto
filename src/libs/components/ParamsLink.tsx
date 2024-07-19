@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { KeyboardEvent, ReactNode } from "react";
 import qs from "query-string";
 import Link from "next/link";
 
@@ -9,6 +9,7 @@ export function ParamsLink(props: {
   className?: string;
   tabIndex?: number;
   children: ReactNode;
+  onKeyDown?: (e?: KeyboardEvent<HTMLAnchorElement>) => void;
 }) {
   const p = { ...props };
   const q = props.mergeParams

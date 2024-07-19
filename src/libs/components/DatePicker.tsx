@@ -24,16 +24,18 @@ export function DatePicker(props: {
 
   const ref = useRef<HTMLTableSectionElement>(null);
   const [val, setVal] = useState<string>(
-    props.value || format(new Date(), "yyyy-MM-dd"),
+    props.value || format(new Date(), "yyyy-MM-dd")
   );
   const [refDate, setRefDate] = useState<Date>(
-    props.value ? new Date(props.value) : new Date(),
+    props.value ? new Date(props.value) : new Date()
   );
 
   const handleDateClick = (d: Date) => {
     const v = format(d, "yyyy-MM-dd");
-    setVal(v);
-    props.handleChange(v);
+    if (props.value !== v) {
+      setVal(v);
+      props.handleChange(v);
+    }
   };
 
   const getCal = (date: Date) => {
@@ -160,9 +162,15 @@ export function DatePicker(props: {
               } else if (key === "Enter") {
                 e.preventDefault();
                 props.handleChange(val);
+                e.currentTarget.blur();
               } else if (key === "Backspace" || key === "Delete") {
                 e.preventDefault();
-                setVal("");
+                if (props.value !== "") {
+                  props.handleChange("");
+                } else {
+                  props.handleCancel();
+                }
+                e.currentTarget.blur();
               } else if (key === "Escape") {
                 /* FYI: No calling e.preventDefault */
                 setVal(props.value);
