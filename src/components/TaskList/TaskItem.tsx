@@ -39,96 +39,94 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
   };
 
   return (
-    <>
-      <div
-        data-taskid={task.id}
-        data-sorting={isSorting}
-        ref={setNodeRef}
-        style={style}
+    <div
+      data-taskid={task.id}
+      data-sorting={isSorting}
+      ref={setNodeRef}
+      style={style}
+      className={clsx(
+        "relative flex border-b",
+        isDragging && "z-10 shadow",
+        task.completed ? "opacity-55" : "bg-white"
+      )}
+    >
+      <button
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
         className={clsx(
-          "relative flex",
-          isDragging && "z-10 shadow",
-          task.completed ? "opacity-55" : "bg-white"
+          "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200"
         )}
       >
-        <button
-          ref={setActivatorNodeRef}
-          {...attributes}
-          {...listeners}
-          className={clsx(
-            "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200"
-          )}
-        >
-          <Icon text="drag_indicator" />
-        </button>
+        <Icon text="drag_indicator" />
+      </button>
 
-        <span className="flex items-center p-1">
-          <Checkbox
-            disabled={props.disabled}
-            className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200"
-            checked={task.completed}
-            onCheckedChange={(v: boolean) => {
-              updateTask({
-                ...task,
-                completed: v,
-              });
-            }}
-          >
-            <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200">
-              <CheckIcon />
-            </CheckboxIndicator>
-          </Checkbox>
-        </span>
-
-        <TaskTextArea
+      <span className="flex items-center p-1">
+        <Checkbox
           disabled={props.disabled}
-          task={task}
-          onTaskTextChange={(e) => {
+          className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200"
+          checked={task.completed}
+          onCheckedChange={(v: boolean) => {
             updateTask({
               ...task,
-              text: e.currentTarget.value,
+              completed: v,
             });
           }}
-        />
-
-        <ParamsLink
-          data-trigger={`datepicker-${task.id}`}
-          tabIndex={props.disabled ? -1 : 0}
-          className="flex cursor-pointer items-center justify-center rounded fill-gray-400 px-1 text-gray-400 focus-visible:bg-gray-200"
-          href="/app"
-          params={{
-            sheet: "datepicker",
-            taskid: task.id,
-            trigger: `datepicker-${task.id}`,
-          }}
-          mergeParams
-          onKeyDown={(e) => {
-            const key = e.key;
-            if (key === "Backspace" || key === "Delete") {
-              e.preventDefault();
-              updateTask({
-                ...task,
-                date: undefined,
-              });
-            }
-          }}
         >
-          {task.date ? (
-            <div className="inline px-1 text-right">
-              <div className="w-full font-bold leading-none">
-                {format(task.date, "MM/dd")}
-              </div>
-              <div className="w-full text-xs leading-none">
-                {t(format(task.date, "EEE"))}
-              </div>
+          <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200">
+            <CheckIcon />
+          </CheckboxIndicator>
+        </Checkbox>
+      </span>
+
+      <TaskTextArea
+        disabled={props.disabled}
+        task={task}
+        onTaskTextChange={(e) => {
+          updateTask({
+            ...task,
+            text: e.currentTarget.value,
+          });
+        }}
+      />
+
+      <ParamsLink
+        data-trigger={`datepicker-${task.id}`}
+        tabIndex={props.disabled ? -1 : 0}
+        className="flex cursor-pointer items-center justify-center rounded fill-gray-400 px-1 text-gray-400 focus-visible:bg-gray-200"
+        href="/app"
+        params={{
+          sheet: "datepicker",
+          taskid: task.id,
+          trigger: `datepicker-${task.id}`,
+        }}
+        mergeParams
+        onKeyDown={(e) => {
+          const key = e.key;
+          if (key === "Backspace" || key === "Delete") {
+            e.preventDefault();
+            updateTask({
+              ...task,
+              date: undefined,
+            });
+          }
+        }}
+      >
+        {task.date ? (
+          <div className="inline px-1 text-right">
+            <div className="w-full font-bold leading-none">
+              {format(task.date, "MM/dd")}
             </div>
-          ) : (
-            <span className="p-1">
-              <Icon text="event" />
-            </span>
-          )}
-        </ParamsLink>
-      </div>
-    </>
+            <div className="w-full text-xs leading-none">
+              {t(format(task.date, "EEE"))}
+            </div>
+          </div>
+        ) : (
+          <span className="p-1">
+            <Icon text="event" />
+          </span>
+        )}
+      </ParamsLink>
+    </div>
   );
 }

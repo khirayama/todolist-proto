@@ -57,7 +57,7 @@ export function TaskList(props: {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   const tasks = getTasksById(taskList.taskIds);
@@ -256,7 +256,7 @@ export function TaskList(props: {
           if (el.taskItems[i] === el.taskItem) {
             const t =
               (el.taskItems[i - 1] || el.taskItems[i + 1])?.querySelector(
-                "textarea",
+                "textarea"
               ) || el.taskText;
             if (t) {
               setTimeout(() => {
@@ -299,7 +299,7 @@ export function TaskList(props: {
               });
               setTimeout(() => {
                 const t = document.querySelector<HTMLTextAreaElement>(
-                  `[data-taskid="${newTask.id}"] textarea`,
+                  `[data-taskid="${newTask.id}"] textarea`
                 );
                 t.focus();
                 t.selectionStart = t.value.length;
@@ -309,7 +309,7 @@ export function TaskList(props: {
             }
           }
         },
-        () => isTaskItemTextFocused,
+        () => isTaskItemTextFocused
       );
       kmh(
         "Shift-Enter",
@@ -333,7 +333,7 @@ export function TaskList(props: {
               });
               setTimeout(() => {
                 const t = document.querySelector<HTMLTextAreaElement>(
-                  `[data-taskid="${newTask.id}"] textarea`,
+                  `[data-taskid="${newTask.id}"] textarea`
                 );
                 t.focus();
                 t.selectionStart = t.value.length;
@@ -343,7 +343,7 @@ export function TaskList(props: {
             }
           }
         },
-        () => isTaskItemTextFocused,
+        () => isTaskItemTextFocused
       );
       kmh("Mod-Enter", e.nativeEvent, () => {
         e.preventDefault();
@@ -416,7 +416,7 @@ export function TaskList(props: {
   return (
     <>
       <div className="h-full overflow-scroll" onKeyDown={handleTaskListKeyDown}>
-        <header className="sticky top-0 z-20 w-full bg-white">
+        <header className="sticky top-0 z-20 w-full border-b bg-white">
           <section className="px-1">
             <div className="flex pl-8">
               <h1 className="flex-1 text-center font-bold">
