@@ -66,9 +66,21 @@ const AppPageContent = () => {
   const closeDrawer = () => router.back();
 
   useEffect(() => {
+    if (
+      preferences.theme === "DARK" ||
+      (preferences.theme === "SYSTEM" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [preferences]);
+
+  useEffect(() => {
     setIsInstalledPWA(
       window.matchMedia("(display-mode: window-controls-overlay)").matches ||
-        window.matchMedia("(display-mode: standalone)").matches,
+        window.matchMedia("(display-mode: standalone)").matches
     );
 
     window.addEventListener("beforeinstallprompt", (e) => {
