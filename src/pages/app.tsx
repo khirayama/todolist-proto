@@ -381,7 +381,6 @@ export default function AppPage() {
   /* Page Stack Control and support fast refresh */
   const isInitialRender = useRef(true);
   useEffect(() => {
-    isInitialRender.current = false;
     const isFastRefresh = !isInitialRender.current;
     if (!isFastRefresh) {
       const query = qs.parse(window.location.search);
@@ -391,6 +390,7 @@ export default function AppPage() {
         window.history.pushState({}, "", tmp);
       }
     }
+    isInitialRender.current = false;
   }, []);
 
   const router = useRouter();
