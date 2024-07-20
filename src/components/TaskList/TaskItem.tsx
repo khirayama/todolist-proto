@@ -45,7 +45,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
       ref={setNodeRef}
       style={style}
       className={clsx(
-        "relative flex border-b",
+        "relative flex border-b py-1",
         isDragging && "z-10 shadow",
         task.completed ? "opacity-55" : "bg-white"
       )}
