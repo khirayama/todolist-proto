@@ -28,7 +28,7 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             });
           }}
         >
-          <Select.Trigger className="inline-flex items-center rounded border p-2 focus-visible:bg-gray-200">
+          <Select.Trigger className="inline-flex items-center rounded border p-2 focus-visible:bg-gray-200 dark:text-white dark:focus-visible:bg-gray-700">
             <Select.Value aria-label={t(preferences.theme)}>
               {t(preferences.theme)}
             </Select.Value>
@@ -37,13 +37,13 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] rounded border bg-white p-2 shadow focus-visible:bg-white">
+            <Select.Content className="z-[500] rounded border bg-white p-2 shadow focus-visible:bg-white dark:bg-gray-800 dark:text-white dark:focus-visible:bg-gray-700">
               <Select.Viewport>
                 {themes.map((theme) => (
                   <Select.Item
                     key={theme}
                     value={theme}
-                    className="flex items-center p-2 focus-visible:bg-gray-200"
+                    className="flex items-center p-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                   >
                     <Select.ItemText>{t(theme)}</Select.ItemText>
                     <Select.ItemIndicator>
@@ -67,7 +67,7 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             });
           }}
         >
-          <Select.Trigger className="inline-flex items-center rounded border p-2 focus-visible:bg-gray-200">
+          <Select.Trigger className="inline-flex items-center rounded border p-2 focus-visible:bg-gray-200 dark:text-white dark:focus-visible:bg-gray-700">
             <Select.Value aria-label={t(preferences.lang)}>
               {t(preferences.lang)}
             </Select.Value>
@@ -76,13 +76,13 @@ export function PreferencesSheet(props: { open: (q?: Query) => boolean }) {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="z-[500] rounded border bg-white p-2 shadow focus-visible:bg-white">
+            <Select.Content className="z-[500] rounded border bg-white p-2 shadow focus-visible:bg-white dark:bg-gray-800 dark:text-white dark:focus-visible:bg-gray-700">
               <Select.Viewport>
                 {supportedLngs.map((ln) => (
                   <Select.Item
                     key={ln}
                     value={ln}
-                    className="flex items-center p-2 focus-visible:bg-gray-200"
+                    className="flex items-center p-2 focus-visible:bg-gray-200 dark:text-white dark:focus-visible:bg-gray-700"
                   >
                     <Select.ItemText>{t(ln)}</Select.ItemText>
                     <Select.ItemIndicator>

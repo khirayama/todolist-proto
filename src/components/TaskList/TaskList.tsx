@@ -57,7 +57,7 @@ export function TaskList(props: {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const tasks = getTasksById(taskList.taskIds);
@@ -256,7 +256,7 @@ export function TaskList(props: {
           if (el.taskItems[i] === el.taskItem) {
             const t =
               (el.taskItems[i - 1] || el.taskItems[i + 1])?.querySelector(
-                "textarea"
+                "textarea",
               ) || el.taskText;
             if (t) {
               setTimeout(() => {
@@ -299,7 +299,7 @@ export function TaskList(props: {
               });
               setTimeout(() => {
                 const t = document.querySelector<HTMLTextAreaElement>(
-                  `[data-taskid="${newTask.id}"] textarea`
+                  `[data-taskid="${newTask.id}"] textarea`,
                 );
                 t.focus();
                 t.selectionStart = t.value.length;
@@ -309,7 +309,7 @@ export function TaskList(props: {
             }
           }
         },
-        () => isTaskItemTextFocused
+        () => isTaskItemTextFocused,
       );
       kmh(
         "Shift-Enter",
@@ -333,7 +333,7 @@ export function TaskList(props: {
               });
               setTimeout(() => {
                 const t = document.querySelector<HTMLTextAreaElement>(
-                  `[data-taskid="${newTask.id}"] textarea`
+                  `[data-taskid="${newTask.id}"] textarea`,
                 );
                 t.focus();
                 t.selectionStart = t.value.length;
@@ -343,7 +343,7 @@ export function TaskList(props: {
             }
           }
         },
-        () => isTaskItemTextFocused
+        () => isTaskItemTextFocused,
       );
       kmh("Mod-Enter", e.nativeEvent, () => {
         e.preventDefault();
@@ -415,14 +415,17 @@ export function TaskList(props: {
 
   return (
     <>
-      <div className="h-full overflow-scroll" onKeyDown={handleTaskListKeyDown}>
-        <header className="sticky top-0 z-20 w-full border-b bg-white">
+      <div
+        className="h-full overflow-scroll bg-white dark:bg-gray-800"
+        onKeyDown={handleTaskListKeyDown}
+      >
+        <header className="sticky top-0 z-20 w-full border-b">
           <section className="px-1">
             <div className="flex pl-8">
               <h1 className="flex-1 text-center font-bold">
                 <input
                   disabled={props.disabled}
-                  className="inline-block w-full rounded py-1 text-center focus-visible:bg-gray-200"
+                  className="inline-block w-full rounded py-1 text-center focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                   type="text"
                   placeholder={t("Task list name")}
                   value={taskList.name}
@@ -432,7 +435,7 @@ export function TaskList(props: {
               <ParamsLink
                 data-trigger={`sharing-${taskList.id}`}
                 tabIndex={props.disabled ? -1 : 0}
-                className="rounded p-1 focus-visible:bg-gray-200"
+                className="rounded p-1 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
                 href="/app"
                 params={{
                   sheet: "sharing",
@@ -445,10 +448,10 @@ export function TaskList(props: {
               </ParamsLink>
             </div>
 
-            <div className="flex items-center bg-white py-2">
+            <div className="flex items-center py-2">
               <button
                 disabled={props.disabled}
-                className="flex rounded p-2 focus-visible:bg-gray-200"
+                className="flex rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
                 onClick={onInsertPositionIconClick}
               >
                 {isInsertTop ? (
@@ -459,13 +462,13 @@ export function TaskList(props: {
               </button>
 
               <form
-                className="flex flex-1 items-center bg-white py-2"
+                className="flex flex-1 items-center py-2"
                 onSubmit={onTaskFormSubmit}
               >
                 <input
                   data-tasktext
                   disabled={props.disabled}
-                  className="flex-1 rounded-full border px-4 py-2 focus-visible:bg-gray-200"
+                  className="flex-1 rounded-full border px-4 py-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                   value={taskText}
                   placeholder={
                     isInsertTop ? t("Add task to top") : t("Add task to bottom")
@@ -477,7 +480,7 @@ export function TaskList(props: {
                 />
                 <button
                   disabled={props.disabled}
-                  className="flex rounded p-2 focus-visible:bg-gray-200"
+                  className="flex rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
                   type="submit"
                 >
                   <Icon text="send" />
@@ -488,7 +491,7 @@ export function TaskList(props: {
           <section className="flex fill-gray-400 p-1 pl-2 text-gray-400">
             <button
               disabled={props.disabled}
-              className="flex rounded p-1 focus-visible:bg-gray-200"
+              className="flex rounded p-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
               onClick={onSortTasksButtonClick}
             >
               <Icon text="sort" />
@@ -499,7 +502,7 @@ export function TaskList(props: {
 
             <button
               disabled={props.disabled}
-              className="flex rounded p-1 focus-visible:bg-gray-200"
+              className="flex rounded p-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
               onClick={onClearCompletedTasksButtonClick}
             >
               <span className="pr-1">{t("Clear Completed")}</span>

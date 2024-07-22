@@ -52,11 +52,11 @@ const AppPageContent = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(isDrawerOpened());
   const [isDrawerDisabled, setIsDrawerDisabled] = useState(
-    isNarrowLayout() && !isDrawerOpen
+    isNarrowLayout() && !isDrawerOpen,
   );
   const [sortingTaskListId, setSortingTaskListId] = useState<string>("");
   const [currentTaskListId, setCurrentTaskListId] = useState<string>(
-    app?.taskListIds[0] || ""
+    app?.taskListIds[0] || "",
   );
   const [isInstalledPWA, setIsInstalledPWA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -80,7 +80,7 @@ const AppPageContent = () => {
   useEffect(() => {
     setIsInstalledPWA(
       window.matchMedia("(display-mode: window-controls-overlay)").matches ||
-        window.matchMedia("(display-mode: standalone)").matches
+        window.matchMedia("(display-mode: standalone)").matches,
     );
 
     window.addEventListener("beforeinstallprompt", (e) => {
@@ -174,7 +174,7 @@ const AppPageContent = () => {
   const scrollToTaskList = (taskListId: string) => {
     const parent = taskListContainerRef.current;
     const el = document.querySelector<HTMLElement>(
-      `[data-tasklistid="${taskListId}"]`
+      `[data-tasklistid="${taskListId}"]`,
     );
     if (parent && el) {
       parent.scrollLeft = el.offsetLeft;
@@ -203,19 +203,19 @@ const AppPageContent = () => {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <div className="flex h-full w-full overflow-hidden">
+      <div className="flex h-full w-full overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
         <section
           data-sectiondrawer
           className={clsx(
-            "absolute z-30 h-full w-full min-w-[320px] -translate-x-full border-r bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0",
-            isDrawerOpen && "translate-x-0"
+            "absolute z-30 h-full w-full min-w-[320px] -translate-x-full border-r bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0 dark:bg-gray-800",
+            isDrawerOpen && "translate-x-0",
           )}
         >
           <div className="flex md:hidden">
             <div className="p-1">
               <button
                 disabled={isDrawerDisabled}
-                className="rounded p-2 focus-visible:bg-gray-200"
+                className="rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
                 onClick={closeDrawer}
               >
                 <Icon text="close" />
@@ -228,7 +228,7 @@ const AppPageContent = () => {
             <ParamsLink
               data-trigger="user"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex w-full items-center justify-center rounded p-2 focus-visible:bg-gray-200"
+              className="flex w-full items-center justify-center rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
               href="/app"
               params={{ sheet: "user", trigger: "user" }}
               mergeParams
@@ -242,7 +242,7 @@ const AppPageContent = () => {
             <ParamsLink
               data-trigger="settings"
               tabIndex={isDrawerDisabled ? -1 : 0}
-              className="flex w-full items-center justify-center rounded p-2 focus-visible:bg-gray-200"
+              className="flex w-full items-center justify-center rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
               href="/app"
               params={{ sheet: "settings", trigger: "settings" }}
               mergeParams
@@ -254,7 +254,7 @@ const AppPageContent = () => {
             {!isInstalledPWA && deferredPrompt ? (
               <div className="p-2">
                 <button
-                  className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200"
+                  className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                   onClick={() => {
                     deferredPrompt.prompt();
                   }}
@@ -264,6 +264,7 @@ const AppPageContent = () => {
               </div>
             ) : null}
           </div>
+
           <div className="border-t pt-2">
             <TaskListList
               disabled={isDrawerDisabled}
@@ -277,10 +278,10 @@ const AppPageContent = () => {
           data-sectionmain
           className="mx-auto flex h-full w-full min-w-[375px] flex-col md:max-w-xl"
         >
-          <header className="flex bg-white p-1">
+          <header className="flex p-1">
             <ParamsLink
               tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
-              className="flex items-center justify-center rounded p-2 focus-visible:bg-gray-200 md:hidden"
+              className="flex items-center justify-center rounded p-2 focus-visible:bg-gray-200 md:hidden dark:fill-white dark:focus-visible:bg-gray-700"
               href="/app"
               params={{ drawer: "opened" }}
               mergeParams
@@ -298,10 +299,10 @@ const AppPageContent = () => {
                   tabIndex={!isDrawerDisabled && isDrawerOpen ? -1 : 0}
                   key={`${i}-${taskList.id}`}
                   className={clsx(
-                    "mx-1 h-1 w-1 rounded-full focus-visible:bg-gray-800",
+                    "mx-1 h-1 w-1 rounded-full focus-visible:bg-gray-800 dark:focus-visible:bg-gray-200",
                     currentTaskListId === taskList.id
                       ? "bg-gray-500"
-                      : "bg-gray-200"
+                      : "bg-gray-200",
                   )}
                   onClick={(e) => {
                     e.preventDefault();
@@ -317,7 +318,7 @@ const AppPageContent = () => {
             className={clsx(
               "relative flex w-full flex-1 snap-x snap-mandatory flex-row flex-nowrap",
               /* FYI: Prevent x-scroll position when sorting after 2nd taskLists */
-              sortingTaskListId ? "overflow-visible" : "overflow-scroll"
+              sortingTaskListId ? "overflow-visible" : "overflow-scroll",
             )}
           >
             {taskLists.map((taskList: TaskList) => {
@@ -337,7 +338,7 @@ const AppPageContent = () => {
                     {
                       hidden:
                         sortingTaskListId && sortingTaskListId !== taskList.id,
-                    }
+                    },
                   )}
                 >
                   <div className="absolute h-full w-full overflow-scroll">

@@ -39,7 +39,7 @@ export function UserSheet(props: {
         <div className="flex p-4">
           <div className="flex-1 pr-4">
             <input
-              className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200"
+              className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
               type="text"
               placeholder={t("New display name")}
               value={displayName}
@@ -49,7 +49,7 @@ export function UserSheet(props: {
             />
           </div>
           <button
-            className="rounded border bg-gray-100 p-2 px-4 focus-visible:bg-gray-200"
+            className="rounded border bg-gray-100 p-2 px-4 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
             onClick={() => {
               updateProfile({ displayName });
             }}
@@ -61,7 +61,7 @@ export function UserSheet(props: {
         <div className="flex p-4">
           <div className="flex-1 pr-4">
             <input
-              className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200"
+              className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
               type="email"
               placeholder={t("New email")}
               value={email}
@@ -71,7 +71,7 @@ export function UserSheet(props: {
             />
           </div>
           <button
-            className="rounded border bg-gray-100 p-2 px-4 focus-visible:bg-gray-200"
+            className="rounded border bg-gray-100 p-2 px-4 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
             onClick={() => {
               supabase.auth.updateUser({ email });
             }}
@@ -84,7 +84,7 @@ export function UserSheet(props: {
           <div className="flex-1 pr-4">
             <div className="pb-4">
               <input
-                className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200"
+                className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                 type="password"
                 placeholder={t("New password")}
                 value={password}
@@ -95,7 +95,7 @@ export function UserSheet(props: {
             </div>
             <div>
               <input
-                className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200"
+                className="w-full rounded border px-4 py-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                 type="password"
                 placeholder={t("Confirm new password")}
                 value={confirmedPassword}
@@ -107,7 +107,7 @@ export function UserSheet(props: {
           </div>
           <div>
             <button
-              className="rounded border bg-gray-100 p-2 px-4 focus-visible:bg-gray-200"
+              className="rounded border bg-gray-100 p-2 px-4 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
               disabled={!password || password !== confirmedPassword}
               onClick={() => {
                 supabase.auth.updateUser({ password });
@@ -120,7 +120,7 @@ export function UserSheet(props: {
 
         <div className="flex p-4">
           <button
-            className="w-full rounded border bg-gray-100 px-4 py-2 focus-visible:bg-gray-200"
+            className="w-full rounded border bg-gray-100 px-4 py-2 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
             onClick={() => {
               supabase.auth.signOut().then(() => {
                 props.handleSignedOut?.();
@@ -133,7 +133,7 @@ export function UserSheet(props: {
 
         <div className="flex p-4">
           <button
-            className="w-full rounded border bg-gray-100 px-4 py-2 text-red-400 focus-visible:bg-gray-200"
+            className="w-full rounded border bg-gray-100 px-4 py-2 text-red-400 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
             onClick={() => {
               if (
                 window.confirm("Are you sure you want to delete your account?")

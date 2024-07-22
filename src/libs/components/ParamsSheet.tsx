@@ -62,7 +62,7 @@ export function ParamsSheet(props: {
       <RadixDialog.Portal>
         <RadixDialog.Overlay
           className={clsx(
-            "fixed left-0 top-0 z-[100] h-full w-full bg-gray-900/50",
+            "fixed left-0 top-0 z-[100] h-full w-full bg-gray-900/50 dark:bg-gray-100/50",
             props.open(query) &&
               `animate-[overlayshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open(query) &&
@@ -71,17 +71,17 @@ export function ParamsSheet(props: {
         />
         <RadixDialog.Content
           className={clsx(
-            "fixed bottom-0 left-1/2 z-[400] mx-auto flex max-h-[95%] min-h-[80%] w-full max-w-2xl translate-x-[-50%] flex-col overflow-hidden rounded-t-lg bg-white shadow-lg focus-visible:bg-white",
+            "fixed bottom-0 left-1/2 z-[400] mx-auto flex max-h-[95%] min-h-[80%] w-full max-w-2xl translate-x-[-50%] flex-col overflow-hidden rounded-t-lg bg-white shadow-lg focus-visible:bg-white dark:bg-gray-800 dark:text-white dark:focus-visible:bg-gray-700",
             props.open(query) &&
               `animate-[contentshow_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
             !props.open(query) &&
               `animate-[contenthide_600ms_cubic-bezier(0.16,1,0.3,1)_forwards]`,
           )}
         >
-          <header className="sticky top-0 flex w-full items-center justify-center bg-white p-4">
+          <header className="sticky top-0 flex w-full items-center justify-center p-4">
             <div className="flex-1 text-center font-bold">{props.title}</div>
             <div className="absolute right-0 top-0 p-2">
-              <RadixDialog.Close className="rounded p-2 focus-visible:bg-gray-200">
+              <RadixDialog.Close className="rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700">
                 <Icon text="close" />
               </RadixDialog.Close>
             </div>

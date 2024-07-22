@@ -38,14 +38,17 @@ export function TaskListListItem(props: {
     <div
       ref={setNodeRef}
       style={style}
-      className={clsx("relative flex bg-white px-1", isDragging && "z-10")}
+      className={clsx(
+        "relative flex bg-white px-1 dark:bg-gray-800",
+        isDragging && "z-10",
+      )}
     >
       <button
         ref={setActivatorNodeRef}
         {...listeners}
         {...attributes}
         className={clsx(
-          "flex touch-none items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200",
+          "flex touch-none items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700",
         )}
       >
         <Icon text="drag_indicator" />
@@ -54,7 +57,7 @@ export function TaskListListItem(props: {
       <button
         disabled={props.disabled}
         className={clsx(
-          "flex-1 cursor-pointer rounded px-1 py-3 text-left focus-visible:bg-gray-200",
+          "flex-1 cursor-pointer rounded px-1 py-3 text-left focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700",
         )}
         onClick={() => {
           props.handleTaskListLinkClick(taskList.id);
@@ -76,7 +79,7 @@ export function TaskListListItem(props: {
             props.handleDeleteTaskListButtonClick(taskList.id);
           }
         }}
-        className="flex cursor-pointer items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200"
+        className="flex cursor-pointer items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
       >
         <Icon text="delete" />
       </button>

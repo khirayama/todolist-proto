@@ -45,9 +45,9 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
       ref={setNodeRef}
       style={style}
       className={clsx(
-        "relative flex border-b py-1",
+        "relative flex border-b bg-white py-1 dark:bg-gray-800",
         isDragging && "z-10 shadow",
-        task.completed ? "opacity-55" : "bg-white"
+        task.completed && "opacity-55",
       )}
     >
       <button
@@ -55,7 +55,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
         {...attributes}
         {...listeners}
         className={clsx(
-          "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200"
+          "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700",
         )}
       >
         <Icon text="drag_indicator" />
@@ -64,7 +64,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
       <span className="flex items-center p-1">
         <Checkbox
           disabled={props.disabled}
-          className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200"
+          className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
           checked={task.completed}
           onCheckedChange={(v: boolean) => {
             updateTask({
@@ -73,7 +73,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
             });
           }}
         >
-          <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200">
+          <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200 dark:group-focus-visible:bg-gray-700">
             <CheckIcon />
           </CheckboxIndicator>
         </Checkbox>
@@ -93,7 +93,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
       <ParamsLink
         data-trigger={`datepicker-${task.id}`}
         tabIndex={props.disabled ? -1 : 0}
-        className="flex cursor-pointer items-center justify-center rounded fill-gray-400 px-1 text-gray-400 focus-visible:bg-gray-200"
+        className="flex cursor-pointer items-center justify-center rounded fill-gray-400 px-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
         href="/app"
         params={{
           sheet: "datepicker",

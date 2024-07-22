@@ -22,7 +22,7 @@ export function TaskTextArea(props: {
       <textarea
         disabled={props.disabled}
         className={clsx(
-          "absolute left-0 top-0 inline-block h-full w-full flex-1 whitespace-break-spaces rounded px-1 py-3 focus-visible:bg-gray-200",
+          "absolute left-0 top-0 inline-block h-full w-full flex-1 whitespace-break-spaces rounded px-1 py-3 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700",
           task.completed ? "text-gray-400 line-through" : "",
         )}
         value={task.text}

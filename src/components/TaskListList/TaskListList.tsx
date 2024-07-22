@@ -82,16 +82,16 @@ export function TaskListList(props: {
 
   return (
     <div>
-      <header className="sticky top-0 z-20 w-full bg-white">
+      <header className="sticky top-0 z-20 w-full">
         <section className="px-1">
           <form
-            className="flex items-center bg-white py-2"
+            className="flex items-center py-2"
             onSubmit={onTaskListFormSubmit}
           >
             <div className="flex-1 pl-2">
               <input
                 disabled={props.disabled}
-                className="w-full rounded-full border px-4 py-2 focus-visible:bg-gray-200"
+                className="w-full rounded-full border px-4 py-2 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-800"
                 type="text"
                 value={taskListName}
                 placeholder={t("Add task list to bottom")}
@@ -100,7 +100,7 @@ export function TaskListList(props: {
             </div>
             <button
               disabled={props.disabled}
-              className="flex rounded p-2 focus-visible:bg-gray-200"
+              className="flex rounded p-2 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
               type="submit"
             >
               <Icon text="send" />

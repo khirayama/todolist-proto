@@ -24,10 +24,10 @@ export function DatePicker(props: {
 
   const ref = useRef<HTMLTableSectionElement>(null);
   const [val, setVal] = useState<string>(
-    props.value || format(new Date(), "yyyy-MM-dd")
+    props.value || format(new Date(), "yyyy-MM-dd"),
   );
   const [refDate, setRefDate] = useState<Date>(
-    props.value ? new Date(props.value) : new Date()
+    props.value ? new Date(props.value) : new Date(),
   );
 
   const handleDateClick = (d: Date) => {
@@ -65,7 +65,7 @@ export function DatePicker(props: {
     <div>
       <div>
         <table className="w-full">
-          <thead className="sticky top-0 bg-white">
+          <thead className="sticky top-0">
             <tr>
               <th colSpan={7} className="p-2">
                 <div className="flex px-2">
@@ -75,7 +75,7 @@ export function DatePicker(props: {
                     </span>
                   ) : null}
                   <button
-                    className="rounded px-2 py-1 focus-visible:bg-gray-200"
+                    className="rounded px-2 py-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                     onClick={() => {
                       setVal("");
                       props.handleChange("");
@@ -84,7 +84,7 @@ export function DatePicker(props: {
                     {t("Reset")}
                   </button>
                   <button
-                    className="rounded px-2 py-1 focus-visible:bg-gray-200"
+                    className="rounded px-2 py-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
                     onClick={() => {
                       setVal(props.value);
                       props.handleCancel();
@@ -99,7 +99,7 @@ export function DatePicker(props: {
               <td colSpan={7}>
                 <div className="flex px-4 pb-2 pt-8 text-center font-bold">
                   <button
-                    className="rounded p-1 focus-visible:bg-gray-200"
+                    className="rounded p-1 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
                     onClick={(e) => {
                       e.preventDefault();
                       setRefDate(addMonths(refDate, -1));
@@ -109,7 +109,7 @@ export function DatePicker(props: {
                   </button>
                   <div className="flex-1">{format(refDate, "yyyy/MM")}</div>
                   <button
-                    className="rounded p-1 focus-visible:bg-gray-200"
+                    className="rounded p-1 focus-visible:bg-gray-200 dark:fill-white dark:focus-visible:bg-gray-700"
                     onClick={(e) => {
                       e.preventDefault();
                       setRefDate(addMonths(refDate, 1));
@@ -134,7 +134,7 @@ export function DatePicker(props: {
           <tbody
             ref={ref}
             tabIndex={0}
-            className="relative mx-auto w-full max-w-[420px] focus-visible:bg-gray-200"
+            className="relative mx-auto w-full max-w-[420px] focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
             onKeyDown={(e) => {
               e.stopPropagation();
 
@@ -190,7 +190,7 @@ export function DatePicker(props: {
                         className={clsx(
                           "flex h-8 w-8 items-center justify-center rounded-full p-4",
                           val === format(day, "yyyy-MM-dd") &&
-                            "bg-gray-600 text-white"
+                            "bg-gray-600 text-white dark:bg-gray-300 dark:text-black",
                         )}
                       >
                         <span>{day.getDate()}</span>
