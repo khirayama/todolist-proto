@@ -419,7 +419,7 @@ export function TaskList(props: {
         className="h-full overflow-scroll bg-white dark:bg-gray-800"
         onKeyDown={handleTaskListKeyDown}
       >
-        <header className="sticky top-0 z-20 w-full border-b">
+        <header className="sticky top-0 z-20 w-full border-b bg-white dark:bg-gray-800">
           <section className="px-1">
             <div className="flex pl-8">
               <h1 className="flex-1 text-center font-bold">
