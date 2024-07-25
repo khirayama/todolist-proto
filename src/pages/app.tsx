@@ -197,9 +197,18 @@ const AppPageContent = () => {
     resetFetchStatus();
   };
 
+  const isDarkTheme =
+    preferences.theme === "DARK" ||
+    (preferences.theme === "SYSTEM" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   return (
     <>
       <Head>
+        <meta
+          name="theme-color"
+          content={isDarkTheme ? "rgb(31, 41, 55)" : "rgb(255, 255, 255)"}
+        />
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
