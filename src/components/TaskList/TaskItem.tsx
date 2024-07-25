@@ -93,7 +93,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
       <ParamsLink
         data-trigger={`datepicker-${task.id}`}
         tabIndex={props.disabled ? -1 : 0}
-        className="flex cursor-pointer items-center justify-center rounded fill-gray-400 px-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
+        className="flex cursor-pointer items-center justify-center rounded px-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
         href="/app"
         params={{
           sheet: "datepicker",
@@ -122,7 +122,7 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
             </div>
           </div>
         ) : (
-          <span className="p-1">
+          <span className="fill-gray-400 p-1">
             <Icon text="event" />
           </span>
         )}
