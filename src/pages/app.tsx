@@ -263,7 +263,7 @@ const AppPageContent = () => {
             {!isInstalledPWA && deferredPrompt ? (
               <div className="p-2">
                 <button
-                  className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
+                  className="w-full rounded border bg-gray-100 px-2 py-1 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
                   onClick={() => {
                     deferredPrompt.prompt();
                   }}
