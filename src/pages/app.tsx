@@ -216,8 +216,9 @@ const AppPageContent = () => {
         <section
           data-sectiondrawer
           className={clsx(
-            "absolute z-30 h-full w-full min-w-[320px] -translate-x-full border-r bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0 dark:bg-gray-800",
+            "absolute z-30 h-full w-full min-w-[320px] -translate-x-full bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0 dark:bg-gray-800",
             isDrawerOpen && "translate-x-0",
+            !isNarrowLayout() && "border-r",
           )}
         >
           <div className="flex md:hidden">
