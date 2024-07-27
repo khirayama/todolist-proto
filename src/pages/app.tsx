@@ -212,11 +212,11 @@ const AppPageContent = () => {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <div className="flex h-full w-full overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
+      <div className="bg flex h-full w-full overflow-hidden">
         <section
           data-sectiondrawer
           className={clsx(
-            "absolute z-30 h-full w-full min-w-[320px] -translate-x-full bg-white transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0 dark:bg-gray-800",
+            "bg absolute z-30 h-full w-full min-w-[320px] -translate-x-full transition-transform duration-[320ms] md:relative md:block md:w-[auto] md:max-w-sm md:translate-x-0",
             isDrawerOpen && "translate-x-0",
             !isNarrowLayout() && "border-r",
           )}

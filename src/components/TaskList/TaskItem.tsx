@@ -45,88 +45,90 @@ export function TaskItem(props: { disabled?: boolean; task: Task }) {
       ref={setNodeRef}
       style={style}
       className={clsx(
-        "relative flex border-b bg-white py-1 dark:bg-gray-800",
+        "border-b",
         isDragging && "z-10 shadow",
         task.completed && "opacity-55",
       )}
     >
-      <button
-        ref={setActivatorNodeRef}
-        {...attributes}
-        {...listeners}
-        className={clsx(
-          "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700",
-        )}
-      >
-        <Icon text="drag_indicator" />
-      </button>
+      <div className="bg relative flex h-full w-full py-1">
+        <button
+          ref={setActivatorNodeRef}
+          {...attributes}
+          {...listeners}
+          className={clsx(
+            "flex touch-none items-center justify-center rounded fill-gray-400 p-2 px-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700",
+          )}
+        >
+          <Icon text="drag_indicator" />
+        </button>
 
-      <span className="flex items-center p-1">
-        <Checkbox
+        <span className="flex items-center p-1">
+          <Checkbox
+            disabled={props.disabled}
+            className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
+            checked={task.completed}
+            onCheckedChange={(v: boolean) => {
+              updateTask({
+                ...task,
+                completed: v,
+              });
+            }}
+          >
+            <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200 dark:group-focus-visible:bg-gray-700">
+              <CheckIcon />
+            </CheckboxIndicator>
+          </Checkbox>
+        </span>
+
+        <TaskTextArea
           disabled={props.disabled}
-          className="group flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
-          checked={task.completed}
-          onCheckedChange={(v: boolean) => {
+          task={task}
+          onTaskTextChange={(e) => {
             updateTask({
               ...task,
-              completed: v,
+              text: e.currentTarget.value,
             });
           }}
+        />
+
+        <ParamsLink
+          data-trigger={`datepicker-${task.id}`}
+          tabIndex={props.disabled ? -1 : 0}
+          className="flex cursor-pointer items-center justify-center rounded px-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
+          href="/app"
+          params={{
+            sheet: "datepicker",
+            taskid: task.id,
+            trigger: `datepicker-${task.id}`,
+          }}
+          mergeParams
+          onKeyDown={(e) => {
+            const key = e.key;
+            if (key === "Backspace" || key === "Delete") {
+              e.preventDefault();
+              updateTask({
+                ...task,
+                date: undefined,
+              });
+            }
+          }}
         >
-          <CheckboxIndicator className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 group-focus-visible:bg-gray-200 dark:group-focus-visible:bg-gray-700">
-            <CheckIcon />
-          </CheckboxIndicator>
-        </Checkbox>
-      </span>
-
-      <TaskTextArea
-        disabled={props.disabled}
-        task={task}
-        onTaskTextChange={(e) => {
-          updateTask({
-            ...task,
-            text: e.currentTarget.value,
-          });
-        }}
-      />
-
-      <ParamsLink
-        data-trigger={`datepicker-${task.id}`}
-        tabIndex={props.disabled ? -1 : 0}
-        className="flex cursor-pointer items-center justify-center rounded px-1 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
-        href="/app"
-        params={{
-          sheet: "datepicker",
-          taskid: task.id,
-          trigger: `datepicker-${task.id}`,
-        }}
-        mergeParams
-        onKeyDown={(e) => {
-          const key = e.key;
-          if (key === "Backspace" || key === "Delete") {
-            e.preventDefault();
-            updateTask({
-              ...task,
-              date: undefined,
-            });
-          }
-        }}
-      >
-        {task.date ? (
-          <div className="inline px-1 text-right text-gray-400">
-            <div className="w-full font-bold leading-none">
-              {format(task.date, "MM/dd")}
+          {task.date ? (
+            <div className="inline px-1 text-right text-gray-400">
+              <div className="w-full font-bold leading-none">
+                {format(task.date, "MM/dd")}
+              </div>
+              <div className="w-full text-xs leading-none">
+                {t(format(task.date, "EEE"))}
+              </div>
             </div>
-            <div className="w-full text-xs leading-none">
-              {t(format(task.date, "EEE"))}
-            </div>
-          </div>
-        ) : (
-          <span className="fill-gray-400 p-1">
-            <Icon text="event" />
-          </span>
-        )}
-      </ParamsLink>
+          ) : (
+            <span className="fill-gray-400 p-1">
+              <Icon text="event" />
+            </span>
+          )}
+        </ParamsLink>
+      </div>
     </div>
   );
 }
