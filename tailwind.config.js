@@ -4,6 +4,9 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      colors: {
+        dark: "rgba(3, 10, 18, 0.81)",
+      },
       keyframes: {
         overlayshow: {
           from: {
