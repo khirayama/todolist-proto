@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .bg {
+    @apply bg-white text-dark transition duration-500 dark:bg-gray-800 dark:text-white;
+  }
+
+  .bg-button {
+    @apply text-dark transition duration-500 focus-visible:bg-gray-200 dark:text-white dark:focus-visible:bg-gray-700;
+  }
+}
+
 html,
 body {
   width: 100%;
