@@ -133,6 +133,20 @@ export const useClient = <T>(
     };
   }, [url]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchStatus[url].polling.restart();
+      } else {
+        fetchStatus[url].polling.stop();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   return {
     sent: axios.create({
       withCredentials: true,
