@@ -8,10 +8,9 @@ export default function IndexPage() {
   const { isLoggedIn } = useSupabase();
   const { t, i18n } = useCustomTranslation("pages.index");
 
-  const params = !isLoggedIn ? { drawer: "opened", sheet: "user" } : {};
-  const [lang, setLang] = useState(i18n.resolvedLanguage);
+  const [lang, setLang] = useState(i18n.resolvedLanguage.toUpperCase());
 
-  if (lang !== i18n.resolvedLanguage) {
+  if (lang !== i18n.resolvedLanguage.toUpperCase()) {
     i18n.changeLanguage(lang);
   }
 
@@ -21,7 +20,7 @@ export default function IndexPage() {
         <button
           className="rounded px-4 py-2 focus-visible:bg-gray-200"
           onClick={() => {
-            setLang("en");
+            setLang("EN");
           }}
         >
           English
@@ -29,7 +28,7 @@ export default function IndexPage() {
         <button
           className="rounded px-4 py-2 focus-visible:bg-gray-200"
           onClick={() => {
-            setLang("ja");
+            setLang("JA");
           }}
         >
           日本語
@@ -46,8 +45,7 @@ export default function IndexPage() {
         </div>
         <div className="p-4 text-center">
           <ParamsLink
-            href="/app"
-            params={params}
+            href={isLoggedIn ? "/app" : `/login?lang=${lang}`}
             className="rounded-full border px-4 py-2 focus-visible:bg-gray-200"
           >
             {t("Get started")}
@@ -81,8 +79,7 @@ export default function IndexPage() {
       <footer className="p-12 text-center">
         <div className="p-4 text-center">
           <ParamsLink
-            href="/app"
-            params={params}
+            href={isLoggedIn ? "/app" : `/login?lang=${lang}`}
             className="rounded-full border px-4 py-2 focus-visible:bg-gray-200"
           >
             {t("Get started")}

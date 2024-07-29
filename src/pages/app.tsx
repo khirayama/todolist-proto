@@ -46,7 +46,8 @@ const AppPageContent = () => {
   const [{ data: app, isInitialized: isAppInitialized }, { updateApp }] =
     useApp("/api/app");
   const [{ data: profile }] = useProfile("/api/profile");
-  const [{ data: preferences }] = usePreferences("/api/preferences");
+  const [{ data: preferences }, { updatePreferences }] =
+    usePreferences("/api/preferences");
   const [, { createTaskList }, { getTaskListsById }] =
     useTaskLists("/api/task-lists");
 
@@ -99,6 +100,16 @@ const AppPageContent = () => {
       const newTaskLists = [...taskLists, newTaskList];
       createTaskList(newTaskList);
       updateApp({ taskListIds: newTaskLists.map((tl) => tl.id) });
+
+      const lang =
+        (qs.parse(window.location.search).lang as string)?.toUpperCase() ||
+        preferences.lang;
+      const supportedLngs = Object.keys(i18n.options.resources).map((lang) =>
+        lang.toUpperCase(),
+      );
+      if (supportedLngs.indexOf(lang) !== -1) {
+        updatePreferences({ lang: lang as Preferences["lang"] });
+      }
     }
   }, [isAppInitialized, app]);
 
