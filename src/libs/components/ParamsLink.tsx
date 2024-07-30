@@ -15,7 +15,8 @@ export function ParamsLink(props: {
   const q = props.mergeParams
     ? { ...qs.parse(window.location.search), ...props.params }
     : props.params;
-  const href = `${props.href}?${qs.stringify(q)}`;
+  const s = qs.stringify(q);
+  const href = props.href + (s ? `?${s}` : "");
   p.href = href;
   delete p.mergeParams;
   delete p.params;
