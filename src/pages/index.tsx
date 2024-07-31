@@ -1,38 +1,47 @@
-import { useState } from "react";
+import i18n from "i18next";
+import { useEffect } from "react";
 
 import { useSupabase } from "libs/supabase";
 import { ParamsLink } from "libs/components/ParamsLink";
 import { useCustomTranslation } from "libs/i18n";
 
-export default function IndexPage() {
+export const getServerSideProps = async ({ query }) => {
+  let lang = query.lang;
+  const supportedLngs = Object.keys(i18n.options.resources).map((l) =>
+    l.toUpperCase(),
+  );
+  if (!supportedLngs.includes(lang)) {
+    lang = i18n.resolvedLanguage.toUpperCase();
+  }
+  return {
+    props: { lang },
+  };
+};
+
+export default function IndexPage({ lang }) {
   const { isLoggedIn } = useSupabase();
   const { t, i18n } = useCustomTranslation("pages.index");
-
-  const [lang, setLang] = useState(i18n.resolvedLanguage.toUpperCase());
-
-  if (lang !== i18n.resolvedLanguage.toUpperCase()) {
-    i18n.changeLanguage(lang);
-  }
+  useEffect(() => {
+    i18n.changeLanguage(lang.toLowerCase());
+  }, [lang]);
 
   return (
     <div>
       <header className="mx-auto max-w-2xl py-4 text-right">
-        <button
+        <ParamsLink
+          href="/"
+          params={{ lang: "EN" }}
           className="rounded px-4 py-2 focus-visible:bg-gray-200"
-          onClick={() => {
-            setLang("EN");
-          }}
         >
           English
-        </button>
-        <button
+        </ParamsLink>
+        <ParamsLink
+          href="/"
+          params={{ lang: "JA" }}
           className="rounded px-4 py-2 focus-visible:bg-gray-200"
-          onClick={() => {
-            setLang("JA");
-          }}
         >
           日本語
-        </button>
+        </ParamsLink>
       </header>
       <div className="pb-8">
         <div className="pb-4 pt-24 text-center">
