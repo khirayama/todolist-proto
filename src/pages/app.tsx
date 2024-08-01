@@ -382,7 +382,7 @@ const AppPageContent = () => {
         </section>
 
         <section
-          className="w-[0px] lg:w-[15%]" /* FYI: Spacer to adjust list centering*/
+          className="w-[0px] lg:w-[10%]" /* FYI: Spacer to adjust list centering*/
         />
       </div>
 
