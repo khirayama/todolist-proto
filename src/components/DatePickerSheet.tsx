@@ -1,7 +1,7 @@
 import qs from "query-string";
 
-import { ParamsSheet } from "libs/components/ParamsSheet";
-import { DatePicker } from "libs/components/DatePicker";
+import { ParamsSheet } from "components/ParamsSheet";
+import { DatePicker } from "components/DatePicker";
 import { useCustomTranslation } from "libs/i18n";
 import { useTasks } from "hooks/useTasks";
 

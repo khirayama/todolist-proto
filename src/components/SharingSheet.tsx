@@ -1,4 +1,4 @@
-import { ParamsSheet } from "libs/components/ParamsSheet";
+import { ParamsSheet } from "components/ParamsSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
 

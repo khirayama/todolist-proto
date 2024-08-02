@@ -22,8 +22,8 @@ import qs from "query-string";
 
 import { useApp } from "hooks/useApp";
 import { useTasks } from "hooks/useTasks";
-import { Icon } from "libs/components/Icon";
-import { ParamsLink } from "libs/components/ParamsLink";
+import { Icon } from "components/Icon";
+import { ParamsLink } from "components/ParamsLink";
 import { useCustomTranslation } from "libs/i18n";
 import { useTaskLists } from "hooks/useTaskLists";
 import { SharingSheet } from "components/SharingSheet";

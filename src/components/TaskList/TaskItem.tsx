@@ -9,9 +9,9 @@ import { clsx } from "clsx";
 import { format } from "date-fns";
 
 import { useTasks } from "hooks/useTasks";
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 import { TaskTextArea } from "components/TaskList";
-import { ParamsLink } from "libs/components/ParamsLink";
+import { ParamsLink } from "components/ParamsLink";
 import { useCustomTranslation } from "libs/i18n";
 
 export function TaskItem(props: { disabled?: boolean; task: Task }) {

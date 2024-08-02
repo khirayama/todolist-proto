@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { ParamsSheet } from "libs/components/ParamsSheet";
+import { ParamsSheet } from "components/ParamsSheet";
 import { useSupabase } from "libs/supabase";
 import { useCustomTranslation } from "libs/i18n";
 import { useApp } from "hooks/useApp";

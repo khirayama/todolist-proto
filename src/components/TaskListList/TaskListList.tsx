@@ -19,7 +19,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 import { useApp } from "hooks/useApp";
 import { useTaskLists } from "hooks/useTaskLists";
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 import { useCustomTranslation } from "libs/i18n";
 import { TaskListListItem } from "components/TaskListList";
 

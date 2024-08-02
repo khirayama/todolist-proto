@@ -2,7 +2,7 @@ import i18n from "i18next";
 import { useEffect } from "react";
 
 import { useSupabase } from "libs/supabase";
-import { ParamsLink } from "libs/components/ParamsLink";
+import { ParamsLink } from "components/ParamsLink";
 import { useCustomTranslation } from "libs/i18n";
 
 export const getServerSideProps = async ({ query }) => {

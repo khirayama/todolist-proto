@@ -1,7 +1,7 @@
 import * as Select from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
-import { ParamsSheet } from "libs/components/ParamsSheet";
+import { ParamsSheet } from "components/ParamsSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { usePreferences } from "hooks/usePreferences";
 

@@ -7,9 +7,9 @@ import { useTasks } from "hooks/useTasks";
 import { TaskList } from "components/TaskList";
 import { useSupabase } from "libs/supabase";
 import { UserSheet } from "components/UserSheet";
-import { ParamsLink } from "libs/components/ParamsLink";
+import { ParamsLink } from "components/ParamsLink";
 import { useCustomTranslation } from "libs/i18n";
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 
 function isUserSheetOpened() {
   return qs.parse(window?.location.search).sheet === "user";

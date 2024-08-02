@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import { useRouter } from "next/router";
 import qs from "query-string";
 
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 
 export function ParamsSheet(props: {
   children: ReactNode;

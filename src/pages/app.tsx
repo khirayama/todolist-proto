@@ -10,7 +10,7 @@ import { useApp } from "hooks/useApp";
 import { useProfile } from "hooks/useProfile";
 import { usePreferences } from "hooks/usePreferences";
 import { useTaskLists } from "hooks/useTaskLists";
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 import { TaskList } from "components/TaskList";
 import { TaskListList } from "components/TaskListList";
 import { UserSheet } from "components/UserSheet";
@@ -18,7 +18,7 @@ import { PreferencesSheet } from "components/PreferencesSheet";
 import { DatePickerSheet } from "components/DatePickerSheet";
 import { useCustomTranslation } from "libs/i18n";
 import { createDebounce, isNarrowLayout } from "libs/common";
-import { ParamsLink } from "libs/components/ParamsLink";
+import { ParamsLink } from "components/ParamsLink";
 import { useSupabase } from "libs/supabase";
 
 const scrollDebounce = createDebounce();

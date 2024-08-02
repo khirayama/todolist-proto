@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { clsx } from "clsx";
 
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 
 export function TaskListListItem(props: {
   disabled?: boolean;

@@ -12,7 +12,7 @@ import {
 import clsx from "clsx";
 
 import { useCustomTranslation } from "libs/i18n";
-import { Icon } from "libs/components/Icon";
+import { Icon } from "components/Icon";
 
 export function DatePicker(props: {
   value: string;
