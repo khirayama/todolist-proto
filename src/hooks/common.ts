@@ -34,18 +34,6 @@ const createPolling = () => {
   return polling;
 };
 
-export const client = () => {
-  console.warn("Please migrate to useClient()");
-  const session = getSession();
-  return axios.create({
-    withCredentials: true,
-    headers: {
-      "Cache-Control": "no-cache",
-      Authorization: `Bearer ${session?.access_token}`,
-    },
-  });
-};
-
 const fetchStatus: {
   [url: string]: {
     isLoading: boolean;
