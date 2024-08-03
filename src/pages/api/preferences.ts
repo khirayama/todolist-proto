@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Preferences as PreferencesType } from "@prisma/client";
 
-import { prisma, exclude, auth } from "libs/pages/api";
+import { prisma, exclude, auth } from "libs/apiHelper";
 
 export default async function handler(
   req: NextApiRequest,

@@ -8,7 +8,7 @@ import { GlobalStateProvider } from "libs/globalState";
 import { SupabaseProvider } from "libs/supabase";
 import { init as initI18n } from "libs/i18n";
 
-import "libs/pages/globals.css";
+import "pages/globals.css";
 
 initI18n();
 
@@ -22,7 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/favicon.png" />
         <title>Lightlist</title>
         <meta
           name="viewport"

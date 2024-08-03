@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Task as TaskType } from "@prisma/client";
 
-import { prisma, exclude } from "libs/pages/api";
+import { prisma, exclude } from "libs/apiHelper";
 
 export default async function handler(
   req: NextApiRequest,
