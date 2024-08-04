@@ -67,6 +67,10 @@ const AppPageContent = () => {
   const closeDrawer = () => router.back();
 
   useEffect(() => {
+    document.documentElement.classList.add("bg");
+  }, []);
+
+  useEffect(() => {
     if (
       preferences.theme === "DARK" ||
       (preferences.theme === "SYSTEM" &&
