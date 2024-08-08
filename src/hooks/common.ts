@@ -39,17 +39,20 @@ const fetchStatus: {
     isLoading: boolean;
     isInitialized: boolean;
     polling: ReturnType<typeof createPolling>;
+    isPolling: boolean;
   };
 } = {};
 
 export const resetFetchStatus = (url?: string) => {
   if (url) {
     fetchStatus[url].polling.stop();
+    fetchStatus[url].isPolling = false;
     fetchStatus[url].isInitialized = false;
     fetchStatus[url].isLoading = false;
   } else {
     for (const key in fetchStatus) {
       fetchStatus[key].polling.stop();
+      fetchStatus[url].isPolling = false;
       fetchStatus[key].isInitialized = false;
       fetchStatus[key].isLoading = false;
     }
@@ -71,6 +74,7 @@ export const useClient = <T>(
 ): {
   isInitialized: boolean;
   isLoading: boolean;
+  isPolling: boolean;
   polling: ReturnType<typeof createPolling>;
   sent: (options: AxiosRequestConfig) => Promise<AxiosResponse>;
 } => {
@@ -78,6 +82,7 @@ export const useClient = <T>(
     fetchStatus[url] = {
       isLoading: false,
       isInitialized: false,
+      isPolling: false,
       polling: createPolling(),
     };
   }
@@ -100,12 +105,14 @@ export const useClient = <T>(
             fetchStatus[url].isInitialized = true;
             fetchStatus[url].isLoading = false;
             fetchStatus[url].polling.start(f, options.interval || time.polling);
+            fetchStatus[url].isPolling = true;
             options.resolve?.(res, tmp);
           })
           .catch((res) => {
             fetchStatus[url].isInitialized = true;
             fetchStatus[url].isLoading = false;
             fetchStatus[url].polling.stop();
+            fetchStatus[url].isPolling = false;
             options.reject?.(res, tmp);
           })
           .finally(() => {
@@ -118,13 +125,19 @@ export const useClient = <T>(
     }
     return () => {
       fetchStatus[url].polling.stop();
+      fetchStatus[url].isPolling = false;
     };
   }, [url]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
+      if (
+        document.visibilityState === "visible" &&
+        fetchStatus[url].isPolling
+      ) {
+        fetchStatus[url].polling.run();
         fetchStatus[url].polling.restart();
+        fetchStatus[url].isPolling = true;
       } else {
         fetchStatus[url].polling.stop();
       }
@@ -146,5 +159,6 @@ export const useClient = <T>(
     isInitialized: fetchStatus[url]?.isInitialized || false,
     isLoading: fetchStatus[url]?.isLoading || false,
     polling: fetchStatus[url]?.polling || null,
+    isPolling: fetchStatus[url]?.isPolling || null,
   };
 };
