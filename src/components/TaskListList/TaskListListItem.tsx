@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { clsx } from "clsx";
 
 import { Icon } from "components/Icon";
+import { ConfirmDialog } from "components/ConfirmDialog";
 
 export function TaskListListItem(props: {
   disabled?: boolean;
@@ -60,23 +61,36 @@ export function TaskListListItem(props: {
           {taskList.name}
         </button>
 
-        <button
-          disabled={props.disabled}
-          onClick={() => {
-            let removeFlag = true;
-            if (taskList.taskIds.length !== 0) {
-              removeFlag = window.confirm(
-                "TODO: this task list has tasks. Do you want to delete it?",
-              );
-            }
-            if (removeFlag) {
+        {taskList.taskIds.length !== 0 ? (
+          <ConfirmDialog
+            title="Delete Task List"
+            description="This task list has tasks. Do you want to delete it?"
+            trueText="Delete"
+            falseText="Cancel"
+            handleSelect={(val) => {
+              if (val) {
+                props.handleDeleteTaskListButtonClick(taskList.id);
+              }
+            }}
+          >
+            <button
+              disabled={props.disabled}
+              className="flex cursor-pointer items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
+            >
+              <Icon text="delete" />
+            </button>
+          </ConfirmDialog>
+        ) : (
+          <button
+            disabled={props.disabled}
+            onClick={() => {
               props.handleDeleteTaskListButtonClick(taskList.id);
-            }
-          }}
-          className="flex cursor-pointer items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
-        >
-          <Icon text="delete" />
-        </button>
+            }}
+            className="flex cursor-pointer items-center justify-center rounded fill-gray-400 p-1 text-gray-400 focus-visible:bg-gray-200 dark:focus-visible:bg-gray-700"
+          >
+            <Icon text="delete" />
+          </button>
+        )}
       </div>
     </div>
   );
