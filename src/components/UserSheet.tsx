@@ -6,6 +6,7 @@ import { useCustomTranslation } from "libs/i18n";
 import { useApp } from "hooks/useApp";
 import { useProfile } from "hooks/useProfile";
 import { useTaskLists } from "hooks/useTaskLists";
+import { ConfirmDialog } from "components/ConfirmDialog";
 
 export function UserSheet(props: {
   open: (q?: Query) => boolean;
@@ -132,12 +133,13 @@ export function UserSheet(props: {
         </div>
 
         <div className="flex p-4">
-          <button
-            className="w-full rounded border bg-gray-100 px-4 py-2 text-red-400 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700"
-            onClick={() => {
-              if (
-                window.confirm("Are you sure you want to delete your account?")
-              ) {
+          <ConfirmDialog
+            title="Delete Account"
+            description="Are you sure you want to delete your account?"
+            trueText="Delete"
+            falseText="Cancel"
+            handleSelect={(val) => {
+              if (val) {
                 Promise.all(
                   app.taskListIds.map((tlid) => {
                     deleteTaskList(tlid);
@@ -153,8 +155,10 @@ export function UserSheet(props: {
               }
             }}
           >
-            {t("Delete account")}
-          </button>
+            <button className="w-full rounded border bg-gray-100 px-4 py-2 text-red-400 focus-visible:bg-gray-200 dark:bg-gray-600 dark:focus-visible:bg-gray-700">
+              {t("Delete account")}
+            </button>
+          </ConfirmDialog>
         </div>
       </div>
     </ParamsSheet>
